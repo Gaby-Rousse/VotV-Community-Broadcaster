@@ -1,0 +1,56 @@
+# Created by https://gitignore.org
+# Laravel.gitignore
+
+/vendor/
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Laravel 4 specific
+bootstrap/compiled.php
+app/storage/
+
+# Laravel 5 & Lumen specific
+public/storage
+public/hot
+
+# Laravel 5 & Lumen specific with changed public path
+public_html/storage
+public_html/hot
+
+storage/*.key
+.env
+Homestead.yaml
+Homestead.json
+/.vagrant
+.phpunit.result.cache
+
+/public/build
+/storage/pail
+.env.backup
+.env.production
+.phpactor.json
+auth.json
+
+/public/uploads/audios/*
+!/public/uploads/audios/.gitkeep
+
+/public/uploads/covers/*
+!/public/uploads/covers/.gitkeep
+
+/public/uploads/playlists/*
+!/public/uploads/playlists/.gitkeep
+
+/public/uploads/videos/*
+!/public/uploads/videos/.gitkeep
+
+/public/temp_uploads/covers/*
+!/public/temp_uploads/covers/.gitkeep
+
+/public/temp_uploads/merge/*
+!/public/temp_uploads/merge/.gitkeep
+
+/public/temp_uploads/pending/*
+!/public/temp_uploads/pending/.gitkeep
+
+/liquidScripts/*

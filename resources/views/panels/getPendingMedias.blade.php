@@ -1,0 +1,39 @@
+<div>
+
+    @foreach($medias as $media)
+        <div class=" h-12 w-full flex flex-row " style="border-bottom: solid white 1px">
+            <img class="w-12 cover" loading="lazy" src="{{asset('temp_uploads/covers/' . $media->cover)}}" alt="cover">
+            {{-- Pour permettre un flex-grow de réduire en dessous de la taille de son contenu, min-width = 0 --}}
+            <div class="ml-1 flex flex-col flex-grow min-w-0">
+                <div class="dos truncate">{{$media->artist}}</div>
+                <div class="dos truncate">{{$media->title}}</div>
+            </div>
+            <div class="m-auto mr-1 gap-1 flex flex-row flex-shrink-0">
+                <img filename="{{$media->filename}}"
+                     class="size-10 border-1 border-solid hover:cursor-pointer pendingFile editAction"
+                     style="border-color: #F8FE50" src={{asset('images/pencil.png')}} alt="edit">
+                <img filename="{{$media->filename}}"
+                     class="size-10 border-1 border-solid hover:cursor-pointer pendingFile deleteAction"
+                     style="border-color: #F8FE50" src={{asset('images/trash.png')}} alt="delete">
+                <img filename="{{$media->filename}}"
+                     class="size-10 border-1 border-solid hover:cursor-pointer pendingFile playAction"
+                     style="border-color: #F8FE50" src={{asset('images/play.png')}} alt="play">
+                @if(session('connectedUser')->isAdmin())
+                    <img filename="{{$media->filename}}"
+                         class="size-10 border-1 border-solid hover:cursor-pointer pendingFile approveAction"
+                         style="border-color: #F8FE50" src={{asset('images/check.png?v=1')}} alt="approve">
+                @endif
+            </div>
+        </div>
+    @endforeach
+
+
+</div>
+
+<script>
+    $(() => {
+        $('.count2').text({{$count}});
+    })
+</script>
+
+

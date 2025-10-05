@@ -1,0 +1,561 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Media;
+use App\Models\Notification;
+use App\Providers\Cobalt;
+use App\Providers\Functions;
+use App\Providers\Queries;
+use FFMpeg\FFMpeg;
+use FFMpeg\Format\Audio\Mp3;
+use FFMpeg\Format\Video\X264;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Kiwilan\Audio\Audio;
+use Illuminate\Support\Facades\File;
+
+class MediaController extends Controller
+{
+
+    function getSession()
+    {
+        return json_encode(session('keywords'));
+    }
+
+    //### FILTERS that adjusts the collection generated in getMedias
+    function showFavorite(Request $request) { session(['favorite' => $request->get('value')]); }
+    function setOwner(Request $request) { session(['owner' => $request->get('value')]); }
+    function setChannel(Request $request){ session(['channel' => $request->get('value')]); }
+    function setSearchKeywords(Request $request){ session(['keywords' => $request->get('keywords')]); }
+
+    function setSorting(Request $request)
+    {
+        $desc = $request->get('desc');
+        $sortBy = $request->get('sortBy');
+        if ($sortBy) {
+            session(['sortBy' => $sortBy]);
+        }
+        if ($desc) {
+            session(['desc' => $desc]);
+        }
+    }
+
+    function setType(Request $request)
+    {
+        $type = $request->get('type');
+        if ($type) {
+            session(['type' => $type]);
+        }
+    }
+
+
+    /**
+     * Add or remove a file from the list of favorites of a user.
+     * @param Request $request
+     * @return false|string
+     */
+    function toggleFavorite(Request $request)
+    {
+        $validated = $request->validate([
+            'filename' => 'required'
+        ]);
+        $filename = $validated['filename'];
+        if (session('connectedUser')) {
+            if (DB::table(Functions::retrieveDestinationTable())->where('filename', $filename)->exists()) {
+                if (DB::table('favorites')->where('filename', $filename)->where('username', session('connectedUser')->username)->exists()) {
+                    DB::table('favorites')->where('filename', $filename)->where('username', session('connectedUser')->username)->delete();
+                    //return json_encode($filename . ' removed from favorites');
+                } else {
+                    DB::table('favorites')->insert(['filename' => $filename, 'username' => session('connectedUser')->username]);
+                    //return json_encode($filename . ' added to favorites');
+                }
+            } else {
+                return json_encode('File do not exists');
+            }
+        } else {
+            return json_encode('Not connected');
+        }
+    }
+
+
+    /**
+     * Creates a new media
+     * @param Request $request
+     * @return false|string|void|null
+     */
+    function uploadMedia(Request $request)
+    {
+        $validated = $request->validate([
+            'type' => 'required',
+        ]);
+
+        $table = Functions::retrieveDestinationTable();
+
+        //Is the type available?
+        $availableTypes = ['media','event','ad','segue'];
+        $type = $validated['type'];
+
+        if (!in_array($type,$availableTypes)) {
+            return json_encode('Not a suitable type');
+        }
+
+        //Are you signed in?
+        if (!session('connectedUser')) {
+            return json_encode('Not connected');
+        }
+        $originalName = Functions::formatFilename($_FILES["mediaFile"]["name"]);
+
+        if (DB::table($table)->get()->contains('filename', $originalName)) {
+            return null; //Le fichier existe mais le serveur va l'indiquer à l'utilisateur.
+        }
+        //Move file
+        $fileResult = move_uploaded_file($_FILES["mediaFile"]["tmp_name"], public_path('/temp_uploads/pending/') . $originalName);
+        $filenameWithoutExt = pathinfo($originalName, PATHINFO_FILENAME);
+        //https://stackoverflow.com/questions/173868/how-can-i-get-a-files-extension-in-php
+        $ext = pathinfo($originalName, PATHINFO_EXTENSION);
+        if ($table == 'audios') {
+            if ($ext == 'mp3') {
+                $media = Functions::parseMetadata($originalName, $type);
+            } else {
+                //Convert into mp3.
+                //https://github.com/PHP-FFMpeg/PHP-FFMpeg#audio
+                $ffmpeg = FFMpeg::create();
+                $audio = $ffmpeg->open(public_path('/temp_uploads/pending/') . $originalName);
+
+                $format = new Mp3();
+                $format->on('progress', function ($audio, $format, $percentage) {
+                    //silence...
+                    //echo "$percentage % transcoded";
+                });
+
+                $format
+                    ->setAudioChannels(2)
+                    ->setAudioKiloBitrate(128);
+
+                $audio->save($format, public_path('/temp_uploads/pending/') . $filenameWithoutExt . '.mp3');
+                //Delete the unconverted file
+                unlink(public_path('/temp_uploads/pending/') . $originalName);
+                $media = new Media($filenameWithoutExt . '.mp3', $filenameWithoutExt, 'Unknown Artist', 'unknown.png', 'None', 'Unknown', 'Unknown', 'None', $type, session('connectedUser')->username);
+            }
+
+            //not a Media? We received an error.
+            if (!($media instanceof Media)) {
+                return json_encode($media);
+            }
+
+        } else if ($table == 'videos') {
+
+            if ($ext == 'mp4')
+            {
+                $media = Functions::parseMetadata($originalName, $type);
+            }
+            else
+            {
+                //Convert a file into a mp4
+                //https://github.com/PHP-FFMpeg/PHP-FFMpeg?tab=readme-ov-file#video
+                $ffmpeg = FFMpeg::create();
+                $video = $ffmpeg->open(public_path('/temp_uploads/pending/') . $originalName);
+
+                $format = new X264();
+                $format->on('progress', function ($video, $format, $percentage) {
+                    //silence...
+                    //echo "$percentage % transcoded";
+                });
+
+                $format
+                    ->setKiloBitrate(1000)
+                    ->setAudioChannels(2)
+                    ->setAudioKiloBitrate(256);
+                $video->save($format, public_path('/temp_uploads/pending/') . $filenameWithoutExt . '.mp4');
+                unlink(public_path('/temp_uploads/pending/') . $originalName);
+                $media = new Media($filenameWithoutExt . '.mp4', $filenameWithoutExt, 'Unknown Artist', 'unknown.png', 'None', 'Unknown', 'Unknown', 'None', $type, session('connectedUser')->username);
+            }
+        }
+
+        Queries::insertMedia($media, $table);
+
+
+        if ($fileResult != true) {
+            return json_encode($fileResult);
+        }
+    }
+
+    /**
+     * Downloads a file into the server using the API of a self hosted cobalt instance
+     * See Cobalt Class
+     * @param Request $request
+     *
+     */
+    function importMedia(Request $request)
+    {
+        if (session('connectedUser')) {
+            $validated = $request->validate([
+                'url' => 'required',
+                'type' => 'required',
+            ]);
+            Cobalt::download($validated['url'], $validated['type']);
+        }
+    }
+
+
+    /**
+     * Update a media entry.
+     * @param Request $request
+     * @return false|string|void
+     * @throws \Exception
+     */
+    function updateMetadata(Request $request)
+    {
+        $validated = $request->validate([
+            'filename' => 'required',
+            'title' => 'required',
+            'artist' => 'required',
+            'genre' => 'required',
+            'year' => 'required',
+            'description' => 'required',
+            'destination' => 'required',
+            'type' => 'required',
+        ]);
+        $explicit = 0;
+
+        $message = [];
+
+        $validTypes = ['media', 'ad', 'event', 'segue'];
+        if (!in_array($validated['type'], $validTypes)) {
+            return json_encode('Invalid folder.');
+        }
+
+        if ($request->input('explicit')) {
+            $explicit = 1;
+        }
+
+        $filename = $validated['filename'];
+
+        $mediaHelper = Functions::generateMediaHelper($filename);
+        //Take the old destination and the new one and regenerate both playlist
+        $oldDestination = $mediaHelper->media->destination;
+        $newDestination = $validated['destination'];
+
+        //Are you connected?
+        if (session('connectedUser')) {
+            //Are you the owner?
+            if (!Queries::isOwner($filename, $mediaHelper->table) && !session('connectedUser')->isAdmin()) {
+                return json_encode('Not owner of the file');
+            }
+            //Good.
+        } else {
+            return json_encode('Not authenticated');
+        }
+
+
+        if ($request->hasFile('cover')) {
+            if ($request->file('cover')->isValid()) {
+                $cover = $request->file('cover');
+                $mime = $cover->getClientMimeType();
+                $coverFileName = Functions::formatFilename($cover->getClientOriginalName());
+                //Is the cover an image?
+                if (str_starts_with($mime, 'image/')) {
+                    //On vérifie qu'une image avec ce nom n'existe pas. S'il y a le même nom on va réutiliser l'image du serveur, l'écrire au fichier et la BD.
+                    if (DB::table($mediaHelper->table)->where('filename', $filename)->value('cover') != $coverFileName) {
+                        $cover->move($mediaHelper->coverPath, $coverFileName);
+                    }
+                    $filepathCover = $mediaHelper->coverPath . $coverFileName;
+                    DB::table($mediaHelper->table)->where('filename', $filename)->update(['title' => $validated['title'], 'artist' => $validated['artist'], 'genre' => $validated['genre'], 'year' => $validated['year'], 'description' => $validated['description'], 'cover' => $coverFileName, 'destination' => $validated['destination'], 'explicit' => $explicit, 'type' => $validated['type']]);
+                } else {
+                    return json_encode('MIME type invalid. Expected image/');
+                }
+            } else {
+                return json_encode('Server considers this image as invalid.');
+            }
+        } else {
+            DB::table($mediaHelper->table)->where('filename', $filename)->update(['title' => $validated['title'], 'artist' => $validated['artist'], 'genre' => $validated['genre'], 'year' => $validated['year'], 'description' => $validated['description'], 'destination' => $validated['destination'], 'explicit' => $explicit, 'type' => $validated['type']]);
+        }
+
+        $tags = array(
+            'title' => array($validated['title']),
+            'artist' => array($validated['artist']),
+            'genre' => array($validated['genre']),
+            'year' => array($validated['year']),
+            'comment' => array($validated['description']),
+        );
+
+
+        if (!Queries::isPending($mediaHelper->media->filename)) {
+            //Update the playlists if the file is not inside the pending list.
+            //We only regenerate for approved files since pending files are not broadcasted.
+            Functions::generatePlaylist($oldDestination);
+            Functions::generatePlaylist($newDestination);
+            Functions::generateSafePlaylist();
+        }
+
+
+        //If the file is already approved we need to move it now.
+        //Otherwise, approving it will move it.
+        if (!Queries::isPending($filename)) {
+            $sourceFile = $mediaHelper->mediaPath;
+            $destinationPath = public_path('uploads/' . $mediaHelper->table . '/' . $validated['type'] . 's/');
+            rename($sourceFile, $destinationPath . pathinfo($sourceFile, PATHINFO_BASENAME));
+        }
+
+        if($mediaHelper->table == 'audios')
+        Functions::updateMetadata($tags, $mediaHelper->mediaPath);
+
+        if ($message) {
+            return json_encode($message);
+        }
+
+    }
+
+    /**
+     * Delete a media from the server
+     * @param Request $request
+     * @return false|string|void
+     */
+    function deleteMedia(Request $request)
+    {
+        if (session('connectedUser')) {
+            $validated = $request->validate([
+                //Si quelqu'un gosse avec le hidden
+                'confirm' => 'required',
+                'filename' => 'required',
+                'reason' => '',
+            ]);
+            if (strtolower($validated['confirm']) == 'y') {
+                $filename = $validated['filename'];
+                $mediaHelper = functions::generateMediaHelper($filename);
+                //es tu le propriétaire ou admin
+                if (Queries::isOwner($filename, $mediaHelper->table) || session('connectedUser')->isAdmin()) {
+                    DB::table($mediaHelper->table)->where('filename', $filename)->delete();
+                    DB::table('reports')->where('filename', $filename)->delete();
+                    if ($validated['reason']) {
+                        Queries::insertNotification(new Notification(session('connectedUser')->username, $mediaHelper->media->owner, 'deleted ' . $filename . ' with the following reason: ' . $validated['reason']));
+                    }
+                    try {
+                        unlink($mediaHelper->mediaPath);
+                    }
+                    catch (\Exception $e) {
+                        return json_encode($e->getMessage());
+                    }
+
+
+                } else {
+                    return json_encode("Not owner of the file.");
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Moves a file from 'temp_uploads' toward 'uploads'
+     * According to the type it will also move the file to the adequate folder (medias, events, ads, segues)
+     * @param Request $request
+     * @return void
+     */
+    function approveMedia(Request $request)
+    {
+        $validated = $request->validate([
+            'filename' => 'required'
+        ]);
+        if (session('connectedUser')) {
+            //es tu admin?
+            if (session('connectedUser')->isAdmin()) {
+                $filename = $validated['filename'];
+
+                $mediaHelper = functions::generateMediaHelper($filename, true);
+                Queries::approveMedia($filename, $mediaHelper->table);
+
+                Functions::generatePlaylist($mediaHelper->media->genre);
+                Functions::generateDurationsPlaylist();
+                Functions::generateSafePlaylist();
+
+
+                File::move(public_path('temp_uploads/pending/') . $filename, $mediaHelper->mediaPath);
+                if (!File::exists(public_path('uploads/covers/') . $mediaHelper->media->cover)) {
+                    File::move(public_path('temp_uploads/covers/') . $mediaHelper->media->cover, public_path('uploads/covers/') . $mediaHelper->media->cover);
+                }
+                Queries::insertNotification(new Notification(session('connectedUser')->username, $mediaHelper->media->owner, 'approved ' . $filename));
+            }
+        }
+    }
+
+    /**
+     * Returns a view that contains the various approved medias according to various filters.
+     * @param Request $request
+     * @return Factory|View|Application|\Illuminate\View\View|object|null
+     */
+    function getMedias(Request $request)
+    {
+        $table = Functions::retrieveDestinationTable();
+        if ($request->get('forceRefresh') || Functions::isUpdated($table)) {
+            Functions::insertLatestUpdate($table);
+            $type = session('type');
+            if (!$type) {
+                $type = 'media';
+            }
+
+
+            $values = DB::table($table)->where('approved', '=', 1)->orderBy('title')->get();
+            if (session('keywords') && session('keywords') != '') {
+                $keywords = strtolower(session('keywords'));
+                // str_starts_with(string $haystack, string $needle): bool
+                if (str_starts_with($keywords, 'title:')) {
+                    //https://stackoverflow.com/questions/4517067/remove-a-string-from-the-beginning-of-a-string
+                    $token = substr($keywords, strlen('title:'));
+                    //https://laravel.com/docs/12.x/queries#where-clauses
+                    $values = DB::table($table)->where('approved', '=', 1)->where('title', 'like', '%' . $token . '%')->get();
+
+                } elseif (str_starts_with($keywords, 'artist:')) {
+                    $token = substr($keywords, strlen('artist:'));
+                    $values = DB::table($table)->where('approved', '=', 1)->where('artist', 'like', '%' . $token . '%')->get();
+
+                } elseif (str_starts_with($keywords, 'genre:')) {
+                    $token = substr($keywords, strlen('genre:'));
+                    $values = DB::table($table)->where('approved', '=', 1)->where('genre', 'like', '%' . $token . '%')->get();
+
+                } elseif (str_starts_with($keywords, 'year:')) {
+                    $token = substr($keywords, strlen('year:'));
+                    $values = DB::table($table)->where('approved', '=', 1)->where('year', 'like', '%' . $token . '%')->get();
+                } elseif (str_starts_with($keywords, 'filename:')) {
+                    $token = substr($keywords, strlen('filename:'));
+                    $values = DB::table($table)->where('approved', '=', 1)->where('filename', '=', $token)->get();
+                }
+            }
+
+            $medias = $values;
+
+            $collection = collect($medias);
+
+            if (session('sortBy')) {
+                $sortBy = session('sortBy');
+            } else {
+                $sortBy = 'title';
+            }
+
+            if (session('desc')) {
+                $desc = session('desc');
+            } else {
+                $desc = -1;
+            }
+
+            if ($desc == 1) {
+                $medias = $collection->sortByDesc($sortBy, SORT_STRING);
+            } else {
+                $medias = $collection->sortBy($sortBy, SORT_STRING);
+            }
+
+            if (!session('channel') || session('channel') == 'Everything') {
+                $filtered = $medias->where('type', '=', $type);
+            } else {
+                $filtered = $medias->where('type', '=', $type)->where('destination', '=', session('channel'));
+            }
+
+
+            if (session('owner') == 1 && session('connectedUser')) {
+                $filtered = $filtered->where('owner', '=', session('connectedUser')->username);
+            }
+
+            if (session('favorite') == 1) {
+                $filtered = $filtered->whereIn('filename', DB::table('favorites')->where('username', session('connectedUser')->username)->pluck('filename'));
+            }
+
+            return view('panels/getMedias', ['medias' => $filtered, 'count' => count($filtered)]);
+        }
+        return null;
+
+    }
+
+    /**
+     * Returns a view that contains the pending medias. Filters are not applied there.
+     * @param Request $request
+     * @return Factory|View|Application|\Illuminate\View\View|object|null
+     */
+    function getPendingMedias(Request $request)
+    {
+        $table = Functions::retrieveDestinationTable();
+        if ($request->get('forceRefresh') || Functions::isUpdated($table)) {
+            Functions::insertLatestUpdate($table);
+
+            if (session('connectedUser')) {
+                if (session('connectedUser')->isAdmin()) {
+                    $values = DB::table($table)->where('approved', '=', 0)->get();
+                } else {
+                    $values = DB::table($table)->where('approved', '=', 0)->where('owner', session('connectedUser')->username)->get();
+                }
+                return view('panels/getPendingMedias', ['medias' => $values, 'count' => count($values)]);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns a single file according to its filename.
+     * @param Request $request
+     * @return false|string
+     */
+    function getMedia(Request $request)
+    {
+        try {
+            $filename = $request->get('filename');
+
+            $mediaHelper = Functions::generateMediaHelper($filename);
+
+            return json_encode($mediaHelper->media);
+        } catch (\Exception $e) {
+            return json_encode(['error' => $e->getMessage()]);
+        }
+
+    }
+
+    /**
+     * Return the filename of a file according to its title.
+     * TODO: Should return the filename according to its title AND its artist.
+     * @param Request $request
+     * @return false|string
+     */
+    function getFilename(Request $request)
+    {
+        try {
+            $title = $request->get('title');
+            $filename = DB::table('audios')->where('title', $title)->value('filename');
+            return json_encode($filename);
+        } catch (\Exception $e) {
+            return json_encode(['error' => $e->getMessage()]);
+        }
+
+    }
+
+    /**
+     * Tells the requester if the fetched file is in the pending list.
+     * @param Request $request
+     * @return false|string
+     */
+    function isPending(Request $request)
+    {
+        return json_encode(Queries::isPending($request->get('filename')));
+    }
+
+    /**
+     * Tells the requester if they are allowed to edit a file.
+     * @param Request $request
+     * @return false|string
+     */
+    function isOwner(Request $request)
+    {
+        $filename = $request->get('filename');
+        $table = Functions::retrieveDestinationTable();
+        //Admin have no restrictions.
+        if (session('connectedUser')->isAdmin()) {
+            return json_encode(true);
+        }
+        //Is the user authorized to edit the ressource?
+        $bool = DB::table($table)->where('filename', $filename)->where('owner', session('connectedUser')->username)->exists();
+        return json_encode($bool);
+    }
+
+}
+

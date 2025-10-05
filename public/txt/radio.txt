@@ -1,0 +1,22 @@
+VotV Community Broadcast
+https://radio.votvbroadcast.com/votv.mp3
+VCB SFW
+https://radio.votvbroadcast.com/votv_sfw.mp3
+VCB Country
+https://radio.votvbroadcast.com/votv_country.mp3
+VCB Classical
+https://radio.votvbroadcast.com/votv_classical.mp3
+VCB Hip Hop
+https://radio.votvbroadcast.com/votv_hiphop.mp3
+VCB Jazz
+https://radio.votvbroadcast.com/votv_jazz.mp3
+VCB Mariachi
+https://radio.votvbroadcast.com/votv_mariachi.mp3
+VCB Pop
+https://radio.votvbroadcast.com/votv_pop.mp3
+VCB Rock
+https://radio.votvbroadcast.com/votv_rock.mp3
+VCB Video Game
+https://radio.votvbroadcast.com/votv_video_game.mp3
+VCB Weird
+https://radio.votvbroadcast.com/votv_weird.mp3
