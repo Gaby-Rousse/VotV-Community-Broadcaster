@@ -32,8 +32,19 @@ Homestead.json
 .phpactor.json
 auth.json
 
-/public/uploads/audios/*
-!/public/uploads/audios/.gitkeep
+#Audios
+
+/public/uploads/audios/advertisements/*
+!/public/uploads/audios/advertisements/.gitkeep
+
+/public/uploads/audios/events/*
+!/public/uploads/audios/events/.gitkeep
+
+/public/uploads/audios/medias/*
+!/public/uploads/audios/medias/.gitkeep
+
+/public/uploads/audios/segues/*
+!/public/uploads/audios/segues/.gitkeep
 
 /public/uploads/covers/*
 !/public/uploads/covers/.gitkeep
@@ -41,8 +52,16 @@ auth.json
 /public/uploads/playlists/*
 !/public/uploads/playlists/.gitkeep
 
-/public/uploads/videos/*
-!/public/uploads/videos/.gitkeep
+#Videos
+
+/public/uploads/videos/advertisements/*
+!/public/uploads/videos/advertisements/.gitkeep
+
+/public/uploads/videos/events/*
+!/public/uploads/videos/events/.gitkeep
+
+/public/uploads/videos/medias/*
+!/public/uploads/videos/medias/.gitkeep
 
 /public/temp_uploads/covers/*
 !/public/temp_uploads/covers/.gitkeep
