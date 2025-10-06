@@ -194,8 +194,8 @@ $(() => {
                     console.log(response)
                     keywords = response;
                     return resolve(true);
-                }, error: function () {
-                    popin('Warning',`AJAX Error, Refreshing this page might resolve this issue.`)
+                }, error: function (xhr) {
+                    popin('Warning',JSON.parse(xhr.responseText).message)
                 }
             });
         });
@@ -401,8 +401,8 @@ $(() => {
                     isFilePending = response;
                     return resolve(true);
 
-                }, error: function () {
-                    popin('Warning',`AJAX Error, Refreshing this page might resolve this issue.`)
+                }, error: function (xhr) {
+                    popin('Warning',JSON.parse(xhr.responseText).message)
                 }
             });
         })
@@ -427,8 +427,8 @@ $(() => {
                     isOwner = response;
                     return resolve(true);
 
-                }, error: function () {
-                    popin('Warning',`AJAX Error, Refreshing this page might resolve this issue.`)
+                }, error: function (xhr) {
+                    popin('Warning',JSON.parse(xhr.responseText).message)
                 }
             });
         })
@@ -671,8 +671,8 @@ $(() => {
                 }
 
 
-            }, error: function () {
-                popin('Warning',`AJAX Error, Refreshing this page might resolve this issue.`)
+            }, error: function (xhr) {
+                popin('Warning',JSON.parse(xhr.responseText).message)
             }
         });
     }
@@ -924,8 +924,8 @@ $(() => {
                 }
 
 
-            }, error: function () {
-                popin('Warning',`AJAX Error, Refreshing this page might resolve this issue.`)
+            }, error: function (xhr) {
+                popin('Warning',JSON.parse(xhr.responseText).message)
             }
         });
     }
@@ -1083,8 +1083,8 @@ $(() => {
             success: function (response) {
                 ajaxRequestPlayMedia(response)
                 toggleScreen($('#playScreen'));
-            }, error: function () {
-                popin('Warning',`AJAX Error, Refreshing this page might resolve this issue.`)
+            }, error: function (xhr) {
+                popin('Warning',JSON.parse(xhr.responseText).message)
             }
         });
     }
