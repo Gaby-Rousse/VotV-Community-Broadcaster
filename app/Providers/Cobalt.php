@@ -4,6 +4,8 @@ namespace App\Providers;
 
 
 use App\Models\Media;
+use App\Models\PopType;
+use App\Models\Verbose;
 use FFMpeg\FFMpeg;
 use FFMpeg\Format\Video\X264;
 use Illuminate\Support\Facades\Http;
@@ -43,7 +45,7 @@ class Cobalt
 
         $collection = $response->collect();
         if (isset($collection['error'])) {
-            echo $collection['error']['code'];
+            echo json_encode(['type' => 'Error','message' => $collection['error']['code']]);
         }
 
         if($collection['status'] == "local-processing")
@@ -73,13 +75,14 @@ class Cobalt
                     }
                     Queries::insertMedia($media, Functions::retrieveDestinationTable());
                 } else {
-                    echo "File failed to download";
+                    echo json_encode(['type' => 'Error','message' => "File failed to download"]);
                 }
             }
             else if($output['type'] == 'video/mp4')
             {
                 //https://www.php.net/manual/en/function.fastcgi-finish-request.php
                 //Solution from god
+                echo json_encode(['type' => 'Info','message' => "Download is running in background."]);
                 fastcgi_finish_request();
                 //First tunnel.mp4 is only the video
                 //Second tunnel.mp4 is only the audio
@@ -103,7 +106,7 @@ class Cobalt
                         unlink($tmpAudio);
                         return;
                     }
-                    return json_encode('File failed to download');
+                    echo json_encode(['type' => 'Error','message' => "File failed to download"]);
                 } else {
                     echo "File failed to download";
                 }

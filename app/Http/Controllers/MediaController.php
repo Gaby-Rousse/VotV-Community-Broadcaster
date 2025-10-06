@@ -74,10 +74,10 @@ class MediaController extends Controller
                     //return json_encode($filename . ' added to favorites');
                 }
             } else {
-                return json_encode('File do not exists');
+                echo json_encode(['type' => 'Error','message' => "File doesn't exists!"]);
             }
         } else {
-            return json_encode('Not connected');
+            echo json_encode(['type' => 'Warning','message' => "Not connected!"]);
         }
     }
 
@@ -93,6 +93,7 @@ class MediaController extends Controller
             'type' => 'required',
         ]);
 
+        try {
         $table = Functions::retrieveDestinationTable();
 
         //Is the type available?
@@ -100,17 +101,21 @@ class MediaController extends Controller
         $type = $validated['type'];
 
         if (!in_array($type,$availableTypes)) {
-            return json_encode('Not a suitable type');
+            echo json_encode(['type' => 'Error','message' => "Not a suitable type."]);
         }
 
         //Are you signed in?
         if (!session('connectedUser')) {
-            return json_encode('Not connected');
+            echo json_encode(['type' => 'Error','message' => "Not connected. Please sign in."]);
         }
         $originalName = Functions::formatFilename($_FILES["mediaFile"]["name"]);
 
         if (DB::table($table)->get()->contains('filename', $originalName)) {
-            return null; //Le fichier existe mais le serveur va l'indiquer à l'utilisateur.
+            if(DB::table($table)->where('filename', $originalName)->where('owner', session('connectedUser')->username)->exists()){
+                return json_encode(['type' => 'Warning','message' => "A file with this name already exists. You may edit it"]);
+            }
+            return json_encode(['type' => 'Warning','message' => "A file with this name already exists."]);
+            return;
         }
         //Move file
         $fileResult = move_uploaded_file($_FILES["mediaFile"]["tmp_name"], public_path('/temp_uploads/pending/') . $originalName);
@@ -142,10 +147,7 @@ class MediaController extends Controller
                 $media = new Media($filenameWithoutExt . '.mp3', $filenameWithoutExt, 'Unknown Artist', 'unknown.png', 'None', 'Unknown', 'Unknown', 'None', $type, session('connectedUser')->username);
             }
 
-            //not a Media? We received an error.
-            if (!($media instanceof Media)) {
-                return json_encode($media);
-            }
+
 
         } else if ($table == 'videos') {
 
@@ -176,12 +178,21 @@ class MediaController extends Controller
             }
         }
 
-        Queries::insertMedia($media, $table);
-
-
-        if ($fileResult != true) {
-            return json_encode($fileResult);
+        //not a Media? We received an error.
+        if (!($media instanceof Media)) {
+            return json_encode(['type' => 'Error','message' => $media]);
         }
+
+        if (!$fileResult) {
+            return json_encode(['type' => 'Error','message' => "move_uploaded_file returned false. No additionnal information available."]);
+        }
+
+            Queries::insertMedia($media, $table);
+        }
+        catch (\Exception $e) {
+            echo json_encode(['type' => 'Error','message' => $e->getMessage()]);
+        }
+
     }
 
     /**
@@ -220,92 +231,96 @@ class MediaController extends Controller
             'destination' => 'required',
             'type' => 'required',
         ]);
-        $explicit = 0;
 
-        $message = [];
+        try {
 
-        $validTypes = ['media', 'ad', 'event', 'segue'];
-        if (!in_array($validated['type'], $validTypes)) {
-            return json_encode('Invalid folder.');
-        }
 
-        if ($request->input('explicit')) {
-            $explicit = 1;
-        }
+            $explicit = 0;
 
-        $filename = $validated['filename'];
 
-        $mediaHelper = Functions::generateMediaHelper($filename);
-        //Take the old destination and the new one and regenerate both playlist
-        $oldDestination = $mediaHelper->media->destination;
-        $newDestination = $validated['destination'];
-
-        //Are you connected?
-        if (session('connectedUser')) {
-            //Are you the owner?
-            if (!Queries::isOwner($filename, $mediaHelper->table) && !session('connectedUser')->isAdmin()) {
-                return json_encode('Not owner of the file');
+            $validTypes = ['media', 'ad', 'event', 'segue'];
+            if (!in_array($validated['type'], $validTypes)) {
+                return json_encode('Invalid folder.');
             }
-            //Good.
-        } else {
-            return json_encode('Not authenticated');
-        }
+
+            if ($request->input('explicit')) {
+                $explicit = 1;
+            }
+
+            $filename = $validated['filename'];
+
+            $mediaHelper = Functions::generateMediaHelper($filename);
+            //Take the old destination and the new one and regenerate both playlist
+            $oldDestination = $mediaHelper->media->destination;
+            $newDestination = $validated['destination'];
+
+            //Are you connected?
+            if (session('connectedUser')) {
+                //Are you the owner?
+                if (!Queries::isOwner($filename, $mediaHelper->table) && !session('connectedUser')->isAdmin()) {
+                    return json_encode(['type' => 'Error', 'message' => "Not the owner of the file."]);
+                }
+                //Good.
+            } else {
+                return json_encode(['type' => 'Error', 'message' => "Not connected."]);
+            }
 
 
-        if ($request->hasFile('cover')) {
-            if ($request->file('cover')->isValid()) {
-                $cover = $request->file('cover');
-                $mime = $cover->getClientMimeType();
-                $coverFileName = Functions::formatFilename($cover->getClientOriginalName());
-                //Is the cover an image?
-                if (str_starts_with($mime, 'image/')) {
-                    //On vérifie qu'une image avec ce nom n'existe pas. S'il y a le même nom on va réutiliser l'image du serveur, l'écrire au fichier et la BD.
-                    if (DB::table($mediaHelper->table)->where('filename', $filename)->value('cover') != $coverFileName) {
-                        $cover->move($mediaHelper->coverPath, $coverFileName);
+            if ($request->hasFile('cover')) {
+                if ($request->file('cover')->isValid()) {
+                    $cover = $request->file('cover');
+                    $mime = $cover->getClientMimeType();
+                    $coverFileName = Functions::formatFilename($cover->getClientOriginalName());
+                    //Is the cover an image?
+                    if (str_starts_with($mime, 'image/')) {
+                        //On vérifie qu'une image avec ce nom n'existe pas. S'il y a le même nom on va réutiliser l'image du serveur, l'écrire au fichier et la BD.
+                        if (DB::table($mediaHelper->table)->where('filename', $filename)->value('cover') != $coverFileName) {
+                            $cover->move($mediaHelper->coverPath, $coverFileName);
+                        }
+                        $filepathCover = $mediaHelper->coverPath . $coverFileName;
+                        DB::table($mediaHelper->table)->where('filename', $filename)->update(['title' => $validated['title'], 'artist' => $validated['artist'], 'genre' => $validated['genre'], 'year' => $validated['year'], 'description' => $validated['description'], 'cover' => $coverFileName, 'destination' => $validated['destination'], 'explicit' => $explicit, 'type' => $validated['type']]);
+                    } else {
+                        return json_encode(['type' => 'Error', 'message' => "Cover MIME type not allowed. Expected image/*"]);
                     }
-                    $filepathCover = $mediaHelper->coverPath . $coverFileName;
-                    DB::table($mediaHelper->table)->where('filename', $filename)->update(['title' => $validated['title'], 'artist' => $validated['artist'], 'genre' => $validated['genre'], 'year' => $validated['year'], 'description' => $validated['description'], 'cover' => $coverFileName, 'destination' => $validated['destination'], 'explicit' => $explicit, 'type' => $validated['type']]);
                 } else {
-                    return json_encode('MIME type invalid. Expected image/');
+                    return json_encode(['type' => 'Error', 'message' => "Server consider this image as invalid"]);
                 }
             } else {
-                return json_encode('Server considers this image as invalid.');
+                DB::table($mediaHelper->table)->where('filename', $filename)->update(['title' => $validated['title'], 'artist' => $validated['artist'], 'genre' => $validated['genre'], 'year' => $validated['year'], 'description' => $validated['description'], 'destination' => $validated['destination'], 'explicit' => $explicit, 'type' => $validated['type']]);
             }
-        } else {
-            DB::table($mediaHelper->table)->where('filename', $filename)->update(['title' => $validated['title'], 'artist' => $validated['artist'], 'genre' => $validated['genre'], 'year' => $validated['year'], 'description' => $validated['description'], 'destination' => $validated['destination'], 'explicit' => $explicit, 'type' => $validated['type']]);
+
+            $tags = array(
+                'title' => array($validated['title']),
+                'artist' => array($validated['artist']),
+                'genre' => array($validated['genre']),
+                'year' => array($validated['year']),
+                'comment' => array($validated['description']),
+            );
+
+
+            if (!Queries::isPending($mediaHelper->media->filename)) {
+                //Update the playlists if the file is not inside the pending list.
+                //We only regenerate for approved files since pending files are not broadcasted.
+                Functions::generatePlaylist($oldDestination);
+                Functions::generatePlaylist($newDestination);
+                Functions::generateSafePlaylist();
+            }
+
+
+            //If the file is already approved we need to move it now.
+            //Otherwise, approving it will move it.
+            if (!Queries::isPending($filename)) {
+                $sourceFile = $mediaHelper->mediaPath;
+                $destinationPath = public_path('uploads/' . $mediaHelper->table . '/' . $validated['type'] . 's/');
+                rename($sourceFile, $destinationPath . pathinfo($sourceFile, PATHINFO_BASENAME));
+            }
+
+            if ($mediaHelper->table == 'audios')
+                Functions::updateMetadata($tags, $mediaHelper->mediaPath);
         }
-
-        $tags = array(
-            'title' => array($validated['title']),
-            'artist' => array($validated['artist']),
-            'genre' => array($validated['genre']),
-            'year' => array($validated['year']),
-            'comment' => array($validated['description']),
-        );
-
-
-        if (!Queries::isPending($mediaHelper->media->filename)) {
-            //Update the playlists if the file is not inside the pending list.
-            //We only regenerate for approved files since pending files are not broadcasted.
-            Functions::generatePlaylist($oldDestination);
-            Functions::generatePlaylist($newDestination);
-            Functions::generateSafePlaylist();
-        }
-
-
-        //If the file is already approved we need to move it now.
-        //Otherwise, approving it will move it.
-        if (!Queries::isPending($filename)) {
-            $sourceFile = $mediaHelper->mediaPath;
-            $destinationPath = public_path('uploads/' . $mediaHelper->table . '/' . $validated['type'] . 's/');
-            rename($sourceFile, $destinationPath . pathinfo($sourceFile, PATHINFO_BASENAME));
-        }
-
-        if($mediaHelper->table == 'audios')
-        Functions::updateMetadata($tags, $mediaHelper->mediaPath);
-
-        if ($message) {
-            return json_encode($message);
+        catch (\Exception $e)
+        {
+            echo json_encode(['type' => 'Error','message' => $e->getMessage()]);
         }
 
     }
@@ -338,12 +353,12 @@ class MediaController extends Controller
                         unlink($mediaHelper->mediaPath);
                     }
                     catch (\Exception $e) {
-                        return json_encode($e->getMessage());
+                        return json_encode(['type' => 'Error','message' => $e->getMessage()]);
                     }
 
 
                 } else {
-                    return json_encode("Not owner of the file.");
+                    return json_encode(['type' => 'Error','message' => "Not owner of the file"]);
                 }
             }
         }
@@ -548,13 +563,18 @@ class MediaController extends Controller
     {
         $filename = $request->get('filename');
         $table = Functions::retrieveDestinationTable();
+        $message = true;
         //Admin have no restrictions.
         if (session('connectedUser')->isAdmin()) {
             return json_encode(true);
         }
-        //Is the user authorized to edit the ressource?
-        $bool = DB::table($table)->where('filename', $filename)->where('owner', session('connectedUser')->username)->exists();
-        return json_encode($bool);
+        if(!DB::table($table)->where('filename', '=', $filename)->exists()) {
+            $message = "File doesn't exists.";
+        }
+        if(!DB::table($table)->where('filename', '=', $filename)->where('owner',session('connectedUser')->username)->exists()) {
+            $message = "A file with this name already exists.";
+        }
+        return json_encode($message);
     }
 
 }

@@ -89,7 +89,8 @@ class AutoRefreshedPanel {
                     this.refresh(true);
                     if(response)
                     {
-                        this.popin(`<div class="popup gap-2 inline-flex flex-row text-nowrap"><img src="https://votvbroadcast.com/images/error.png" > <div class="mt-auto mb-auto dos !text-white">` + response + `</div></div>`);
+                        let parsedResponse = JSON.parse(response)
+                        this.popin(parsedResponse.type,parsedResponse.message);
                     }
                     resolve(true);
 
@@ -101,30 +102,9 @@ class AutoRefreshedPanel {
         })
     }
 
-    /**
-     * Script directly from musicUpload.js
-     * There must be a way to use it without rewriting it here
-     * Adds a pop-up to the right
-     * @function
-     * @param {string} html - The html to show
-     */
-    popin(html) {
-        //clearTimeout(timeoutID)
-        //$('.popup').remove();
-
-        $('#popups').append(html);
-        let popup = $('.popup')
-        setTimeout(function () {
-            popup.addClass('popout');
-            setTimeout(function () {
-                popup.remove();
-            }, 3000);
-        }, 3000);
-    }
-
 
     /**
-     * Sends a GET request
+     * Sends a POST request
      * @function
      * @param {string} url - The endpoint for the request
      * @param {FormData} data - The submitted data
@@ -143,20 +123,12 @@ class AutoRefreshedPanel {
                 data: data,
                 success: (response) => {
                     this.refresh(true);
-                    if (response)
-                        this.parsedResponse = JSON.parse(response);
-                    if (this.parsedResponse) {
-                        if (this.parsedResponse.database) {
-                            this.popin(`<div class="popup gap-2 inline-flex flex-row text-nowrap"><img src="https://votvbroadcast.com/images/error.png" > <div class="mt-auto mb-auto dos !text-white">` + this.parsedResponse.txt + `</div></div>`);
-                            this.popin(`<div class="popup gap-2 inline-flex flex-row text-nowrap"><img src="https://votvbroadcast.com/images/warning.png" > <div class="mt-auto mb-auto dos !text-white">` + 'Database updated! However no data has been written in the file itself.' + `</div></div>`);
-                        } else {
-                            this.popin(`<div class="popup gap-2 inline-flex flex-row text-nowrap"><img src="https://votvbroadcast.com/images/error.png" > <div class="mt-auto mb-auto dos !text-white">` + response + `</div></div>`);
-                        }
+                    if(response)
+                    {
+                        let parsedResponse = JSON.parse(response)
+                        this.popin(parsedResponse.type,parsedResponse.message);
                     }
-
-
                     resolve(true);
-
                 },
                 error: () => {
                     resolve(true);
@@ -164,6 +136,28 @@ class AutoRefreshedPanel {
             });
 
         });
+    }
+
+    //TODO Use external functions dude
+    /**
+     * Adds a pop-up to the right
+     * @function
+     * @param {string} type - The icon to show
+     * @param {string} message - The message to show
+     */
+    popin(type, message) {
+        //clearTimeout(timeoutID)
+        //$('.popup').remove();
+        let icon = type.toLowerCase();
+        let html = `<div class="popup gap-2 inline-flex flex-row"><img src="https://votvbroadcast.com/images/${icon}.png" > <div class="mt-auto mb-auto dos !text-white">${message}</div></div>`
+        $('#popups').append(html);
+        let popup = $('.popup')
+        setTimeout(function () {
+            popup.addClass('popout');
+            setTimeout(function () {
+                popup.remove();
+            }, 3000);
+        }, 3000);
     }
 
 }

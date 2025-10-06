@@ -98,11 +98,14 @@ $(() => {
     /**
      * Adds a pop-up to the right
      * @function
-     * @param {string} html - The html to show
+     * @param {string} type - The icon to show
+     * @param {string} message - The message to show
      */
-    function popin(html) {
+     function popin(type, message) {
         //clearTimeout(timeoutID)
         //$('.popup').remove();
+        let icon = type.toLowerCase();
+        let html = `<div class="popup gap-2 inline-flex flex-row"><img src="https://votvbroadcast.com/images/${icon}.png" > <div class="mt-auto mb-auto dos !text-white">${message}</div></div>`
         sfx_click.play();
         clearTimeout(timeoutID)
         $('#popups').append(html);
@@ -192,7 +195,7 @@ $(() => {
                     keywords = response;
                     return resolve(true);
                 }, error: function () {
-                    popin(`<div class="popup gap-2 inline-flex flex-row text-nowrap"><img src="https://votvbroadcast.com/images/warning.png" > <div class="mt-auto mb-auto dos !text-white">AJAX Error, Refreshing this page might resolve this issue.</div></div>`)
+                    popin('Warning',`AJAX Error, Refreshing this page might resolve this issue.`)
                 }
             });
         });
@@ -217,18 +220,18 @@ $(() => {
      * When clicking on the favorite icon, add or remove the file from your favorite
      * @event
      */
-    favorite.click(function () {
-        let htmlContent
+    favorite.on("click",function () {
+        let message
         MusicsPanel.command('/toggleFavorite?filename=' + lastFilename);
         if ($(this).attr('src') === 'https://votvbroadcast.com/images/empty_heart.png') {
-            htmlContent = `<div class="popup w-70 gap-2 inline-flex flex-row text-nowrap"><img src="https://votvbroadcast.com/images/help.png" > <div class="mt-auto mb-auto dos !text-white">File added to favorites!</div></div>`
+            message = `${lastFilename} added to favorites!`
             $(this).attr('src', 'https://votvbroadcast.com/images/filled_heart.png')
         } else {
-            htmlContent = `<div class="popup w-76 gap-2 inline-flex flex-row text-nowrap"><img src="https://votvbroadcast.com/images/help.png" > <div class="mt-auto mb-auto dos !text-white">File removed from favorites!</div></div>`
+            message = `${lastFilename} removed from favorites!`
             $(this).attr('src', 'https://votvbroadcast.com/images/empty_heart.png')
         }
 
-        popin(htmlContent);
+        popin('Info',message);
 
     })
 
@@ -240,7 +243,7 @@ $(() => {
 
         //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI
         navigator.clipboard.writeText(encodeURI('https://votvbroadcast.com/' + route + '?keywords=filename:' + lastFilename));
-        popin(`<div class="popup gap-2 inline-flex flex-row text-nowrap"><img src="https://votvbroadcast.com/images/help.png" > <div class="mt-auto mb-auto dos !text-white">URL copied into clipboard!</div></div>`)
+        popin('Info',`URL copied into clipboard!`);
 
     });
 
@@ -344,7 +347,7 @@ $(() => {
                 MusicsPanel.refresh(true);
                 PendingPanel.refresh(true);
                 toggleScreen($('#playScreen'));
-                popin(`<div class="popup gap-2 inline-flex flex-row text-nowrap"><img src="https://votvbroadcast.com/images/help.png" > <div class="mt-auto mb-auto dos !text-white">Media approved!</div></div>`)
+                popin('info',`${filename} approved!`)
             });
         });
     }
@@ -399,7 +402,7 @@ $(() => {
                     return resolve(true);
 
                 }, error: function () {
-                    popin(`<div class="popup gap-2 inline-flex flex-row text-nowrap"><img src="https://votvbroadcast.com/images/warning.png" > <div class="mt-auto mb-auto dos !text-white">AJAX Error, Refreshing this page might resolve this issue.</div></div>`)
+                    popin('Warning',`AJAX Error, Refreshing this page might resolve this issue.`)
                 }
             });
         })
@@ -425,7 +428,7 @@ $(() => {
                     return resolve(true);
 
                 }, error: function () {
-                    popin(`<div class="popup gap-2 inline-flex flex-row text-nowrap"><img src="https://votvbroadcast.com/images/warning.png" > <div class="mt-auto mb-auto dos !text-white">AJAX Error, Refreshing this page might resolve this issue.</div></div>`)
+                    popin('Warning',`AJAX Error, Refreshing this page might resolve this issue.`)
                 }
             });
         })
@@ -534,12 +537,17 @@ $(() => {
             filename = formatFilename(filename);
             console.log(filename);
             ajaxIsOwner(filename).then(() => {
-                if (isOwner) {
+                if (isOwner === true) {
                     ajaxRequestMedia(filename)
                 } else {
                     toggleScreen(formMedia)
-                    log("It seems the file already exists. However you're not the owner.");
-                    log('If you believe this is an error, rename your file.')
+                    log(isOwner);
+                    if(isOwner === 'A file with this name already exists.')
+                    {
+                        searchToken.val('filename:' + filename)
+                        MusicsPanel.command("/setSearchKeywords?keywords=filename:" + filename);
+                        log('If you believe this is an error, rename your file.')
+                    }
                 }
 
 
@@ -664,7 +672,7 @@ $(() => {
 
 
             }, error: function () {
-                popin(`<div class="popup gap-2 inline-flex flex-row text-nowrap"><img src="https://votvbroadcast.com/images/warning.png" > <div class="mt-auto mb-auto dos !text-white">AJAX Error, Refreshing this page might resolve this issue.</div></div>`)
+                popin('Warning',`AJAX Error, Refreshing this page might resolve this issue.`)
             }
         });
     }
@@ -755,7 +763,6 @@ $(() => {
                 success: function () {
                     return resolve(true);
                 }, error: function () {
-                    popin(`<div class="popup gap-2 inline-flex flex-row text-nowrap"><img src="https://votvbroadcast.com/images/warning.png" > <div class="mt-auto mb-auto dos !text-white">AJAX Error, Refreshing this page might resolve this issue.</div></div>`)
                     return resolve(true);
                 },
                 complete: function () {
@@ -918,7 +925,7 @@ $(() => {
 
 
             }, error: function () {
-                popin(`<div class="popup gap-2 inline-flex flex-row text-nowrap"><img src="https://votvbroadcast.com/images/warning.png" > <div class="mt-auto mb-auto dos !text-white">AJAX Error, Refreshing this page might resolve this issue.</div></div>`)
+                popin('Warning',`AJAX Error, Refreshing this page might resolve this issue.`)
             }
         });
     }
@@ -1077,7 +1084,7 @@ $(() => {
                 ajaxRequestPlayMedia(response)
                 toggleScreen($('#playScreen'));
             }, error: function () {
-                popin(`<div class="popup gap-2 inline-flex flex-row text-nowrap"><img src="https://votvbroadcast.com/images/warning.png" > <div class="mt-auto mb-auto dos !text-white">AJAX Error, Refreshing this page might resolve this issue.</div></div>`)
+                popin('Warning',`AJAX Error, Refreshing this page might resolve this issue.`)
             }
         });
     }
@@ -1109,7 +1116,6 @@ $(() => {
      */
     broadcasting.click(function () {
         ajaxRequestFilename(currentlyPlayingTitle)
-      // popin(`<div class="popup gap-2 inline-flex flex-row text-nowrap"><img src="https://votvbroadcast.com/images/warning.png" > <div class="mt-auto mb-auto dos !text-white">${currentlyPlayingTitle}</div></div>`)
     })
 
 
@@ -1368,7 +1374,7 @@ $(() => {
      * Show only events
      * @event
      */
-    $('#listWhere button:contains("Events")').click(function () {
+    $('#listWhere button:contains("Events")').on('click',function () {
         toggleButton(listWhere, $(this))
         setListing("event")
         ChannelDropdown.updateOptions(['Everything','Strange [4%]', 'Weird [2%]', 'Bizarre [1%]', 'Outlandish [0.4%]', 'Unfathomable [0.2%]', 'Otherworldly [0.1%]', 'Transcendental [0.04%]'])
@@ -1377,7 +1383,7 @@ $(() => {
      * Show only events
      * @event
      */
-    $('#listWhere button:contains("Ads")').click(function () {
+    $('#listWhere button:contains("Ads")').on('click',function () {
         toggleButton(listWhere, $(this))
         setListing("ad")
         ChannelDropdown.updateOptions(['Everything'])
@@ -1386,7 +1392,7 @@ $(() => {
      * Show only segues
      * @event
      */
-    $('#listWhere button:contains("Segues")').click(function () {
+    $('#listWhere button:contains("Segues")').on('click',function () {
         toggleButton(listWhere, $(this))
         setListing("segue")
         ChannelDropdown.updateOptions(['Everything'])
@@ -1535,7 +1541,7 @@ $(() => {
                     toggleScreen(playScreen)
                 });
             }
-            popin(`<div class="popup gap-2 inline-flex flex-row text-nowrap"><img src="https://votvbroadcast.com/images/help.png" > <div class="mt-auto mb-auto dos !text-white">File reported successfully!</div></div>`)
+            popin('Info',`${filename} reported successfully!`)
 
         })
 

@@ -18,7 +18,7 @@
 @include('partials.dropdown')
 <!--- https://tailwindcss.com/docs/pointer-events --->
 <div class="flex flex-row fixed w-[20vw] h-full top-0 right-0 z-10 pointer-events-none">
-    <div class="popup w-76 gap-2 inline-flex flex-row text-nowrap"><img src="{{asset('images/help.png')}}" > <div class="mt-auto mb-auto dos !text-white">Text copied into clipboard!</div></div>
+    <div class="popup w-76 gap-2 inline-flex flex-row text-nowrap"><img src="{{asset('images/info.png')}}" > <div class="mt-auto mb-auto dos !text-white">Text copied into clipboard!</div></div>
 </div>
 
 <div>Hello I shouldn't move. ...</div>
