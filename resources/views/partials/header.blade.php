@@ -12,7 +12,7 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
             integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="{{asset("/scripts/autoRefreshPanel.js?v=0.6")}}"></script>
+    <script src="{{asset("/scripts/autoRefreshPanel.js?v=0.7")}}"></script>
     <script src="{{asset("scripts/votvDropdown.js?v=0.7")}}"></script>
     <title>{{$title}}</title>
     @if($title == "VOTV Community Broadcaster")

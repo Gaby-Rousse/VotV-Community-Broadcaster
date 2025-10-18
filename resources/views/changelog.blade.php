@@ -13,16 +13,17 @@
                    target="_blank">discord</a> rules)
             </li>
             <li>Fix display for tablet users</li>
-            <li>Make importing from an url faster</li>
             <li>Allow users to create a custom broadcast/playlist (?!)</li>
             <li>Segmented programmes</li>
             <li>Avoiding Repetitions (p84 of cookbook)(not soon)</li>
             <li>Segmented uploader (solve 100mb limit)</li>
             <li>Voting system</li>
-            <li>Allow "Sensitive content" video from youtube to be imported <a
-                        class="url hover:!text-blue-500 !text-blue-400"
-                        href="https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp">see this
-                    Gaby</a></li>
+            <li>Rework suggestions and bugs forms</li>
+            <li>Status page for streams</li>
+            <li>Metadata for video using custom  <a class="url hover:!text-blue-500 !text-blue-400" href="https://www.liquidsoap.info/doc-dev/icy_metadata.html"
+                                                    target="_blank">icy_metadata</a></li>
+            <li>Batch uploading</li>
+            <li>Batch editing</li>
         </ul>
     </div>
     <div class=" text-xl sm:text-2xl md:text-3xl lg:text-4xl subtitle sm:text-left text-center">v0.3.4.5 (09/21/2025)

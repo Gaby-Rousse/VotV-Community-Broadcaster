@@ -331,7 +331,18 @@ class Functions
         $filename_without_ext = pathinfo($filename, PATHINFO_FILENAME);
         $problematicCharacters = ['"', '#', '/', '?', '.', ','];
         $filename_without_ext = str_replace($problematicCharacters, '', $filename_without_ext);
+        $filename_without_ext = self::trimUnicode($filename_without_ext);
         return $filename_without_ext . '.' . $ext;
+    }
+
+    /**
+     * From this: https://stackoverflow.com/questions/33273210/php-fix-zero-width-space-inside-string-variable
+     * Trim a string so it doesn't contain any "empty" character.
+     * @param string $str the string to trim
+     * @return string
+     */
+    static function trimUnicode($str) {
+        return preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u','',$str);
     }
 
     /**
