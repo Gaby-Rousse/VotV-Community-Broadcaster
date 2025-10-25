@@ -222,7 +222,7 @@ $(() => {
      */
     favorite.on("click",function () {
         let message
-        MusicsPanel.command('/toggleFavorite?filename=' + lastFilename);
+        MusicsPanel.command('/toggleFavorite?filename=' + encodeURI(lastFilename));
         if ($(this).attr('src') === 'https://votvbroadcast.com/images/empty_heart.png') {
             message = `${lastFilename} added to favorites!`
             $(this).attr('src', 'https://votvbroadcast.com/images/filled_heart.png')
