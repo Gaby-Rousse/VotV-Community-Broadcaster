@@ -13,9 +13,9 @@
         </button>
     </div>
 
-    <div class="flex flex-row ml-1 w-full">
+    <div class="flex flex-row ml-1 w-full flex-grow">
         <label for="url" class="dos hover:cursor-pointer ">URL:</label>
-        <input class="dos flex-grow" id="url" type="text" name="url">
+        <textarea wrap="soft" class="dos flex-grow resize-none mr-1" id="url" type="text" name="url"></textarea>
     </div>
 
     <!--- Footer --->

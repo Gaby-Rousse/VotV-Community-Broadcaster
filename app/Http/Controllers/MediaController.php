@@ -27,10 +27,25 @@ class MediaController extends Controller
     }
 
     //### FILTERS that adjusts the collection generated in getMedias
-    function showFavorite(Request $request) { session(['favorite' => $request->get('value')]); }
-    function setOwner(Request $request) { session(['owner' => $request->get('value')]); }
-    function setChannel(Request $request){ session(['channel' => $request->get('value')]); }
-    function setSearchKeywords(Request $request){ session(['keywords' => $request->get('keywords')]); }
+    function showFavorite(Request $request)
+    {
+        session(['favorite' => $request->get('value')]);
+    }
+
+    function setOwner(Request $request)
+    {
+        session(['owner' => $request->get('value')]);
+    }
+
+    function setChannel(Request $request)
+    {
+        session(['channel' => $request->get('value')]);
+    }
+
+    function setSearchKeywords(Request $request)
+    {
+        session(['keywords' => $request->get('keywords')]);
+    }
 
     function setSorting(Request $request)
     {
@@ -74,10 +89,10 @@ class MediaController extends Controller
                     //return json_encode($filename . ' added to favorites');
                 }
             } else {
-                echo json_encode(['type' => 'Error','message' => "File doesn't exists!"]);
+                echo json_encode(['type' => 'Error', 'message' => "File doesn't exists!"]);
             }
         } else {
-            echo json_encode(['type' => 'Warning','message' => "Not connected!"]);
+            echo json_encode(['type' => 'Warning', 'message' => "Not connected!"]);
         }
     }
 
@@ -93,104 +108,111 @@ class MediaController extends Controller
             'type' => 'required',
         ]);
 
+        $forceTranscode = $request->input('forceTranscode') ?? false;
+
         try {
-        $table = Functions::retrieveDestinationTable();
+            $table = Functions::retrieveDestinationTable();
 
-        //Is the type available?
-        $availableTypes = ['media','event','ad','segue'];
-        $type = $validated['type'];
+            //Is the type available?
+            $availableTypes = ['media', 'event', 'ad', 'segue'];
+            $type = $validated['type'];
 
-        if (!in_array($type,$availableTypes)) {
-            echo json_encode(['type' => 'Error','message' => "Not a suitable type."]);
-        }
-
-        //Are you signed in?
-        if (!session('connectedUser')) {
-            echo json_encode(['type' => 'Error','message' => "Not connected. Please sign in."]);
-        }
-        $originalName = Functions::formatFilename($_FILES["mediaFile"]["name"]);
-
-        if (DB::table($table)->get()->contains('filename', $originalName)) {
-            if(DB::table($table)->where('filename', $originalName)->where('owner', session('connectedUser')->username)->exists()){
-                return json_encode(['type' => 'Warning','message' => "A file with this name already exists. You may edit it"]);
-            }
-            return json_encode(['type' => 'Warning','message' => "A file with this name already exists."]);
-            return;
-        }
-        //Move file
-        $fileResult = move_uploaded_file($_FILES["mediaFile"]["tmp_name"], public_path('/temp_uploads/pending/') . $originalName);
-        $filenameWithoutExt = pathinfo($originalName, PATHINFO_FILENAME);
-        //https://stackoverflow.com/questions/173868/how-can-i-get-a-files-extension-in-php
-        $ext = pathinfo($originalName, PATHINFO_EXTENSION);
-        if ($table == 'audios') {
-            if ($ext == 'mp3') {
-                $media = Functions::parseMetadata($originalName, $type);
-            } else {
-                //Convert into mp3.
-                //https://github.com/PHP-FFMpeg/PHP-FFMpeg#audio
-                $ffmpeg = FFMpeg::create();
-                $audio = $ffmpeg->open(public_path('/temp_uploads/pending/') . $originalName);
-
-                $format = new Mp3();
-                $format->on('progress', function ($audio, $format, $percentage) {
-                    //silence...
-                    //echo "$percentage % transcoded";
-                });
-
-                $format
-                    ->setAudioChannels(2)
-                    ->setAudioKiloBitrate(128);
-
-                $audio->save($format, public_path('/temp_uploads/pending/') . $filenameWithoutExt . '.mp3');
-                //Delete the unconverted file
-                unlink(public_path('/temp_uploads/pending/') . $originalName);
-                $media = new Media($filenameWithoutExt . '.mp3', $filenameWithoutExt, 'Unknown Artist', 'unknown.png', 'None', 'Unknown', 'Unknown', 'None', $type, session('connectedUser')->username);
+            if (!in_array($type, $availableTypes)) {
+                echo json_encode(['type' => 'Error', 'message' => "Not a suitable type."]);
             }
 
-
-
-        } else if ($table == 'videos') {
-
-            if ($ext == 'mp4')
-            {
-                $media = Functions::parseMetadata($originalName, $type);
+            //Are you signed in?
+            if (!session('connectedUser')) {
+                echo json_encode(['type' => 'Error', 'message' => "Not connected. Please sign in."]);
             }
-            else
-            {
-                //Convert a file into a mp4
-                //https://github.com/PHP-FFMpeg/PHP-FFMpeg?tab=readme-ov-file#video
-                $ffmpeg = FFMpeg::create();
-                $video = $ffmpeg->open(public_path('/temp_uploads/pending/') . $originalName);
 
-                $format = new X264();
-                $format->on('progress', function ($video, $format, $percentage) {
-                    //silence...
-                    //echo "$percentage % transcoded";
-                });
+            if ($_FILES['mediaFile']) {
+                foreach ($_FILES["mediaFile"]["error"] as $key => $error) {
+                    $originalName = Functions::formatFilename($_FILES["mediaFile"]["name"][$key]);
 
-                $format
-                    ->setKiloBitrate(1000)
-                    ->setAudioChannels(2)
-                    ->setAudioKiloBitrate(256);
-                $video->save($format, public_path('/temp_uploads/pending/') . $filenameWithoutExt . '.mp4');
-                unlink(public_path('/temp_uploads/pending/') . $originalName);
-                $media = new Media($filenameWithoutExt . '.mp4', $filenameWithoutExt, 'Unknown Artist', 'unknown.png', 'None', 'Unknown', 'Unknown', 'None', $type, session('connectedUser')->username);
+                    if (DB::table($table)->get()->contains('filename', $originalName)) {
+                        if (DB::table($table)->where('filename', $originalName)->where('owner', session('connectedUser')->username)->exists()) {
+                            return json_encode(['type' => 'Warning', 'message' => "A file with this name already exists. You may edit it"]);
+                        }
+                        return json_encode(['type' => 'Warning', 'message' => "A file with this name already exists."]);
+                    }
+                    //Move file
+                    $fileResult = move_uploaded_file($_FILES["mediaFile"]["tmp_name"][$key], public_path('/temp_uploads/pending/') . $originalName);
+                    $filenameWithoutExt = pathinfo($originalName, PATHINFO_FILENAME);
+                    //https://stackoverflow.com/questions/173868/how-can-i-get-a-files-extension-in-php
+                    $ext = pathinfo($originalName, PATHINFO_EXTENSION);
+                    if ($table == 'audios') {
+                        if ($ext == 'mp3' && !$forceTranscode) {
+                            $media = Functions::parseMetadata($originalName, $type);
+                        } else {
+                            //Convert into mp3.
+                            //https://github.com/PHP-FFMpeg/PHP-FFMpeg#audio
+                            $ffmpeg = FFMpeg::create();
+                            $audio = $ffmpeg->open(public_path('/temp_uploads/pending/') . $originalName);
+
+                            $format = new Mp3();
+                            $format->on('progress', function ($audio, $format, $percentage) {
+                                //silence...
+                                //echo "$percentage % transcoded";
+                            });
+
+                            $format
+                                ->setAudioChannels(2)
+                                ->setAudioKiloBitrate(128);
+
+                            $newFilename = $filenameWithoutExt . '_xcode.mp3';
+                            $newFilepath =  public_path('/temp_uploads/pending/') . $newFilename;
+
+
+                            $audio->save($format,$newFilepath);
+                            //Delete the unconverted file
+                            unlink(public_path('/temp_uploads/pending/') . $originalName);
+                            $media = Functions::parseMetadata($newFilename, $type);
+                        }
+
+                    } else if ($table == 'videos') {
+
+                        if ($ext == 'mp4' && !$forceTranscode) {
+                            $media = Functions::parseMetadata($originalName, $type);
+                        } else {
+                            //Convert a file into a mp4
+                            //https://github.com/PHP-FFMpeg/PHP-FFMpeg?tab=readme-ov-file#video
+                            $ffmpeg = FFMpeg::create();
+                            $video = $ffmpeg->open(public_path('/temp_uploads/pending/') . $originalName);
+
+                            $format = new X264();
+                            $format->on('progress', function ($video, $format, $percentage) {
+                                //silence...
+                                //echo "$percentage % transcoded";
+                            });
+
+                            $newFilename = $filenameWithoutExt . '_xcode.mp4';
+                            $newFilepath =  public_path('/temp_uploads/pending/') . $newFilename;
+
+                            $format
+                                ->setKiloBitrate(1000)
+                                ->setAudioChannels(2)
+                                ->setAudioKiloBitrate(256);
+                            $video->save($format,  $newFilepath);
+                            unlink(public_path('/temp_uploads/pending/') . $originalName);
+                            $media = Functions::parseMetadata($newFilename, $type);
+                        }
+                    }
+
+                    //not a Media? We received an error.
+                    if (!($media instanceof Media)) {
+                        return json_encode(['type' => 'Error', 'message' => $media]);
+                    }
+
+                    if (!$fileResult) {
+                        return json_encode(['type' => 'Error', 'message' => "move_uploaded_file returned false. No additionnal information available."]);
+                    }
+
+                    Queries::insertMedia($media, $table);
+                }
             }
-        }
-
-        //not a Media? We received an error.
-        if (!($media instanceof Media)) {
-            return json_encode(['type' => 'Error','message' => $media]);
-        }
-
-        if (!$fileResult) {
-            return json_encode(['type' => 'Error','message' => "move_uploaded_file returned false. No additionnal information available."]);
-        }
-
-            Queries::insertMedia($media, $table);
-        }
-        catch (\Exception $e) {
-            echo json_encode(['type' => 'Error','message' => $e->getMessage()]);
+        } catch (\Exception $e) {
+            echo json_encode(['type' => 'Error', 'message' => $e->getMessage()]);
         }
 
     }
@@ -317,10 +339,8 @@ class MediaController extends Controller
 
             if ($mediaHelper->table == 'audios')
                 Functions::updateMetadata($tags, $mediaHelper->mediaPath);
-        }
-        catch (\Exception $e)
-        {
-            echo json_encode(['type' => 'Error','message' => $e->getMessage()]);
+        } catch (\Exception $e) {
+            echo json_encode(['type' => 'Error', 'message' => $e->getMessage()]);
         }
 
     }
@@ -351,14 +371,13 @@ class MediaController extends Controller
                     }
                     try {
                         unlink($mediaHelper->mediaPath);
-                    }
-                    catch (\Exception $e) {
-                        return json_encode(['type' => 'Error','message' => $e->getMessage()]);
+                    } catch (\Exception $e) {
+                        return json_encode(['type' => 'Error', 'message' => $e->getMessage()]);
                     }
 
 
                 } else {
-                    return json_encode(['type' => 'Error','message' => "Not owner of the file"]);
+                    return json_encode(['type' => 'Error', 'message' => "Not owner of the file"]);
                 }
             }
         }
@@ -568,10 +587,10 @@ class MediaController extends Controller
         if (session('connectedUser')->isAdmin()) {
             return json_encode(true);
         }
-        if(!DB::table($table)->where('filename', '=', $filename)->exists()) {
+        if (!DB::table($table)->where('filename', '=', $filename)->exists()) {
             $message = "File doesn't exists.";
         }
-        if(!DB::table($table)->where('filename', '=', $filename)->where('owner',session('connectedUser')->username)->exists()) {
+        if (!DB::table($table)->where('filename', '=', $filename)->where('owner', session('connectedUser')->username)->exists()) {
             $message = "A file with this name already exists.";
         }
         return json_encode($message);

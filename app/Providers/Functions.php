@@ -120,13 +120,13 @@ class Functions
         $filepath = public_path('/temp_uploads/pending/' . $filename);
         $ext = pathinfo($filepath, PATHINFO_EXTENSION);
         $filenameWithoutExt = pathinfo($filepath, PATHINFO_FILENAME);
-        $ThisFileInfo = $getID3->analyze($filepath);
+        $thisFileInfo = $getID3->analyze($filepath);
         if ($ext == 'mp3') {
-            if(isset($ThisFileInfo['tags']))
-            $info = $ThisFileInfo['tags']['id3v2'];
+            if(isset($thisFileInfo['tags']))
+            $info = $thisFileInfo['tags']['id3v2'];
         } else if ($ext == 'mp4') {
-            if(isset($ThisFileInfo['tags']))
-            $info = $ThisFileInfo['tags']['quicktime'];
+            if(isset($thisFileInfo['tags']))
+            $info = $thisFileInfo['tags']['quicktime'];
         }
 
         //Default values
@@ -329,6 +329,10 @@ class Functions
     {
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
         $filename_without_ext = pathinfo($filename, PATHINFO_FILENAME);
+        $maxFilenameLength = 240;
+        if (strlen($filename_without_ext) > $maxFilenameLength) {
+            $filename_without_ext = substr($filename_without_ext, 0, $maxFilenameLength);
+        }
         $problematicCharacters = ['"', '#', '/', '?', '.', ','];
         $filename_without_ext = str_replace($problematicCharacters, '', $filename_without_ext);
         $filename_without_ext = self::trimUnicode($filename_without_ext);

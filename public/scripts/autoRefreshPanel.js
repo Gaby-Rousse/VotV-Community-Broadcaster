@@ -89,8 +89,7 @@ class AutoRefreshedPanel {
                     this.refresh(true);
                     if(response)
                     {
-                        let parsedResponse = JSON.parse(response)
-                        this.popin(parsedResponse.type,parsedResponse.message);
+                        this.notify(response)
                     }
                     resolve(true);
 
@@ -125,8 +124,7 @@ class AutoRefreshedPanel {
                     this.refresh(true);
                     if(response)
                     {
-                        let parsedResponse = JSON.parse(response)
-                        this.popin(parsedResponse.type,parsedResponse.message);
+                      this.notify(response)
                     }
                     resolve(true);
                 },
@@ -158,6 +156,15 @@ class AutoRefreshedPanel {
                 popup.remove();
             }, 3000);
         }, 3000);
+    }
+
+    notify(response)
+    {
+        let parsedResponse = JSON.parse(response)
+        if(Array.isArray(parsedResponse))
+            parsedResponse.forEach(error => this.popin(error.type,error.message));
+        else
+            this.popin(parsedResponse.type, parsedResponse.message)
     }
 
 }

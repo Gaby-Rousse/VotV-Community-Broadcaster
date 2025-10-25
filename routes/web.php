@@ -171,3 +171,10 @@ Route::get('/generateDurationsPlaylist', function () {
 Route::get('/cobalt', function() {
    dd(Cobalt::download('https://www.youtube.com/watch?v=4yUU5v-1v0w', 'media'));
 });
+
+Route::get('/stats', function() {
+    $truc = DB::table('audios')->select('destination', DB::raw('count(*) as count'))->groupBy('destination')->get();
+    foreach ($truc as $item) {
+        echo "$item->destination" . ":" . $item->count . "<br>";
+    }
+});

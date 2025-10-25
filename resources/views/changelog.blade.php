@@ -22,8 +22,18 @@
             <li>Status page for streams</li>
             <li>Metadata for video using custom  <a class="url hover:!text-blue-500 !text-blue-400" href="https://www.liquidsoap.info/doc-dev/icy_metadata.html"
                                                     target="_blank">icy_metadata</a></li>
-            <li>Batch uploading</li>
             <li>Batch editing</li>
+        </ul>
+    </div>
+    <div class=" text-xl sm:text-2xl md:text-3xl lg:text-4xl subtitle sm:text-left text-center">v0.3.5 (10/25/2025)
+    </div>
+    <div class="flex flex-col gap-2 mt-2 mb-6 items-center sm:items-baseline ">
+        <ul>
+           <li>Batch uploading</li>
+           <li>Batch downloading</li>
+           <li>Fixed a bug related to favorites</li>
+           <li>Files that are converted now have their metadata automatically parsed</li>
+           <li>Introduced compatibility mode, might help uploading some files that doesn't work</li>
         </ul>
     </div>
     <div class=" text-xl sm:text-2xl md:text-3xl lg:text-4xl subtitle sm:text-left text-center">v0.3.4.5 (09/21/2025)

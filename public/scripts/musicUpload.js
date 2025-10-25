@@ -440,6 +440,7 @@ $(() => {
     const uploaderFooter = $('#uploaderFooter');
     const resetButton = $('#resetButton')
     const jqueryFilename = $('#filename');
+    let fileInputList = $('#fileList')
 
     /**
      * Empty the file input.
@@ -448,50 +449,96 @@ $(() => {
     resetButton.click(() => {
         fileInput.val(null);
         jqueryFilename.text('None');
+        fileInputList.html('')
+        hide(fileInputList)
         disableButton();
         log("Reset successfully.")
     })
 
+    function updateFileList(target)
+    {
+        let fileList = target.files
+        let count = fileList.length
+        Array.from(fileList).forEach((file, index) => {
+            fileInputList.append(generateFile(file.name, index,count))
+        })
+        show(fileInputList)
+        $('.removeFile').on('click', function () {
+            removeFileFromFileList(parseInt($(this).data('id')))
+        });
+        return count;
+    }
+
     /**
-     * Watches if the file input changes and acknowledge when its there
-     * It doesn't check for extensions anymore.
+     * Add files in the list of file you're about to upload.
      * @event
      */
-    fileInput.change(() => {
-        let filename = fileInput[0].files[0].name;
-
-
-        let extension = filename.split('.').pop();
-        if (media_type === 'audios') {
-            /*if (extension !== 'mp3') {
-                //Extension != mp3. Retourne erreur
-                log("File not added. Not mp3. (Received: " + extension + ")");
-                //Vide l'input.
-                fileInput.val(null);
-                jqueryFilename.text('None');
-                disableButton();
-            } else { */
-            jqueryFilename.text(filename);
+    fileInput.on('change', function () {
+        fileInputList.html('')
+        let count = updateFileList($(this)[0])
+        //https://stackoverflow.com/questions/25333488/why-isnt-the-filelist-object-an-array
+        if(count > 1)
+        {
+            log("Files added successfully.")
+        }
+        else
+        {
             log("File added successfully.")
-            enableButton();
-            //}
-        } else if (media_type === 'videos') {
-            /* if (extension !== 'mp4') {
-                 //Extension != mp3. Retourne erreur
-                 log("File not added. Not mp4. (Received: " + extension + ")");
-                 //Vide l'input.
-                 fileInput.val(null);
-                 jqueryFilename.text('None');
-                 disableButton();
-             } else { */
-            jqueryFilename.text(filename);
-            log("File added successfully.")
-            enableButton();
-            // }
         }
 
+        enableButton();
 
-    });
+    })
+
+
+    /**
+     * Removes a file from the list of file about to be uploaded.
+     * @function
+     * @param {int} index - Position of the file in the list
+     * This comes from here: https://stackoverflow.com/questions/3144419/how-do-i-remove-a-file-from-the-filelist
+     */
+
+    function removeFileFromFileList(index) {
+        const dt = new DataTransfer();
+        const {files} = document.getElementById('fileupload')
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (index !== i) {
+                dt.items.add(file); // here you exclude the file. thus removing it.
+            }
+        }
+
+        /* Assigning data transfer object files to the 'input' variable will not write the data transfer files to it because it doesn't have the reference to the element: Instead write, */
+        document.getElementById('fileupload').files = dt.files; // Assign the updates list
+        fileInputList.html('')
+        if (dt.files.length <= 0) {
+            hide(fileInputList)
+            disableButton()
+        } else {
+            updateFileList(document.getElementById('fileupload'))
+        }
+    }
+
+    /**
+     * HTMLHelper that creates a "file" to display in the list.
+     * @function
+     * @param {string} filename - Text to write
+     * @param {int} id - Identifier used when removing one file from the list
+     * @param {int} maxIndex - Manage width by knowing how many file is there
+     */
+
+    function generateFile(filename, id, maxIndex = 1) {
+        let width = maxIndex
+        if (maxIndex > 10)
+        {
+            width = 10;
+        }
+        return `<file class="flex flex-row max-w-1/${width} gap-0.5">
+        <img data-id="${id}" class="removeFile border-1 computerButton mt-auto hover:cursor-pointer mb-auto size-4" src="https://dev.votvbroadcast.com/images/cross.png">
+        <div class=" line-clamp-1 dos">${filename}</div></file>`
+    }
+
 
 
     let blink = false;
@@ -519,7 +566,7 @@ $(() => {
         toggleScreen($("#loadingScreen"))
         let formMedia = $("form[action|='/uploadMedia']")
         let formData = new FormData(formMedia[0]);
-        let filename = formData.get("mediaFile").name;
+        let filename = formData.get("mediaFile[]").name;
         console.log(formData);
         //Quand la fameuse promesse est retourné, ouvre le metadata editor
         PendingPanel.postCommand('/uploadMedia', formData).then(() => {
@@ -532,6 +579,7 @@ $(() => {
 
 
             fileInput.val(null);
+            fileInputList.html('')
             $('#filename').text('None');
             disableButton();
             filename = formatFilename(filename);
@@ -545,7 +593,7 @@ $(() => {
                     if(isOwner === 'A file with this name already exists.')
                     {
                         searchToken.val('filename:' + filename)
-                        MusicsPanel.command("/setSearchKeywords?keywords=filename:" + filename);
+                        MusicsPanel.command("/setSearchKeywords?keywords=filename:" + encodeURIComponent(filename));
                         log('If you believe this is an error, rename your file.')
                     }
                 }
@@ -564,7 +612,7 @@ $(() => {
      * @param {string} text - The text to show
      */
     function log(text) {
-        uploaderFooter.before(`<label for="fileupload" class="dos ml-1 trash">${text}</label>`);
+        $('#mediaSettings').before(`<label for="fileupload" class="dos ml-1 trash">${text}</label>`);
         if ($('.trash').length >= 4) {
             $('.trash').first().remove();
         }
@@ -1171,8 +1219,8 @@ $(() => {
         clearTimeout(timeout);
 
         timeout = setTimeout(() => {
-            MusicsPanel.command("/setSearchKeywords?keywords=" + $(this).val());
-            window.history.replaceState(null, "", route + "?keywords=" + $(this).val());
+            MusicsPanel.command("/setSearchKeywords?keywords=" + encodeURIComponent($(this).val()));
+            window.history.replaceState(null, "", route + "?keywords=" + encodeURIComponent($(this).val()));
         }, 1000);
     });
 
