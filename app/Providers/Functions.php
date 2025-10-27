@@ -122,11 +122,11 @@ class Functions
         $filenameWithoutExt = pathinfo($filepath, PATHINFO_FILENAME);
         $thisFileInfo = $getID3->analyze($filepath);
         if ($ext == 'mp3') {
-            if(isset($thisFileInfo['tags']))
-            $info = $thisFileInfo['tags']['id3v2'];
+            if (isset($thisFileInfo['tags']))
+                $info = $thisFileInfo['tags']['id3v2'];
         } else if ($ext == 'mp4') {
-            if(isset($thisFileInfo['tags']))
-            $info = $thisFileInfo['tags']['quicktime'];
+            if (isset($thisFileInfo['tags']))
+                $info = $thisFileInfo['tags']['quicktime'];
         }
 
         //Default values
@@ -140,11 +140,10 @@ class Functions
 
         if (isset($info['title'][0])) {
             $title = $info['title'][0];
-        }
-        else {
+        } else {
             //No title? We'll extract the filename and write it to the file immediately.
-            if(self::retrieveDestinationTable() == 'audios')
-            self::updateMetadata(array('title' => array($title)), $filepath);
+            if (self::retrieveDestinationTable() == 'audios')
+                self::updateMetadata(array('title' => array($title)), $filepath);
         }
 
         if (isset($info['artist'][0])) {
@@ -345,8 +344,9 @@ class Functions
      * @param string $str the string to trim
      * @return string
      */
-    static function trimUnicode($str) {
-        return preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u','',$str);
+    static function trimUnicode($str)
+    {
+        return preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $str);
     }
 
     /**
@@ -374,6 +374,19 @@ class Functions
             }
         }
         return $values->count();
+    }
+
+    /**
+     * Is the file unreadable according to ffmpeg?
+     * https://stackoverflow.com/questions/58815980/how-can-i-tell-if-a-video-file-is-corrupted-ffmpeg
+     * @param string $filepath
+     * @return bool
+     */
+    static function validateFile(string $filepath): bool
+    {
+        $cmd = "ffmpeg -v error -i $filepath -c copy -f null - > /dev/null 2>&1";
+        exec($cmd, $output, $return_var);
+        return $return_var == 0;
     }
 
     /**

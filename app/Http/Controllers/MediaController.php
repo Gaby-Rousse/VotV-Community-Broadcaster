@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Media;
+use App\Models\MediaHelper;
 use App\Models\Notification;
 use App\Providers\Cobalt;
 use App\Providers\Functions;
@@ -109,6 +110,7 @@ class MediaController extends Controller
         ]);
 
         $forceTranscode = $request->input('forceTranscode') ?? false;
+        $transcoded = $forceTranscode;
 
         try {
             $table = Functions::retrieveDestinationTable();
@@ -145,6 +147,7 @@ class MediaController extends Controller
                         if ($ext == 'mp3' && !$forceTranscode) {
                             $media = Functions::parseMetadata($originalName, $type);
                         } else {
+                            $transcoded = true;
                             //Convert into mp3.
                             //https://github.com/PHP-FFMpeg/PHP-FFMpeg#audio
                             $ffmpeg = FFMpeg::create();
@@ -161,10 +164,10 @@ class MediaController extends Controller
                                 ->setAudioKiloBitrate(128);
 
                             $newFilename = $filenameWithoutExt . '_xcode.mp3';
-                            $newFilepath =  public_path('/temp_uploads/pending/') . $newFilename;
+                            $newFilepath = public_path('/temp_uploads/pending/') . $newFilename;
 
 
-                            $audio->save($format,$newFilepath);
+                            $audio->save($format, $newFilepath);
                             //Delete the unconverted file
                             unlink(public_path('/temp_uploads/pending/') . $originalName);
                             $media = Functions::parseMetadata($newFilename, $type);
@@ -175,6 +178,8 @@ class MediaController extends Controller
                         if ($ext == 'mp4' && !$forceTranscode) {
                             $media = Functions::parseMetadata($originalName, $type);
                         } else {
+                            return json_encode(['type' => 'Info', 'message' => 'Video transcoding has been disabled temporally.']);
+                            $transcoded = true;
                             //Convert a file into a mp4
                             //https://github.com/PHP-FFMpeg/PHP-FFMpeg?tab=readme-ov-file#video
                             $ffmpeg = FFMpeg::create();
@@ -187,13 +192,13 @@ class MediaController extends Controller
                             });
 
                             $newFilename = $filenameWithoutExt . '_xcode.mp4';
-                            $newFilepath =  public_path('/temp_uploads/pending/') . $newFilename;
+                            $newFilepath = public_path('/temp_uploads/pending/') . $newFilename;
 
                             $format
                                 ->setKiloBitrate(1000)
                                 ->setAudioChannels(2)
                                 ->setAudioKiloBitrate(256);
-                            $video->save($format,  $newFilepath);
+                            $video->save($format, $newFilepath);
                             unlink(public_path('/temp_uploads/pending/') . $originalName);
                             $media = Functions::parseMetadata($newFilename, $type);
                         }
@@ -208,7 +213,17 @@ class MediaController extends Controller
                         return json_encode(['type' => 'Error', 'message' => "move_uploaded_file returned false. No additionnal information available."]);
                     }
 
-                    Queries::insertMedia($media, $table);
+                    $filepath = $transcoded ? $newFilepath : public_path('/temp_uploads/pending/') . $originalName;
+
+                    if (Functions::validateFile($filepath)) {
+                        Queries::insertMedia($media, $table);
+                    } else
+                    {
+                        echo json_encode(['type' => 'Error', 'message' => "INVALID_FILE: FFMPEG CONSIDER THIS FILE CORRUPTED. You might want to try compatibility mode"]);
+                        unlink($filepath);
+                    }
+
+
                 }
             }
         } catch (\Exception $e) {
