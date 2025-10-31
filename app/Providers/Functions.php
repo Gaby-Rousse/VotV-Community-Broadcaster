@@ -384,7 +384,8 @@ class Functions
      */
     static function validateFile(string $filepath): bool
     {
-        $cmd = "ffmpeg -v error -i $filepath -c copy -f null - > /dev/null 2>&1";
+        $escapedFilepath = escapeshellarg($filepath);
+        $cmd = "ffmpeg -v error -i $escapedFilepath -c copy -f null - > /dev/null 2>&1";
         exec($cmd, $output, $return_var);
         return $return_var == 0;
     }

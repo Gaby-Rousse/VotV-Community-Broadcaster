@@ -38,7 +38,7 @@
 
                 <div class="flex flex-row">
                     <div>Message:</div>
-                    <pre class="break-keep" >{{$message->content}}</pre>
+                    <pre class="text-wrap" >{{$message->content}}</pre>
                 </div>
 
                 <div class="flex flex-row">

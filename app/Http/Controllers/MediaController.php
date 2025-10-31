@@ -110,7 +110,6 @@ class MediaController extends Controller
         ]);
 
         $forceTranscode = $request->input('forceTranscode') ?? false;
-        $transcoded = $forceTranscode;
 
         try {
             $table = Functions::retrieveDestinationTable();
@@ -131,6 +130,7 @@ class MediaController extends Controller
             if ($_FILES['mediaFile']) {
                 foreach ($_FILES["mediaFile"]["error"] as $key => $error) {
                     $originalName = Functions::formatFilename($_FILES["mediaFile"]["name"][$key]);
+                    $currentFilename = $originalName;
 
                     if (DB::table($table)->get()->contains('filename', $originalName)) {
                         if (DB::table($table)->where('filename', $originalName)->where('owner', session('connectedUser')->username)->exists()) {
@@ -165,7 +165,7 @@ class MediaController extends Controller
 
                             $newFilename = $filenameWithoutExt . '_xcode.mp3';
                             $newFilepath = public_path('/temp_uploads/pending/') . $newFilename;
-
+                            $currentFilename = $newFilename;
 
                             $audio->save($format, $newFilepath);
                             //Delete the unconverted file
@@ -179,7 +179,6 @@ class MediaController extends Controller
                             $media = Functions::parseMetadata($originalName, $type);
                         } else {
                             return json_encode(['type' => 'Info', 'message' => 'Video transcoding has been disabled temporally.']);
-                            $transcoded = true;
                             //Convert a file into a mp4
                             //https://github.com/PHP-FFMpeg/PHP-FFMpeg?tab=readme-ov-file#video
                             $ffmpeg = FFMpeg::create();
@@ -192,6 +191,7 @@ class MediaController extends Controller
                             });
 
                             $newFilename = $filenameWithoutExt . '_xcode.mp4';
+                            $currentFilename = $newFilename;
                             $newFilepath = public_path('/temp_uploads/pending/') . $newFilename;
 
                             $format
@@ -213,7 +213,7 @@ class MediaController extends Controller
                         return json_encode(['type' => 'Error', 'message' => "move_uploaded_file returned false. No additionnal information available."]);
                     }
 
-                    $filepath = $transcoded ? $newFilepath : public_path('/temp_uploads/pending/') . $originalName;
+                    $filepath = public_path('/temp_uploads/pending/') . $currentFilename;
 
                     if (Functions::validateFile($filepath)) {
                         Queries::insertMedia($media, $table);
