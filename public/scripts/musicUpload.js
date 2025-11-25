@@ -672,7 +672,7 @@ $(() => {
                         toggleButton(where, whereMusics)
                         typeInput.val('media');
                         if (media_type === 'audios') {
-                            DestinationDropdown.updateOptions(['None', 'Classical', 'Country', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
+                            DestinationDropdown.updateOptions(['None', 'Christmas', 'Classical', 'Country', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
                         }
                         if (media_type === 'videos') {
                             DestinationDropdown.updateOptions(['None', 'Animations', 'Documentaries', 'Horror', "Let's Plays", 'Memes', 'News', 'Shows', 'Vlogs'])
@@ -1051,7 +1051,7 @@ $(() => {
     //### Currently Broadcasting
 
     WatchingChannelsDropdown = new VotvDropdown('watchingChannels','monitoringChannel','updateMonitoringChannel',20)
-    WatchingChannelsDropdown.updateOptions(['Everything', 'SFW', 'Classical', 'Country', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
+    WatchingChannelsDropdown.updateOptions(['Everything', 'SFW', 'Christmas', 'Classical', 'Country', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
 
     //https://www.w3schools.com/jsref/met_win_setinterval.asp
 
@@ -1410,7 +1410,7 @@ $(() => {
         setListing("media")
         if(media_type === 'audios')
         {
-            ChannelDropdown.updateOptions(['Everything','None', 'Classical', 'Country', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
+            ChannelDropdown.updateOptions(['Everything','None', 'Christmas', 'Classical', 'Country', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
         }
         else if(media_type === 'videos')
         {
