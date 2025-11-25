@@ -222,7 +222,7 @@ $(() => {
      */
     favorite.on("click",function () {
         let message
-        MusicsPanel.command('/toggleFavorite?filename=' + encodeURI(lastFilename));
+        MusicsPanel.command('/toggleFavorite?filename=' + encodeURIComponent(lastFilename));
         if ($(this).attr('src') === 'https://votvbroadcast.com/images/empty_heart.png') {
             message = `${lastFilename} added to favorites!`
             $(this).attr('src', 'https://votvbroadcast.com/images/filled_heart.png')
@@ -242,7 +242,7 @@ $(() => {
     $('.share').click(function () {
 
         //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI
-        navigator.clipboard.writeText(encodeURI('https://votvbroadcast.com/' + route + '?keywords=filename:' + lastFilename));
+        navigator.clipboard.writeText(encodeURI('https://votvbroadcast.com/' + route + '?keywords=filename:') + encodeURIComponent(lastFilename));
         popin('Info',`URL copied into clipboard!`);
 
     });

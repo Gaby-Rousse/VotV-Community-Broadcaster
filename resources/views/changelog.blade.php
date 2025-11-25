@@ -31,7 +31,7 @@
         <ul>
            <li>Batch uploading</li>
            <li>Batch downloading</li>
-           <li>Fixed a bug related to favorites</li>
+           <li>Fixed a bug related to favorites and the share button</li>
            <li>Files that are converted now have their metadata automatically parsed</li>
            <li>Introduced compatibility mode, might help uploading some files that doesn't work</li>
         </ul>
