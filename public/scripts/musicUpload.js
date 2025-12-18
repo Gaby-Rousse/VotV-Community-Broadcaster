@@ -1063,17 +1063,18 @@ $(() => {
     //TODO: Find a way to not hardcode these number.
     const channelsNumber = {
         'Everything': 0,
-        'Classical': 3,
-        'Country': 4,
-        'Hip Hop': 6,
-        'Instrumental': 8,
-        'Jazz': 9,
-        'Mariachi': 13,
-        'Pop': 16,
-        'Rock': 17,
-        'SFW': 18,
-        'Video Game': 21,
-        'Weird': 22,
+        'Christmas': 3,
+        'Classical': 4,
+        'Country': 5,
+        'Hip Hop': 7,
+        'Instrumental': 9,
+        'Jazz': 10,
+        'Mariachi': 14,
+        'Pop': 17,
+        'Rock': 18,
+        'SFW': 19,
+        'Video Game': 22,
+        'Weird': 23,
     }
 
     const monitoringChannel = $('#monitoringChannel')

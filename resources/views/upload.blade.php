@@ -1,5 +1,5 @@
 @include('partials.header')
-<script src="scripts/musicUpload.js?v=2.8"></script>
+<script src="scripts/musicUpload.js?v=2.9.1"></script>
 
 
 
@@ -335,7 +335,7 @@
 
             @if(!session('type') || session('type') == 'media')
             @if(App\Providers\Functions::retrieveDestinationTable() == 'audios')
-            ChannelDropdown.updateOptions(['Everything', 'None', 'Classical', 'Country', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
+            ChannelDropdown.updateOptions(['Everything', 'None', 'Christmas', 'Classical', 'Country', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
             @else
             ChannelDropdown.updateOptions(['Everything', 'None', 'Animations', 'Documentaries', 'Horror', "Let's Plays", 'Memes', 'News', 'Shows', 'Vlogs'])
             @endif
