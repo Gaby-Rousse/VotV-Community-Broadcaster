@@ -1,5 +1,5 @@
 @include('partials.header')
-<script src="scripts/musicUpload.js?v=2.9.1"></script>
+<script src="scripts/musicUpload.js?v=2.9.2"></script>
 
 
 

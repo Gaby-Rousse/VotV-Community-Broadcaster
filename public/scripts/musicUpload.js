@@ -672,7 +672,7 @@ $(() => {
                         toggleButton(where, whereMusics)
                         typeInput.val('media');
                         if (media_type === 'audios') {
-                            DestinationDropdown.updateOptions(['None', 'Christmas', 'Classical', 'Country', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
+                            DestinationDropdown.updateOptions(['None', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
                         }
                         if (media_type === 'videos') {
                             DestinationDropdown.updateOptions(['None', 'Animations', 'Documentaries', 'Horror', "Let's Plays", 'Memes', 'News', 'Shows', 'Vlogs'])
@@ -1051,7 +1051,7 @@ $(() => {
     //### Currently Broadcasting
 
     WatchingChannelsDropdown = new VotvDropdown('watchingChannels','monitoringChannel','updateMonitoringChannel',20)
-    WatchingChannelsDropdown.updateOptions(['Everything', 'SFW', 'Christmas', 'Classical', 'Country', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
+    WatchingChannelsDropdown.updateOptions(['Everything', 'SFW', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
 
     //https://www.w3schools.com/jsref/met_win_setinterval.asp
 
@@ -1066,15 +1066,16 @@ $(() => {
         'Christmas': 3,
         'Classical': 4,
         'Country': 5,
-        'Hip Hop': 7,
-        'Instrumental': 9,
-        'Jazz': 10,
-        'Mariachi': 14,
-        'Pop': 17,
-        'Rock': 18,
-        'SFW': 19,
-        'Video Game': 22,
-        'Weird': 23,
+        'Electronic': 7,
+        'Hip Hop': 8,
+        'Instrumental': 10,
+        'Jazz': 11,
+        'Mariachi': 15,
+        'Pop': 18,
+        'Rock': 19,
+        'SFW': 20,
+        'Video Game': 23,
+        'Weird': 24,
     }
 
     const monitoringChannel = $('#monitoringChannel')
@@ -1411,7 +1412,7 @@ $(() => {
         setListing("media")
         if(media_type === 'audios')
         {
-            ChannelDropdown.updateOptions(['Everything','None', 'Christmas', 'Classical', 'Country', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
+            ChannelDropdown.updateOptions(['Everything','None', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
         }
         else if(media_type === 'videos')
         {

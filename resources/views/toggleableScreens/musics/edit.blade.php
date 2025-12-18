@@ -44,15 +44,12 @@
         <textarea id="description" type="text" class="dos border-none hover:cursor-pointer flex-grow ml-0.5 h-5" name="description"></textarea>
     </div>
 
+    <div id="channelDiv" class="ml-1 flex flex-row gap-1">
+        <div id="channelText" class="dos">Channel: </div>
+        <div id="destinationDropdown"></div>
+    </div>
 
     <div class="mt-auto">
-
-
-
-        <div id="channelDiv" class="ml-1 mt-auto flex flex-row gap-1">
-            <div id="channelText" class="dos">Channel: </div>
-            <div id="destinationDropdown"></div>
-        </div>
 
         <div class="h-12 w-full flex flex-row" style="border-top: solid white 1px">
             @include('partials.whereButtons')
