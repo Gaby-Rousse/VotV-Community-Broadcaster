@@ -18,7 +18,7 @@
                 <img filename="{{$media->filename}}"
                      class="size-10 border-1 border-solid hover:cursor-pointer pendingFile playAction"
                      style="border-color: #F8FE50" src={{asset('images/play.png')}} alt="play">
-                @if(session('connectedUser')->isAdmin())
+                @if(Auth::user()->isAdmin())
                     <img filename="{{$media->filename}}"
                          class="size-10 border-1 border-solid hover:cursor-pointer pendingFile approveAction"
                          style="border-color: #F8FE50" src={{asset('images/check.png?v=1')}} alt="approve">

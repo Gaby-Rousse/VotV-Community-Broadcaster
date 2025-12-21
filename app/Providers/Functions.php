@@ -12,28 +12,13 @@ use getID3;
 use getid3_writetags;
 use Illuminate\Foundation\Application;
 use Illuminate\Session\SessionManager;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Kiwilan\Audio\Audio;
 
 class Functions
 {
-    /**
-     * If a cookie exists, fill the session with the connected remembered user
-     * @return void
-     */
-    static function refreshUser()
-    {
-        $username = false;
-        if (!session('connectedUser')) {
-            $username = Cookie::get('username');
-        }
-
-        if ($username) {
-            $value = DB::table('users')->where('username', $username)->get();
-            session(['connectedUser' => new User($value[0]->username, $value[0]->isAdmin)]);
-        }
-    }
 
     //https://github.com/kiwilan/php-audio
     /**
@@ -101,7 +86,7 @@ class Functions
                 }
             }
 
-            return new Media($filename, $title, $artist, $coverFileName, $album, $genre, $year, $description, $type, session('connectedUser')->username);
+            return new Media($filename, $title, $artist, $coverFileName, $album, $genre, $year, $description, $type, Auth::user()->username);
 
         } catch (\Exception $e) {
             return json_encode($e->getMessage());
@@ -162,7 +147,7 @@ class Functions
             $description = $info['comment'][0];
         }
 
-        return new Media($filename, $title, $artist, $coverFileName, $album, $genre, $year, $description, $type, session('connectedUser')->username);
+        return new Media($filename, $title, $artist, $coverFileName, $album, $genre, $year, $description, $type, Auth::user()->username);
     }
 
     static function updateMetadata(array $tags, $filepath)
@@ -241,7 +226,7 @@ class Functions
     static function generatePlaylist(string $pDestination)
     {
         $table = self::retrieveDestinationTable();
-        $availableChannels = ['christmas','classical', 'country', 'electronic', 'hip hop', 'instrumental', 'jazz', 'mariachi', 'pop', 'rock', 'video game', 'weird', 'animations', 'documentaries', 'horror', "let's plays", 'memes', 'news', 'shows', 'vlogs'];
+        $availableChannels = ['christmas', 'classical', 'country', 'electronic', 'hip hop', 'instrumental', 'jazz', 'mariachi', 'pop', 'rock', 'video game', 'weird', 'animations', 'documentaries', 'horror', "let's plays", 'memes', 'news', 'shows', 'vlogs'];
         $eventChannels = ['strange [4%]', 'weird [2%]', 'bizarre [1%]', 'outlandish [0.4%]', 'unfathomable [0.2%]', 'otherworldly [0.1%]', 'transcendental [0.04%]'];
         $prefix = '';
 
@@ -400,8 +385,8 @@ class Functions
     static function insertLatestUpdate(string $table): void
     {
         if ($table == 'notifications') {
-            if (session('connectedUser'))
-                session(['created_at' => DB::table($table)->orderBy('created_at', 'desc')->where('to', session('connectedUser')->username)->limit(1)->value('created_at')]);
+            if (Auth::check())
+                session(['created_at' => DB::table($table)->orderBy('created_at', 'desc')->where('to', Auth::user()->username)->limit(1)->value('created_at')]);
         }
         session(['last_update_' . $table => DB::table($table)->orderBy('updated_at', 'desc')->limit(1)->value('updated_at')]);
     }
@@ -415,8 +400,8 @@ class Functions
     static function isUpdated(string $table): bool
     {
         if ($table == 'notifications') {
-            if (session('connectedUser'))
-                $result = DB::table($table)->orderBy('created_at', 'desc')->where('to', session('connectedUser')->username)->limit(1)->value('created_at');
+            if (Auth::check())
+                $result = DB::table($table)->orderBy('created_at', 'desc')->where('to', Auth::user()->username)->limit(1)->value('created_at');
             if ($result) {
                 return session('created_at') != $result;
             } else {

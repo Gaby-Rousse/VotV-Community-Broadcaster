@@ -7,6 +7,7 @@ use App\Models\Message;
 use App\Models\Music;
 use App\Models\Notification;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Kiwilan\Audio\Audio;
 use PHPUnit\Exception;
@@ -42,8 +43,8 @@ class Queries
         $media->isFavorite = self::isFavorite($value[0]->filename);
         $media->favoriteCount = DB::table('favorites')->where('filename', $value[0]->filename)->count();
         $media->isReported = self::isReported($value[0]->filename);
-        if (session('connectedUser')) {
-            $media->reportReason = DB::table('reports')->where('filename', $value[0]->filename)->where('from', session('connectedUser')->username)->value('reason') ?? '';
+        if (Auth::check()) {
+            $media->reportReason = DB::table('reports')->where('filename', $value[0]->filename)->where('from', Auth::user()->username)->value('reason') ?? '';
         }
         $media->explicit = $value[0]->explicit;
         return $media;
@@ -56,8 +57,8 @@ class Queries
      */
     static function isFavorite(string $filename): bool
     {
-        if (session('connectedUser')) {
-            return DB::table('favorites')->where('filename', $filename)->where('username', session('connectedUser')->username)->exists();
+        if (Auth::check()) {
+            return DB::table('favorites')->where('filename', $filename)->where('username', Auth::user()->username)->exists();
         }
         return false;
     }
@@ -69,8 +70,8 @@ class Queries
      */
     static function isReported(string $filename): bool
     {
-        if (session('connectedUser')) {
-            return DB::table('reports')->where('filename', $filename)->where('from', session('connectedUser')->username)->exists();
+        if (Auth::check()) {
+            return DB::table('reports')->where('filename', $filename)->where('from', Auth::user()->username)->exists();
         }
         return false;
     }
@@ -83,7 +84,7 @@ class Queries
      */
     static function isOwner(string $filename, string $table = 'audios'): bool
     {
-        return session('connectedUser')->username == DB::table($table)->where('filename', $filename)->value('owner');
+        return Auth::user()->username == DB::table($table)->where('filename', $filename)->value('owner');
     }
 
     /**
@@ -120,6 +121,7 @@ class Queries
     }
 
     //Notifications
+
     /**
      * Insert a notification
      * @param Notification $notification - The notification to insert
@@ -148,9 +150,9 @@ class Queries
      * @param string $table
      * @return bool
      */
-    static function isOwnerOfMessage(int $id, string $table) : bool
+    static function isOwnerOfMessage(int $id, string $table): bool
     {
-        return DB::table($table)->where('id', $id)->value('from') == session('connectedUser')->username;
+        return DB::table($table)->where('id', $id)->value('from') == Auth::user()->username;
     }
 
 

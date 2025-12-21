@@ -11,7 +11,7 @@
     <div>
         <label for="description">Message: </label>
         <textarea class="w-full h-[200px] " id="description" name="message"
-                  type="text" {{session('connectedUser') ? '' : 'disabled'}} >{{session('connectedUser') ? '' : 'Please authenticate.'}}</textarea>
+                  type="text" {{Auth::check() ? '' : 'disabled'}} >{{Auth::check() ? '' : 'Please authenticate.'}}</textarea>
 
     </div>
     <button type="submit" class="ml-auto mr-auto rounded-sm border-2 hover:cursor-pointer"
@@ -38,7 +38,7 @@
 
                 <div class="flex flex-row">
                     <div>Message:</div>
-                    <pre class="text-wrap" >{{$message->content}}</pre>
+                    <pre class="text-wrap">{{$message->content}}</pre>
                 </div>
 
                 <div class="flex flex-row">
@@ -47,22 +47,22 @@
                 </div>
 
             </div>
-            @if(session('connectedUser'))
+            @auth
                 <div class="ml-auto mr-auto">
-                    @if(\App\Providers\Queries::isOwnerOfMessage($message->id, $table) || session('connectedUser')->isAdmin())
+                    @if(Auth::user()->isAdmin() || \App\Providers\Queries::isOwnerOfMessage($message->id, $table))
                         <button type="submit" name="delete" value="{{$message->id}}"
                                 class=" rounded-sm border-2 hover:cursor-pointer"
                                 style="border-color: #4d4e51; background-color:#2b2d30">Delete!
                         </button>
                     @endif
-                    @if(session('connectedUser')->isAdmin())
+                    @if(Auth::user()->isAdmin())
                         <button type="submit" name="seen" value="{{$message->id}}"
                                 class=" rounded-sm border-2 hover:cursor-pointer"
                                 style="border-color: #4d4e51; background-color:#2b2d30">Check!
                         </button>
                     @endif
                 </div>
-            @endif
+            @endauth
             <input type="hidden" name="table" value="{{$table}}">
         </form>
     @endforeach

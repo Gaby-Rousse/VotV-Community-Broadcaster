@@ -23,7 +23,6 @@ return new class extends Migration
             $table->boolean('isAdmin')->default(false);
             $table->rememberToken();
 
-            // Database-level defaults for "seamless" SQL insertions
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });

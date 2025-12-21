@@ -6,13 +6,14 @@ use App\Models\Notification;
 use App\Providers\Queries;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
     function reports()
     {
-        if (session('connectedUser')->isAdmin())
+        if (Auth::user()->isAdmin())
             return view('reports', ['title' => 'Reports', 'reports' => DB::table('reports')->get()]);
         return redirect('/');
     }
@@ -24,20 +25,20 @@ class ReportController extends Controller
      */
     function reportMedia(Request $request)
     {
-        if (session('connectedUser')) {
+        if (Auth::check()) {
             $validated = $request->validate([
                 //Si quelqu'un gosse avec le hidden
                 'filename' => 'required',
                 'reason' => '',
             ]);
             if (trim($validated['reason'])) {
-                DB::table('reports')->upsert(['filename' => $validated['filename'], 'from' => session('connectedUser')->username, 'reason' => trim($validated['reason'])], ['from', 'filename']);
+                DB::table('reports')->upsert(['filename' => $validated['filename'], 'from' => Auth::user()->username, 'reason' => trim($validated['reason'])], ['from', 'filename']);
                 $admins = DB::table('users')->where('isAdmin', '=', 1)->get();
                 foreach ($admins as $admin) {
-                    Queries::insertNotification(new Notification(session('connectedUser')->username, $admin->username, 'added a report for: ' . $validated['filename'] . ' open the reports tab for more info.'));
+                    Queries::insertNotification(new Notification(Auth::user()->username, $admin->username, 'added a report for: ' . $validated['filename'] . ' open the reports tab for more info.'));
                 }
             } else {
-                DB::table('reports')->where('from', session('connectedUser')->username)->where('filename', $validated['filename'])->delete();
+                DB::table('reports')->where('from', Auth::user()->username)->where('filename', $validated['filename'])->delete();
             }
 
         }
@@ -53,7 +54,7 @@ class ReportController extends Controller
      */
     function deleteReport(int $id)
     {
-        if (session('connectedUser')->isAdmin()) {
+        if (Auth::user()->isAdmin()) {
             DB::table('reports')->where('id', $id)->delete();
             return redirect()->back();
         }

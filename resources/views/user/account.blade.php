@@ -8,7 +8,7 @@
             <div class="dos red">Err: {{$message}}</div>
             @enderror
 
-            <div class="dos">Hello {{session('connectedUser')->username}}.</div>
+            <div class="dos">Hello {{Auth::user()->username}}.</div>
             <div class="dos">You can adjust your account settings here.</div>
             <div class="dos">1) Log off</div>
             <div class="dos">2) Change username</div>

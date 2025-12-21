@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Audio;
 use App\Models\Media;
 use App\Models\MediaHelper;
 use App\Models\Notification;
@@ -15,8 +16,8 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Kiwilan\Audio\Audio;
 use Illuminate\Support\Facades\File;
 
 class MediaController extends Controller
@@ -80,13 +81,13 @@ class MediaController extends Controller
             'filename' => 'required'
         ]);
         $filename = $validated['filename'];
-        if (session('connectedUser')) {
+        if (Auth::check()) {
             if (DB::table(Functions::retrieveDestinationTable())->where('filename', $filename)->exists()) {
-                if (DB::table('favorites')->where('filename', $filename)->where('username', session('connectedUser')->username)->exists()) {
-                    DB::table('favorites')->where('filename', $filename)->where('username', session('connectedUser')->username)->delete();
+                if (DB::table('favorites')->where('filename', $filename)->where('username', Auth::user()->username)->exists()) {
+                    DB::table('favorites')->where('filename', $filename)->where('username', Auth::user()->username)->delete();
                     //return json_encode($filename . ' removed from favorites');
                 } else {
-                    DB::table('favorites')->insert(['filename' => $filename, 'username' => session('connectedUser')->username]);
+                    DB::table('favorites')->insert(['filename' => $filename, 'username' => Auth::user()->username]);
                     //return json_encode($filename . ' added to favorites');
                 }
             } else {
@@ -123,7 +124,7 @@ class MediaController extends Controller
             }
 
             //Are you signed in?
-            if (!session('connectedUser')) {
+            if (!auth::check()) {
                 echo json_encode(['type' => 'Error', 'message' => "Not connected. Please sign in."]);
             }
 
@@ -133,7 +134,7 @@ class MediaController extends Controller
                     $currentFilename = $originalName;
 
                     if (DB::table($table)->get()->contains('filename', $originalName)) {
-                        if (DB::table($table)->where('filename', $originalName)->where('owner', session('connectedUser')->username)->exists()) {
+                        if (DB::table($table)->where('filename', $originalName)->where('owner', Auth::user()->username)->exists()) {
                             return json_encode(['type' => 'Warning', 'message' => "A file with this name already exists. You may edit it"]);
                         }
                         return json_encode(['type' => 'Warning', 'message' => "A file with this name already exists."]);
@@ -217,8 +218,7 @@ class MediaController extends Controller
 
                     if (Functions::validateFile($filepath)) {
                         Queries::insertMedia($media, $table);
-                    } else
-                    {
+                    } else {
                         echo json_encode(['type' => 'Error', 'message' => "INVALID_FILE: FFMPEG CONSIDER THIS FILE CORRUPTED. You might want to try compatibility mode"]);
                         unlink($filepath);
                     }
@@ -240,7 +240,7 @@ class MediaController extends Controller
      */
     function importMedia(Request $request)
     {
-        if (session('connectedUser')) {
+        if (Auth::check()) {
             $validated = $request->validate([
                 'url' => 'required',
                 'type' => 'required',
@@ -292,9 +292,9 @@ class MediaController extends Controller
             $newDestination = $validated['destination'];
 
             //Are you connected?
-            if (session('connectedUser')) {
+            if (Auth::check()) {
                 //Are you the owner?
-                if (!Queries::isOwner($filename, $mediaHelper->table) && !session('connectedUser')->isAdmin()) {
+                if (!Queries::isOwner($filename, $mediaHelper->table) && !Auth::user()->isAdmin()) {
                     return json_encode(['type' => 'Error', 'message' => "Not the owner of the file."]);
                 }
                 //Good.
@@ -367,7 +367,7 @@ class MediaController extends Controller
      */
     function deleteMedia(Request $request)
     {
-        if (session('connectedUser')) {
+        if (Auth::check()) {
             $validated = $request->validate([
                 //Si quelqu'un gosse avec le hidden
                 'confirm' => 'required',
@@ -378,11 +378,11 @@ class MediaController extends Controller
                 $filename = $validated['filename'];
                 $mediaHelper = functions::generateMediaHelper($filename);
                 //es tu le propriétaire ou admin
-                if (Queries::isOwner($filename, $mediaHelper->table) || session('connectedUser')->isAdmin()) {
+                if (Queries::isOwner($filename, $mediaHelper->table) || Auth::user()->isAdmin()) {
                     DB::table($mediaHelper->table)->where('filename', $filename)->delete();
                     DB::table('reports')->where('filename', $filename)->delete();
                     if ($validated['reason']) {
-                        Queries::insertNotification(new Notification(session('connectedUser')->username, $mediaHelper->media->owner, 'deleted ' . $filename . ' with the following reason: ' . $validated['reason']));
+                        Queries::insertNotification(new Notification(Auth::user()->username, $mediaHelper->media->owner, 'deleted ' . $filename . ' with the following reason: ' . $validated['reason']));
                     }
                     try {
                         unlink($mediaHelper->mediaPath);
@@ -410,9 +410,9 @@ class MediaController extends Controller
         $validated = $request->validate([
             'filename' => 'required'
         ]);
-        if (session('connectedUser')) {
+        if (Auth::check()) {
             //es tu admin?
-            if (session('connectedUser')->isAdmin()) {
+            if (Auth::user()->isAdmin()) {
                 $filename = $validated['filename'];
 
                 $mediaHelper = functions::generateMediaHelper($filename, true);
@@ -427,7 +427,7 @@ class MediaController extends Controller
                 if (!File::exists(public_path('uploads/covers/') . $mediaHelper->media->cover)) {
                     File::move(public_path('temp_uploads/covers/') . $mediaHelper->media->cover, public_path('uploads/covers/') . $mediaHelper->media->cover);
                 }
-                Queries::insertNotification(new Notification(session('connectedUser')->username, $mediaHelper->media->owner, 'approved ' . $filename));
+                Queries::insertNotification(new Notification(Auth::user()->username, $mediaHelper->media->owner, 'approved ' . $filename));
             }
         }
     }
@@ -440,82 +440,53 @@ class MediaController extends Controller
     function getMedias(Request $request)
     {
         $table = Functions::retrieveDestinationTable();
-        if ($request->get('forceRefresh') || Functions::isUpdated($table)) {
-            Functions::insertLatestUpdate($table);
-            $type = session('type');
-            if (!$type) {
-                $type = 'media';
-            }
 
-
-            $values = DB::table($table)->where('approved', '=', 1)->orderBy('title')->get();
-            if (session('keywords') && session('keywords') != '') {
-                $keywords = strtolower(session('keywords'));
-                // str_starts_with(string $haystack, string $needle): bool
-                if (str_starts_with($keywords, 'title:')) {
-                    //https://stackoverflow.com/questions/4517067/remove-a-string-from-the-beginning-of-a-string
-                    $token = substr($keywords, strlen('title:'));
-                    //https://laravel.com/docs/12.x/queries#where-clauses
-                    $values = DB::table($table)->where('approved', '=', 1)->where('title', 'like', '%' . $token . '%')->get();
-
-                } elseif (str_starts_with($keywords, 'artist:')) {
-                    $token = substr($keywords, strlen('artist:'));
-                    $values = DB::table($table)->where('approved', '=', 1)->where('artist', 'like', '%' . $token . '%')->get();
-
-                } elseif (str_starts_with($keywords, 'genre:')) {
-                    $token = substr($keywords, strlen('genre:'));
-                    $values = DB::table($table)->where('approved', '=', 1)->where('genre', 'like', '%' . $token . '%')->get();
-
-                } elseif (str_starts_with($keywords, 'year:')) {
-                    $token = substr($keywords, strlen('year:'));
-                    $values = DB::table($table)->where('approved', '=', 1)->where('year', 'like', '%' . $token . '%')->get();
-                } elseif (str_starts_with($keywords, 'filename:')) {
-                    $token = substr($keywords, strlen('filename:'));
-                    $values = DB::table($table)->where('approved', '=', 1)->where('filename', '=', $token)->get();
-                }
-            }
-
-            $medias = $values;
-
-            $collection = collect($medias);
-
-            if (session('sortBy')) {
-                $sortBy = session('sortBy');
-            } else {
-                $sortBy = 'title';
-            }
-
-            if (session('desc')) {
-                $desc = session('desc');
-            } else {
-                $desc = -1;
-            }
-
-            if ($desc == 1) {
-                $medias = $collection->sortByDesc($sortBy, SORT_STRING);
-            } else {
-                $medias = $collection->sortBy($sortBy, SORT_STRING);
-            }
-
-            if (!session('channel') || session('channel') == 'Everything') {
-                $filtered = $medias->where('type', '=', $type);
-            } else {
-                $filtered = $medias->where('type', '=', $type)->where('destination', '=', session('channel'));
-            }
-
-
-            if (session('owner') == 1 && session('connectedUser')) {
-                $filtered = $filtered->where('owner', '=', session('connectedUser')->username);
-            }
-
-            if (session('favorite') == 1) {
-                $filtered = $filtered->whereIn('filename', DB::table('favorites')->where('username', session('connectedUser')->username)->pluck('filename'));
-            }
-
-            return view('panels/getMedias', ['medias' => $filtered, 'count' => count($filtered)]);
+        if (!$request->get('forceRefresh') && !Functions::isUpdated($table)) {
+            return null;
         }
-        return null;
 
+        Functions::insertLatestUpdate($table);
+
+        $type = session('type', 'media');
+        $query = DB::table($table)->where('approved', 1);
+
+        $keywords = strtolower(session('keywords', ''));
+        if (!empty($keywords) && str_contains($keywords, ':')) {
+            $parts = explode(':', $keywords, 2);
+            $prefix = $parts[0];
+            $token = $parts[1];
+
+            $columns = ['title', 'artist', 'genre', 'year', 'filename'];
+
+            if (in_array($prefix, $columns)) {
+                $operator = ($prefix === 'filename') ? '=' : 'like';
+                $value = ($prefix === 'filename') ? $token : "%$token%";
+                $query->where($prefix, $operator, $value);
+            }
+        }
+
+        $query->where('type', $type);
+
+        if (session('channel') && session('channel') !== 'Everything') {
+            $query->where('destination', session('channel'));
+        }
+        if (session('owner') == 1 && Auth::check()) {
+            $query->where('owner', Auth::user()->username);
+        }
+        if (session('favorite') == 1 && Auth::check()) {
+            $favorites = DB::table('favorites')
+                ->where('username', Auth::user()->username)
+                ->pluck('filename');
+            $query->whereIn('filename', $favorites);
+        }
+
+        $sortBy = session('sortBy', 'title');
+        $direction = (session('desc') == 1) ? 'desc' : 'asc';
+        $query->orderBy($sortBy, $direction);
+
+        $medias = $query->paginate(10);
+
+        return view('panels/getMedias', ['medias' => $medias, 'count' => $medias->total()]);
     }
 
     /**
@@ -529,11 +500,11 @@ class MediaController extends Controller
         if ($request->get('forceRefresh') || Functions::isUpdated($table)) {
             Functions::insertLatestUpdate($table);
 
-            if (session('connectedUser')) {
-                if (session('connectedUser')->isAdmin()) {
+            if (Auth::check()) {
+                if (Auth::user()->isAdmin()) {
                     $values = DB::table($table)->where('approved', '=', 0)->get();
                 } else {
-                    $values = DB::table($table)->where('approved', '=', 0)->where('owner', session('connectedUser')->username)->get();
+                    $values = DB::table($table)->where('approved', '=', 0)->where('owner', Auth::user()->username)->get();
                 }
                 return view('panels/getPendingMedias', ['medias' => $values, 'count' => count($values)]);
             }
@@ -599,13 +570,13 @@ class MediaController extends Controller
         $table = Functions::retrieveDestinationTable();
         $message = true;
         //Admin have no restrictions.
-        if (session('connectedUser')->isAdmin()) {
+        if (Auth::user()->isAdmin()) {
             return json_encode(true);
         }
         if (!DB::table($table)->where('filename', '=', $filename)->exists()) {
             $message = "File doesn't exists.";
         }
-        if (!DB::table($table)->where('filename', '=', $filename)->where('owner', session('connectedUser')->username)->exists()) {
+        if (!DB::table($table)->where('filename', '=', $filename)->where('owner', Auth::user()->username)->exists()) {
             $message = "A file with this name already exists.";
         }
         return json_encode($message);

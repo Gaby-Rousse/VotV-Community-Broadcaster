@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\Auth\Account;
+use App\Http\Controllers\Auth\Login;
+use App\Http\Controllers\Auth\Register;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\UserController;
 use App\Models\Message;
 use App\Providers\Cobalt;
 use App\Providers\Functions;
@@ -21,7 +23,7 @@ Route::fallback(function () {
 });
 Route::view('/changelog', 'changelog', ['title' => 'Changelog']);
 Route::view('/credits', 'credits', ['title' => 'Credits']);
-
+Route::view('/debug', 'debug', ['title' => 'Debug']);
 //Account related views
 Route::view('/signin', 'user.signin', ['title' => 'Sign in']);
 Route::view('/signup', 'user.signup', ['title' => 'Sign up']);
@@ -31,7 +33,7 @@ Route::view('/account', 'user.account', ['title' => 'Account']);
 //Media Related Actions
 Route::controller(MediaController::class)->group(function () {
     Route::post('/reportMedia', 'reportMedia');
-    Route::get('/toggleFavorite',  'toggleFavorite');
+    Route::get('/toggleFavorite', 'toggleFavorite');
 
     //Is that still used?
     Route::get('/getSession', 'getSession');
@@ -59,7 +61,7 @@ Route::controller(MediaController::class)->group(function () {
     Route::get('/showFavorite', 'showFavorite');
     Route::get('/setSorting', 'setSorting');
     Route::get('/setType', 'setType');
-    Route::get('/onlyMe',  'setOwner');
+    Route::get('/onlyMe', 'setOwner');
 
     //GET INFOS
     Route::get('/getMedia', 'getMedia');
@@ -71,9 +73,9 @@ Route::controller(MediaController::class)->group(function () {
 
 //Reports
 Route::controller(ReportController::class)->group(function () {
-    Route::get('/reports','reports');
-    Route::post('/reportMedia','reportMedia');
-    Route::get('/deleteReport/{id}','deleteReport');
+    Route::get('/reports', 'reports');
+    Route::post('/reportMedia', 'reportMedia');
+    Route::get('/deleteReport/{id}', 'deleteReport');
 });
 
 //Suggestions and bugs forms
@@ -85,18 +87,13 @@ Route::controller(MessageController::class)->group(function () {
     //CREATE
     Route::post('/sendMessage', 'sendMessage');
     //UPDATE or DELETE
-    Route::post('/updateMessage',  'updateMessage');
+    Route::post('/updateMessage', 'updateMessage');
 });
 
-Route::controller(UserController::class)->group(function () {
-
-    //CREATE
-    Route::post('/signup', 'signup');
-    //UPDATE / DELETE
-    Route::post('/account',  'account');
-    //AUTH
-    Route::post('/signin', 'signin');
-});
+//AUTH
+Route::post('/register', Register::class);
+Route::post('/login', Login::class);
+Route::post('/account', Account::class);
 
 Route::controller(NotificationController::class)->group(function () {
     //UPDATE / DELETE
@@ -109,17 +106,12 @@ Route::controller(NotificationController::class)->group(function () {
 //CUSTOM, no controller.
 
 Route::get('/', function () {
-    Functions::refreshUser();
     return view('index', ['title' => 'VOTV Community Broadcaster']);
 });
 
 Route::get('/upload', function () {
-    Functions::refreshUser();
     return view('upload', ['title' => 'Upload', 'count' => 0, 'reportCount' => DB::table('reports')->count()]);
 });
-
-
-
 
 
 Route::get('/uploadAudio', function (Request $request) {
@@ -136,17 +128,6 @@ Route::get('/uploadVideo', function (Request $request) {
     session(['keywords' => $keywords]);
     return redirect('upload');
 });
-
-
-
-
-
-
-
-
-
-
-
 
 
 //Test
@@ -168,11 +149,11 @@ Route::get('/generateDurationsPlaylist', function () {
     Functions::generateDurationsPlaylist();
 });
 
-Route::get('/cobalt', function() {
-   dd(Cobalt::download('https://www.youtube.com/watch?v=4yUU5v-1v0w', 'media'));
+Route::get('/cobalt', function () {
+    dd(Cobalt::download('https://www.youtube.com/watch?v=4yUU5v-1v0w', 'media'));
 });
 
-Route::get('/stats', function() {
+Route::get('/stats', function () {
     $truc = DB::table('audios')->select('destination', DB::raw('count(*) as count'))->groupBy('destination')->get();
     foreach ($truc as $item) {
         echo "$item->destination" . ":" . $item->count . "<br>";

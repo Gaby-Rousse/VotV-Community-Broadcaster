@@ -8,7 +8,7 @@
             <div class="flex flex-col ml-1">
                 <div class="dos">Media Player</div>
             </div>
-            @if(session('connectedUser'))
+            @auth
                 <div class="ml-auto flex flex-row gap-0.5">
                     <img class="m-auto ml-0 report w-11 border-2 border-solid hover:cursor-pointer mr-0.5"
                          src="{{asset('images/empty_flag.png')}}" alt="" style="border-color:#F8FE50">
@@ -22,7 +22,7 @@
             @else
                 <img class="m-auto share h-11 w-11 border-2 border-solid hover:cursor-pointer mr-0.5"
                      src="{{asset('images/share.png')}}?v=4" alt="" style="border-color:#F8FE50">
-            @endif
+            @endauth
         </div>
 
         <div class="flex flex-row">
@@ -60,7 +60,7 @@
         <div class="h-12 w-full flex flex-row" style="border-top: solid white 1px">
 
             <div class="flex flex-row flex-grow">
-                <img  class="w-12 pcurrentCover cover" alt="">
+                <img class="w-12 pcurrentCover cover" alt="">
                 <div class="hidden xl:flex !max-w-[30%]  flex-col ml-1">
                     <div class="dos">File loaded:</div>
                     <!--- LA VIE MÉRITE D'ÊTRE VÉCU: https://stackoverflow.com/questions/71093772/how-to-truncate-text-in-tailwindcss --->
@@ -87,7 +87,7 @@
             <div class="flex flex-col ml-1">
                 <div class="dos">Media Player</div>
             </div>
-            @if(session('connectedUser'))
+            @auth
                 <div class="ml-auto flex flex-row gap-0.5">
                     <img class="m-auto ml-0 report w-11 border-2 border-solid hover:cursor-pointer mr-0.5"
                          src="{{asset('images/empty_flag.png')}}" alt="" style="border-color:#F8FE50">
@@ -101,14 +101,19 @@
             @else
                 <img class="m-auto share h-11 w-11 border-2 border-solid hover:cursor-pointer mr-0.5"
                      src="{{asset('images/share.png')}}?v=4" alt="" style="border-color:#F8FE50">
-            @endif
+            @endauth
         </div>
         <div class="h-full max-h-full relative">
-            <video class="absolute h-full overflow-hidden" src="" style=" top: 50%; left: 50%; transform: translate(-50%, -50%)"></video>
+            <video class="absolute h-full overflow-hidden" src=""
+                   style=" top: 50%; left: 50%; transform: translate(-50%, -50%)"></video>
         </div>
         <div id="details" class="flex  mt-1 flex-col transition-all duration-300" style="height:26px">
-            <div id="openDetails" class=" mr-auto ml-auto border-1 text-center border-b-black rounded-t-md pl-12 pr-12 hover:cursor-pointer z-10 " style=" margin-bottom: -1px;">&#9650;</div>
-            <div class="flex flex-col w-full h-full border-b-black  border-1 mr-auto ml-auto" style="margin-bottom: -1px">
+            <div id="openDetails"
+                 class=" mr-auto ml-auto border-1 text-center border-b-black rounded-t-md pl-12 pr-12 hover:cursor-pointer z-10 "
+                 style=" margin-bottom: -1px;">&#9650;
+            </div>
+            <div class="flex flex-col w-full h-full border-b-black  border-1 mr-auto ml-auto"
+                 style="margin-bottom: -1px">
                 <div class="flex flex-row">
                     <div class="dos ml-1">Title:</div>
                     <div id="ptitle" class="dos border-none flex-grow ml-0.5"></div>
@@ -165,17 +170,15 @@
     </div>
     <script>
         $(() => {
-            $('#openDetails').on('click',function() {
+            $('#openDetails').on('click', function () {
                 let details = $('#details')
 
-                if($(this).html() === '▲')
-                {
+                if ($(this).html() === '▲') {
                     $(this).html('▼');
-                    details.css('height',400);
-                }
-                else {
+                    details.css('height', 400);
+                } else {
                     $(this).html('▲');
-                    details.css('height',26);
+                    details.css('height', 26);
                 }
             })
         })

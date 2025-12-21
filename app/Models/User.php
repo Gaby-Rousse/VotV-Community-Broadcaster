@@ -2,28 +2,36 @@
 
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 
-class User
+class User extends Authenticatable
 {
-    public int $Id;
-    public string $username;
-    public $password;
-    public int $admin;
-    public function isAdmin() : bool
+    use Notifiable;
+
+
+    protected $fillable = [
+        'username',
+        'email',
+        'password',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    public function isAdmin(): bool
     {
-        return $this->admin == 1;
+        return $this->isAdmin == 1;
     }
 
-    public function notificationCount() : int
+    public function notificationCount(): int
     {
-        return DB::table('notifications')->where('seen', 0)->where('to', $this->username)->count();
-    }
-
-    function __construct(string $username, int $admin = 0, $password = null)
-    {
-        $this->username = $username;
-        $this->admin = $admin;
-        $this->password = $password;
+        return DB::table('notifications')
+            ->where('seen', 0)
+            ->where('to', $this->username)
+            ->count();
     }
 }

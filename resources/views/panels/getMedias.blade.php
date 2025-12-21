@@ -1,9 +1,11 @@
-@php use App\Providers\Functions; @endphp
+@php use App\Providers\Functions;
+     $mediaType = Functions::retrieveDestinationTable();
+@endphp
 <div class="w-full">
 
     @foreach($medias as $media)
         @php
-            $mediaType = Functions::retrieveDestinationTable();
+
             if($media->type == 'media') {
                 $folder = 'medias';
             } elseif ($media->type == 'event') {
@@ -22,7 +24,7 @@
                 <div class="flex flex-row">
                     <div class="dos truncate">{{$media->title}}</div>
                     @if($media->explicit == 1)
-                    <div class="dos purple">[E]</div>
+                        <div class="dos purple">[E]</div>
                     @endif
                     @if($media->explicit == 2)
                         <div class="ml-1 dos selected">[DEBUG]</div>
@@ -31,8 +33,8 @@
 
             </div>
             <div class="m-auto mr-1 gap-1 flex flex-row flex-shrink-0">
-                @if(session('connectedUser'))
-                    @if(session('connectedUser')->isAdmin() || session('connectedUser')->username == $media->owner)
+                @auth
+                    @if(Auth::user()->isAdmin() || Auth::user()->username == $media->owner)
                         <img filename="{{$media->filename}}"
                              class="size-10 border-1 border-solid hover:cursor-pointer editAction"
                              style="border-color: #F8FE50" src={{asset('images/pencil.png')}} alt="edit">
@@ -40,7 +42,7 @@
                              class="size-10 border-1 border-solid hover:cursor-pointer deleteAction"
                              style="border-color: #F8FE50" src={{asset('images/trash.png')}} alt="delete">
                     @endif
-                @endif
+                @endauth
                 <img filename="{{$media->filename}}"
                      class="size-10 border-1 border-solid hover:cursor-pointer playAction" style="border-color: #F8FE50"
                      src={{asset('images/play.png')}} alt="play">
@@ -52,7 +54,6 @@
             </div>
         </div>
     @endforeach
-
 
 </div>
 

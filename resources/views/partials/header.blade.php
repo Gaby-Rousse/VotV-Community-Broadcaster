@@ -12,15 +12,16 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
             integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jscroll/2.4.1/jquery.jscroll.min.js"></script>
     <script src="{{asset("/scripts/autoRefreshPanel.js?v=0.8")}}"></script>
     <script src="{{asset("scripts/votvDropdown.js?v=0.7")}}"></script>
     <title>{{$title}}</title>
     @if($title == "VOTV Community Broadcaster")
-    <meta content="VOTV Community Broadcaster" property="og:title" />
-    <meta content="A fan-made radio station for Voices of the Void!" property="og:description" />
-    <meta content="https://votvbroadcast.com/" property="og:url" />
-    <meta content="https://votvbroadcast.com/images/VOTV%20Community%20Radio%20Poster.png?v=1" property="og:image" />
-    <meta content="#04a96c" data-react-helmet="true" name="theme-color" />
-        @endif
+        <meta content="VOTV Community Broadcaster" property="og:title"/>
+        <meta content="A fan-made radio station for Voices of the Void!" property="og:description"/>
+        <meta content="https://votvbroadcast.com/" property="og:url"/>
+        <meta content="https://votvbroadcast.com/images/VOTV%20Community%20Radio%20Poster.png?v=1" property="og:image"/>
+        <meta content="#04a96c" data-react-helmet="true" name="theme-color"/>
+    @endif
 </head>
 <body class="flex flex-col">

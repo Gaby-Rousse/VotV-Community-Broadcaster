@@ -1,7 +1,7 @@
 @include('partials.header')
 <div class="flex flex-col h-screen bg-black">
     <div class="mt-auto  mb-40 md:mb-0 ml-1">
-        <form action="/signin" method="post" class="flex flex-col">
+        <form action="/login" method="post" class="flex flex-col">
             @csrf
             @if(Session('error'))
                 <div class="dos red">{{Session('error')}}</div>
@@ -23,8 +23,8 @@
             @enderror
 
             <div class="flex">
-                <label for="rememberMe" class="dos">Remember me</label>
-                <input id="rememberMe" type="checkbox" name="rememberMe" class="dos ml-2 rounded-none hover:cursor-pointer">
+                <label for="remember" class="dos">Remember me</label>
+                <input id="remember" type="checkbox" name="remember" class="dos ml-2 rounded-none hover:cursor-pointer">
             </div>
 
 

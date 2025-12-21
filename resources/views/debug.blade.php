@@ -17,17 +17,19 @@
 
 <h2 class="font-bold text-2xl">The debug zone</h2>
 <p>Access features that could help you. Who knows.</p>
-@if(session('connectedUser'))
+@auth
     <h2 class="text-lg font-bold">Data:</h2>
     <pre class="border-2">
-    Username: {{session('connectedUser')->username}}
-    Role: {{session('connectedUser')->isAdmin() == 1 ? 'Administrator' : 'User'}}
-    Cookie (remember me): {{Cookie::get('username') ? 'Yes' : 'No'}}
+    Username: {{Auth::user()->username}}
+    Role: {{Auth::user()->isAdmin() == 1 ? 'Administrator' : 'User'}}
+    Remember token by Laravel: {{Auth::viaRemember() ? 'Yes' : 'No'}}
 </pre>
     <h2 class="text-lg font-bold">Experimental:</h2>
-    <div>Main channel shows blank screen: <a class=" hover:text-blue-500 text-blue-400 underline" href="/refreshTV">Force refresh</a></div>
+    <div>Main channel shows blank screen: <a class=" hover:text-blue-500 text-blue-400 underline" href="/refreshTV">Force
+            refresh</a></div>
 @else
-    <h2 class="text-lg font-bold">Not connected. <a class=" hover:text-blue-500 text-blue-400 underline" href="/signin">Connect here</a></h2>
-@endif
+    <h2 class="text-lg font-bold">Not connected. <a class=" hover:text-blue-500 text-blue-400 underline" href="/signin">Connect
+            here</a></h2>
+@endauth
 </body>
 </html>

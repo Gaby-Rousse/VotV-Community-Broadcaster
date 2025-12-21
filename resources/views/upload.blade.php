@@ -4,7 +4,7 @@
 
 
 
-@if(!session('connectedUser'))
+@if(!Auth::check())
     <div id="overlay" class="flex fixed w-full h-full top-0 left-0 right-0 bottom-0 z-50 hover:cursor-pointer"
          style="background-color: rgba(0,0,0,0.5)">
         <div class="w-[75%] h-[75%] flex border-3 gap-1 flex-col border-solid m-auto bg-black">
@@ -66,27 +66,27 @@
                 TV
             </a>
             <div class="flex flex-row ml-auto flex-shrink-0">
-                @if(session('connectedUser'))
-                    @if(session('connectedUser')->isAdmin())
+                @auth
+                    @if(Auth::user()->isAdmin())
                         <a href="/reports"
                            class="computerButton flex-shrink-0 border-2 w-35 border-solid p-0.5 mt-1 mb-1 mr-1 pl-4 pr-4 hover:cursor-pointer"
                            id="reports">
                             Reports ({{$reportCount}})
                         </a>
                     @endif
-                @endif
+                @endauth
                 <button
-                    id="settingButton"
-                    class="computerButton flex-shrink-0 border-2 w-28 border-solid p-0.5 mt-1 mb-1 mr-1 pl-4 pr-4 hover:cursor-pointer">
+                        id="settingButton"
+                        class="computerButton flex-shrink-0 border-2 w-28 border-solid p-0.5 mt-1 mb-1 mr-1 pl-4 pr-4 hover:cursor-pointer">
                     Settings
                 </button>
-                @if(session('connectedUser'))
+                @auth
                     <button id="notificationButton"
                             class="computerButton flex-shrink-0 hover:cursor-pointer border-2 border-solid p-0.5 pr-1 mt-1 mb-1 mr-1 flex flex-row">
                         <img class="size-6" alt="notifications" src="{{asset('images/bell.png')}}">
                         <div class="dos notifCount">0</div>
                     </button>
-                @endif
+                @endauth
             </div>
         </div>
     </div>
@@ -97,14 +97,16 @@
                 <div class="dos text-nowrap">Currently broadcasting:</div>
                 <div class="dos metadata truncate">Loading...</div>
             </div>
-            <a class="md:ml-auto md:mr-1 dos url mr-auto" target="_blank" href="https://radio.votvbroadcast.com/votv.mp3">
+            <a class="md:ml-auto md:mr-1 dos url mr-auto" target="_blank"
+               href="https://radio.votvbroadcast.com/votv.mp3">
                 radio.votvbroadcast.com</a>
 
         </div>
-    <div class="flex flex-row">
-        <div class="ml-1 dos">Currently monitoring: </div><div class="ml-1" id="watchingChannels"></div>
-        <input type="hidden" id="monitoringChannel">
-    </div>
+        <div class="flex flex-row">
+            <div class="ml-1 dos">Currently monitoring:</div>
+            <div class="ml-1" id="watchingChannels"></div>
+            <input type="hidden" id="monitoringChannel">
+        </div>
 
     @endif
 
@@ -137,7 +139,7 @@
             </div>
 
             <div id="MusicsPanel"
-                 class="approvedList {{session('connectedUser') ? 'h-[40vh]' : 'h-[50vh]'}} flex overflow-y-auto">
+                 class="approvedList {{Auth::check() ? 'h-[40vh]' : 'h-[50vh]'}} flex overflow-y-auto">
 
                 {{--
 
@@ -157,7 +159,7 @@
 
 
             </div>
-            @if(session('connectedUser'))
+            @auth
                 <div id="pendingTab"
                      class="h-[30vh] flex flex-col">
                     <!-- Infos  -->
@@ -172,7 +174,7 @@
                     <div id="PendingPanel" class="pendingList flex-grow overflow-y-auto relative">
                         <!--- Écran de chargement (il seras écrasé par le panneau) --->
                         <div
-                            class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-row">
+                                class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-row">
                             <img class="w-12 mx-auto" src="{{ asset('images/hourglass.gif') }}?v=1" alt="">
                             <div class="border-3 border-solid p-1 w-100 h-12 flex flex-row">
                                 <div class="h-full loadingBar" style="background-color: #F8FE50;"></div>
@@ -205,7 +207,7 @@
                     <div id="NotificationsPanel" class="h-[29vh] overflow-y-auto relative">
                         <!--- Écran de chargement (il seras écrasé par le panneau) --->
                         <div
-                            class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-row">
+                                class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-row">
                             <img class="w-12 mx-auto" src="{{ asset('images/hourglass.gif') }}?v=1" alt="">
                             <div class="border-3 border-solid p-1 w-100 h-12 flex flex-row">
                                 <div class="h-full loadingBar" style="background-color: #F8FE50;"></div>
@@ -214,7 +216,7 @@
                     </div>
                 </div>
 
-            @endif
+            @endauth
         </div>
 
 
@@ -222,14 +224,14 @@
         <div class="w-full h-[50%] md:h-full md:w-1/2 flex flex-col">
 
             {{-- Insertion des écrans activable --}}
-            @if(session('connectedUser'))
+            @auth
                 @include('toggleableScreens.musics.import')
                 @include('toggleableScreens.musics.upload')
                 @include('toggleableScreens.musics.delete')
                 @include('toggleableScreens.musics.edit')
                 @include('toggleableScreens.musics.loading')
                 @include('toggleableScreens.musics.report')
-            @endif
+            @endauth
             @include('toggleableScreens.musics.play')
             {{-- stupide html --}}
             <div>
@@ -273,31 +275,31 @@
                             </div>
                             <div class="flex flex-row w-full">
                                 <div
-                                    class="{{session('sortBy') == null || session('sortBy') == 'title' ? 'selected' : ''}} sorting dos url hover:cursor-pointer ml-1 sortTitle">
+                                        class="{{session('sortBy') == null || session('sortBy') == 'title' ? 'selected' : ''}} sorting dos url hover:cursor-pointer ml-1 sortTitle">
                                     &#9830; Sort by title
                                 </div>
                             </div>
                             <div class="flex flex-row w-full">
                                 <div
-                                    class="{{session('sortBy') == 'artist' ? 'selected' : ''}} sorting dos url hover:cursor-pointer ml-1 sortArtist">
+                                        class="{{session('sortBy') == 'artist' ? 'selected' : ''}} sorting dos url hover:cursor-pointer ml-1 sortArtist">
                                     &#9830; Sort by artist
                                 </div>
                             </div>
                             <div class="flex flex-row w-full">
                                 <div
-                                    class="{{session('sortBy') == 'genre' ? 'selected' : ''}} sorting dos url hover:cursor-pointer ml-1 sortGenre">
+                                        class="{{session('sortBy') == 'genre' ? 'selected' : ''}} sorting dos url hover:cursor-pointer ml-1 sortGenre">
                                     &#9830; Sort by genre
                                 </div>
                             </div>
                             <div class="flex flex-row w-full">
                                 <div
-                                    class="{{session('sortBy') == 'year' ? 'selected' : ''}} sorting dos url hover:cursor-pointer ml-1 sortYear">
+                                        class="{{session('sortBy') == 'year' ? 'selected' : ''}} sorting dos url hover:cursor-pointer ml-1 sortYear">
                                     &#9830; Sort by year
                                 </div>
                             </div>
 
                         </details>
-                        @if(session('connectedUser'))
+                        @auth
                             <div class="flex flex-row w-full">
                                 <div id="showMe"
                                      class="{{session('owner') == '1' ? 'selected' : ''}} dos url hover:cursor-pointer ml-1">
@@ -310,7 +312,7 @@
                                     &#9824; Show only my favorites
                                 </div>
                             </div>
-                        @endif
+                        @endauth
 
                     </div>
 
@@ -327,7 +329,7 @@
     <script>
         $(() => {
 
-            @if(!session('connectedUser'))
+            @if(!Auth::check())
             PendingPanel.pause();
 
             NotificationsPanel.pause();
