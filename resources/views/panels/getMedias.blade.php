@@ -5,7 +5,6 @@
 
     @foreach($medias as $media)
         @php
-
             if($media->type == 'media') {
                 $folder = 'medias';
             } elseif ($media->type == 'event') {
@@ -54,13 +53,13 @@
             </div>
         </div>
     @endforeach
-
 </div>
 
 <script>
     $(() => {
+
         $('.count').text({{$count}});
-    })
+    });
 </script>
 
 

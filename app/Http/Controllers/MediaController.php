@@ -484,9 +484,14 @@ class MediaController extends Controller
         $direction = (session('desc') == 1) ? 'desc' : 'asc';
         $query->orderBy($sortBy, $direction);
 
-        $medias = $query->paginate(10);
+        if ($request->get('page') == null) {
+            $value = 1;
+        } else {
+            $value = $request->get('page');
+        }
+        $medias = $query->limit(10 * $value)->get();
 
-        return view('panels/getMedias', ['medias' => $medias, 'count' => $medias->total()]);
+        return view('panels/getMedias', ['medias' => $medias, 'count' => $query->count()]);
     }
 
     /**
@@ -502,11 +507,19 @@ class MediaController extends Controller
 
             if (Auth::check()) {
                 if (Auth::user()->isAdmin()) {
-                    $values = DB::table($table)->where('approved', '=', 0)->get();
+                    $query = DB::table($table)->where('approved', '=', 0);
                 } else {
-                    $values = DB::table($table)->where('approved', '=', 0)->where('owner', Auth::user()->username)->get();
+                    $query = DB::table($table)->where('approved', '=', 0)->where('owner', Auth::user()->username);
                 }
-                return view('panels/getPendingMedias', ['medias' => $values, 'count' => count($values)]);
+
+
+                if ($request->get('page') == null) {
+                    $value = 1;
+                } else {
+                    $value = $request->get('page');
+                }
+                $pending = $query->limit(10 * $value)->get();
+                return view('panels/getPendingMedias', ['medias' => $pending, 'count' => $query->count()]);
             }
         }
         return null;

@@ -19,6 +19,7 @@ let WatchingChannelsDropdown
 
 $(() => {
 
+
     const uploadButton = $('#uploadButton')
 
     //### Global functions
@@ -49,8 +50,7 @@ $(() => {
         selector.removeClass('invisible');
     }
 
-    function invisible(selector)
-    {
+    function invisible(selector) {
         selector.addClass('invisible');
     }
 
@@ -101,7 +101,7 @@ $(() => {
      * @param {string} type - The icon to show
      * @param {string} message - The message to show
      */
-     function popin(type, message) {
+    function popin(type, message) {
         //clearTimeout(timeoutID)
         //$('.popup').remove();
         let icon = type.toLowerCase();
@@ -195,7 +195,7 @@ $(() => {
                     keywords = response;
                     return resolve(true);
                 }, error: function (xhr) {
-                    popin('Warning',JSON.parse(xhr.responseText).message)
+                    popin('Warning', JSON.parse(xhr.responseText).message)
                 }
             });
         });
@@ -220,7 +220,7 @@ $(() => {
      * When clicking on the favorite icon, add or remove the file from your favorite
      * @event
      */
-    favorite.on("click",function () {
+    favorite.on("click", function () {
         let message
         MusicsPanel.command('/toggleFavorite?filename=' + encodeURIComponent(lastFilename));
         if ($(this).attr('src') === 'https://votvbroadcast.com/images/empty_heart.png') {
@@ -231,7 +231,7 @@ $(() => {
             $(this).attr('src', 'https://votvbroadcast.com/images/empty_heart.png')
         }
 
-        popin('Info',message);
+        popin('Info', message);
 
     })
 
@@ -243,7 +243,7 @@ $(() => {
 
         //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI
         navigator.clipboard.writeText(encodeURI('https://votvbroadcast.com/' + route + '?keywords=filename:') + encodeURIComponent(lastFilename));
-        popin('Info',`URL copied into clipboard!`);
+        popin('Info', `URL copied into clipboard!`);
 
     });
 
@@ -347,7 +347,7 @@ $(() => {
                 MusicsPanel.refresh(true);
                 PendingPanel.refresh(true);
                 toggleScreen($('#playScreen'));
-                popin('info',`${filename} approved!`)
+                popin('info', `${filename} approved!`)
             });
         });
     }
@@ -402,7 +402,7 @@ $(() => {
                     return resolve(true);
 
                 }, error: function (xhr) {
-                    popin('Warning',JSON.parse(xhr.responseText).message)
+                    popin('Warning', JSON.parse(xhr.responseText).message)
                 }
             });
         })
@@ -428,7 +428,7 @@ $(() => {
                     return resolve(true);
 
                 }, error: function (xhr) {
-                    popin('Warning',JSON.parse(xhr.responseText).message)
+                    popin('Warning', JSON.parse(xhr.responseText).message)
                 }
             });
         })
@@ -455,12 +455,11 @@ $(() => {
         log("Reset successfully.")
     })
 
-    function updateFileList(target)
-    {
+    function updateFileList(target) {
         let fileList = target.files
         let count = fileList.length
         Array.from(fileList).forEach((file, index) => {
-            fileInputList.append(generateFile(file.name, index,count))
+            fileInputList.append(generateFile(file.name, index, count))
         })
         show(fileInputList)
         $('.removeFile').on('click', function () {
@@ -477,12 +476,9 @@ $(() => {
         fileInputList.html('')
         let count = updateFileList($(this)[0])
         //https://stackoverflow.com/questions/25333488/why-isnt-the-filelist-object-an-array
-        if(count > 1)
-        {
+        if (count > 1) {
             log("Files added successfully.")
-        }
-        else
-        {
+        } else {
             log("File added successfully.")
         }
 
@@ -530,8 +526,7 @@ $(() => {
 
     function generateFile(filename, id, maxIndex = 1) {
         let width = maxIndex
-        if (maxIndex > 10)
-        {
+        if (maxIndex > 10) {
             width = 10;
         }
         return `<file class="flex flex-row max-w-1/${width} gap-0.5">
@@ -540,20 +535,19 @@ $(() => {
     }
 
 
-
     let blink = false;
+
     /**
      * The server removes problematic characters from the file.
      * However, when a user upload a file, the client fetch the editor windows using the filename that you provided earlier
      * Therefore it must be formatted like the server did.
      * @event
      */
-    function formatFilename(filename)
-    {
+    function formatFilename(filename) {
         //J'HAIT REGEX JE COMPRENDS RIEN
-        const problematicCharacters = ['"','#','/','?']
+        const problematicCharacters = ['"', '#', '/', '?']
         problematicCharacters.forEach((item) => {
-            filename = filename.replaceAll(item,'')
+            filename = filename.replaceAll(item, '')
         })
         return filename;
     }
@@ -590,8 +584,7 @@ $(() => {
                 } else {
                     toggleScreen(formMedia)
                     log(isOwner);
-                    if(isOwner === 'A file with this name already exists.')
-                    {
+                    if (isOwner === 'A file with this name already exists.') {
                         searchToken.val('filename:' + filename)
                         MusicsPanel.command("/setSearchKeywords?keywords=filename:" + encodeURIComponent(filename));
                         log('If you believe this is an error, rename your file.')
@@ -643,7 +636,7 @@ $(() => {
     //### Metadata editing
 
     let fileType;
-    const explicitInput =  document.querySelector('#explicit')
+    const explicitInput = document.querySelector('#explicit')
 
     /**
      * Open the metadata editor with the requested file loaded.
@@ -694,8 +687,7 @@ $(() => {
                     }
 
 
-                   explicitInput.checked = false;
-
+                    explicitInput.checked = false;
 
 
                     $('#title').val(response.title);
@@ -704,8 +696,7 @@ $(() => {
                     $('#year').val(response.year);
                     $('#description').val(response.description);
                     $('#destination').val(response.destination);
-                    if(response.explicit === 1)
-                    {
+                    if (response.explicit === 1) {
                         explicitInput.checked = true;
                     }
                     $('#destinationDropdown .dropdownTitle').text(response.destination)
@@ -720,7 +711,7 @@ $(() => {
 
 
             }, error: function (xhr) {
-                popin('Warning',JSON.parse(xhr.responseText).message)
+                popin('Warning', JSON.parse(xhr.responseText).message)
             }
         });
     }
@@ -840,13 +831,11 @@ $(() => {
 
 
     let storageVolume = parseFloat(localStorage.getItem("volume"));
-    if(storageVolume) {
+    if (storageVolume) {
         volume.val(storageVolume)
         volumeValue.text(storageVolume);
         sfx_click.volume = storageVolume / 100;
-    }
-    else
-    {
+    } else {
         volume.val(50);
         sfx_click.volume = 50 / 100;
     }
@@ -966,14 +955,13 @@ $(() => {
                 if (storageAutoplay === "1") {
                     vAudio.play();
                     $("#playPause").attr('src', '/images/pause.png')
-                }
-                else {
+                } else {
                     $("#playPause").attr('src', '/images/play.png')
                 }
 
 
             }, error: function (xhr) {
-                popin('Warning',JSON.parse(xhr.responseText).message)
+                popin('Warning', JSON.parse(xhr.responseText).message)
             }
         });
     }
@@ -984,7 +972,7 @@ $(() => {
      * @event
      */
     volume.on('input', () => {
-        let volumeNumber =  volume.val() / 100;
+        let volumeNumber = volume.val() / 100;
         volumeValue.text(volume.val());
         vAudio.volume = volumeNumber;
         sfx_click.volume = volumeNumber
@@ -1050,7 +1038,7 @@ $(() => {
 
     //### Currently Broadcasting
 
-    WatchingChannelsDropdown = new VotvDropdown('watchingChannels','monitoringChannel','updateMonitoringChannel',20)
+    WatchingChannelsDropdown = new VotvDropdown('watchingChannels', 'monitoringChannel', 'updateMonitoringChannel', 20)
     WatchingChannelsDropdown.updateOptions(['Everything', 'SFW', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
 
     //https://www.w3schools.com/jsref/met_win_setinterval.asp
@@ -1085,7 +1073,7 @@ $(() => {
      * @event
      * @listens 'updateMonitoringChannel' is a custom trigger sent to the dropdown. Whenever the dropdown changes this event is triggered.
      */
-    monitoringChannel.on('updateMonitoringChannel', function() {
+    monitoringChannel.on('updateMonitoringChannel', function () {
         clearInterval(monitoringInterval)
         fetchMetadata(channelsNumber[monitoringChannel.val()]);
         monitoringInterval = setInterval(() => fetchMetadata(channelsNumber[monitoringChannel.val()]), 5000);
@@ -1116,7 +1104,6 @@ $(() => {
     }
 
 
-
     /**
      * Retrieve the filename from using the title
      * @function
@@ -1134,7 +1121,7 @@ $(() => {
                 ajaxRequestPlayMedia(response)
                 toggleScreen($('#playScreen'));
             }, error: function (xhr) {
-                popin('Warning',JSON.parse(xhr.responseText).message)
+                popin('Warning', JSON.parse(xhr.responseText).message)
             }
         });
     }
@@ -1202,7 +1189,7 @@ $(() => {
     function importMedia() {
         toggleScreen($("#loadingScreen"))
         const formData = new FormData($("form[action|='/importMedia']")[0]);
-        PendingPanel.postCommand('import',formData).then(() => {
+        PendingPanel.postCommand('import', formData).then(() => {
             $('#url').val('');
             toggleScreen($("form[action|='/importMedia']"))
         })
@@ -1395,10 +1382,9 @@ $(() => {
     }
 
 
-
     const listWhere = $('.listWhere');
 
-    ChannelDropdown = new VotvDropdown('channelDropdown','filterByChannel','sendChannel')
+    ChannelDropdown = new VotvDropdown('channelDropdown', 'filterByChannel', 'sendChannel')
 
     const channelDiv = $('#channelDiv');
     const channelText = $('#channelText');
@@ -1410,13 +1396,10 @@ $(() => {
     $('#listWhere button:contains("Musics"), #listWhere button:contains("Videos")').click(function () {
         toggleButton(listWhere, $(this))
         setListing("media")
-        if(media_type === 'audios')
-        {
-            ChannelDropdown.updateOptions(['Everything','None', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
-        }
-        else if(media_type === 'videos')
-        {
-            ChannelDropdown.updateOptions(['Everything','None', 'Animations', 'Documentaries', 'Horror', "Let's Plays", 'Memes', 'News', 'Shows', 'Vlogs'])
+        if (media_type === 'audios') {
+            ChannelDropdown.updateOptions(['Everything', 'None', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
+        } else if (media_type === 'videos') {
+            ChannelDropdown.updateOptions(['Everything', 'None', 'Animations', 'Documentaries', 'Horror', "Let's Plays", 'Memes', 'News', 'Shows', 'Vlogs'])
         }
 
     })
@@ -1424,16 +1407,16 @@ $(() => {
      * Show only events
      * @event
      */
-    $('#listWhere button:contains("Events")').on('click',function () {
+    $('#listWhere button:contains("Events")').on('click', function () {
         toggleButton(listWhere, $(this))
         setListing("event")
-        ChannelDropdown.updateOptions(['Everything','Strange [4%]', 'Weird [2%]', 'Bizarre [1%]', 'Outlandish [0.4%]', 'Unfathomable [0.2%]', 'Otherworldly [0.1%]', 'Transcendental [0.04%]'])
+        ChannelDropdown.updateOptions(['Everything', 'Strange [4%]', 'Weird [2%]', 'Bizarre [1%]', 'Outlandish [0.4%]', 'Unfathomable [0.2%]', 'Otherworldly [0.1%]', 'Transcendental [0.04%]'])
     })
     /**
      * Show only events
      * @event
      */
-    $('#listWhere button:contains("Ads")').on('click',function () {
+    $('#listWhere button:contains("Ads")').on('click', function () {
         toggleButton(listWhere, $(this))
         setListing("ad")
         ChannelDropdown.updateOptions(['Everything'])
@@ -1442,7 +1425,7 @@ $(() => {
      * Show only segues
      * @event
      */
-    $('#listWhere button:contains("Segues")').on('click',function () {
+    $('#listWhere button:contains("Segues")').on('click', function () {
         toggleButton(listWhere, $(this))
         setListing("segue")
         ChannelDropdown.updateOptions(['Everything'])
@@ -1536,14 +1519,14 @@ $(() => {
      * Close the setting tab and apply the settings
      * @event
      */
-    $('#backButton').click(function() {
+    $('#backButton').click(function () {
         hide(settingScreen);
         storageAutoplay = localStorage.getItem("autoplay");
-    } )
+    })
 
     //### Fonctionnement dropdown
 
-    DestinationDropdown = new VotvDropdown('destinationDropdown','destination')
+    DestinationDropdown = new VotvDropdown('destinationDropdown', 'destination')
 
     //### Reporting
 
@@ -1553,7 +1536,7 @@ $(() => {
      */
     report.click(function () {
         toggleScreen($("form[action|='/reportMedia']"));
-        $('#hiddenFileToReport').attr('value',lastFilename);
+        $('#hiddenFileToReport').attr('value', lastFilename);
     })
 
     /**
@@ -1591,16 +1574,38 @@ $(() => {
                     toggleScreen(playScreen)
                 });
             }
-            popin('Info',`${filename} reported successfully!`)
+            popin('Info', `${filename} reported successfully!`)
 
         })
 
 
-
-
     }
 
+    //### Infinite scrolling
 
+    let approvedMediaPage = 0;
+    $('#MusicsPanel').on('scroll', function () {
+        let scrollTop = $(this).scrollTop();
+        let containerHeight = $(this).innerHeight();
+        let totalContentHeight = this.scrollHeight;
+        if (scrollTop + containerHeight >= totalContentHeight - 1) {
+            approvedMediaPage++;
+            MusicsPanel.contentServiceURL = "/getMedias?page=" + approvedMediaPage;
+            MusicsPanel.refresh(true);
+        }
+    });
+
+    let pendingMediaPage = 0;
+    $('#PendingPanel').on('scroll', function () {
+        let scrollTop = $(this).scrollTop();
+        let containerHeight = $(this).innerHeight();
+        let totalContentHeight = this.scrollHeight;
+        if (scrollTop + containerHeight >= totalContentHeight - 1) {
+            pendingMediaPage++;
+            PendingPanel.contentServiceURL = "/getPendingMedias?page=" + pendingMediaPage;
+            PendingPanel.refresh(true);
+        }
+    });
 
 
 })
