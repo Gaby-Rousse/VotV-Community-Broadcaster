@@ -31,9 +31,10 @@
 </div>
 
 <script>
-    $(() => {
+
         $('.count2').text({{$count}});
-    })
+        $('#pendingMaxPages').val({{ceil($count /10)}})
+
 </script>
 
 

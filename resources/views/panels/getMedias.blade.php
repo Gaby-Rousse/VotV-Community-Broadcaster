@@ -56,10 +56,11 @@
 </div>
 
 <script>
-    $(() => {
+
 
         $('.count').text({{$count}});
-    });
+        $('#approvedMaxPages').val({{ceil($count /10)}})
+
 </script>
 
 

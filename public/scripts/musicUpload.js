@@ -1583,29 +1583,102 @@ $(() => {
 
     //### Infinite scrolling
 
-    let approvedMediaPage = 0;
+    let mutexApproved = false;
+    let approvedMediaPage = 1;
+    let approvedMaxMediaPage = $('#approvedMaxPages').val()
     $('#MusicsPanel').on('scroll', function () {
+        if (approvedMediaPage >= approvedMaxMediaPage) {
+
+            return;
+        }
+
         let scrollTop = $(this).scrollTop();
         let containerHeight = $(this).innerHeight();
         let totalContentHeight = this.scrollHeight;
+        let oldScrollTop = $(this).scrollTop();
         if (scrollTop + containerHeight >= totalContentHeight - 1) {
+            if (mutexApproved)
+                return;
+            mutexApproved = true;
             approvedMediaPage++;
+            addLoadingScreen($(this))
             MusicsPanel.contentServiceURL = "/getMedias?page=" + approvedMediaPage;
-            MusicsPanel.refresh(true);
+            MusicsPanel.refresh(true).then(() => {
+                $('#MusicsPanel').scrollTop(oldScrollTop);
+                mutexApproved = false;
+            })
         }
     });
 
-    let pendingMediaPage = 0;
+    let mutexPending = false;
+    let pendingMediaPage = 1;
+    let pendingMaxMediaPage = $('#pendingMaxPages').val()
+
     $('#PendingPanel').on('scroll', function () {
+        if (pendingMediaPage >= pendingMaxMediaPage) {
+
+            return;
+        }
         let scrollTop = $(this).scrollTop();
         let containerHeight = $(this).innerHeight();
         let totalContentHeight = this.scrollHeight;
+        let oldScrollTop = $(this).scrollTop();
         if (scrollTop + containerHeight >= totalContentHeight - 1) {
+            if (mutexPending)
+                return;
+            mutexPending = true;
             pendingMediaPage++;
+            addLoadingScreen($(this))
             PendingPanel.contentServiceURL = "/getPendingMedias?page=" + pendingMediaPage;
-            PendingPanel.refresh(true);
+            PendingPanel.refresh(true).then(() => {
+                $('#PendingPanel').scrollTop(oldScrollTop);
+                mutexPending = false;
+            });
         }
     });
+
+    function addLoadingScreen(target) {
+        target.html(` <div class="m-auto flex flex-row">
+                    <img class="w-12 mx-auto" src="{{ asset('images/hourglass.gif') }}?v=1" alt="">
+                    <div class="border-3 border-solid p-1 w-100 h-12 flex flex-row">
+                        <div class="h-full loadingBar" style="background-color: #F8FE50;"></div>
+                    </div>
+                </div>`)
+    }
+
+    const filterByChannel = $('#filterByChannel')
+
+    filterByChannel.on("sendChannel", () => {
+        $('#MusicsPanel').scrollTop(0);
+        approvedMediaPage = 1;
+        MusicsPanel.contentServiceURL = "/getMedias?page=" + approvedMediaPage;
+        mutexApproved = true;
+        MusicsPanel.command("/setChannel?value=" + filterByChannel.val()).then(() => {
+            mutexApproved = false;
+        });
+    })
+
+    //I'm pissed, 1 nanoseconds between the actual value and the new channels, FUCK THIS.
+    //https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+    const targetNode = document.getElementById("approvedMaxPages");
+
+    // Options for the observer (which mutations to observe)
+    const config = {attributes: true, childList: true, subtree: true};
+
+    // Callback function to execute when mutations are observed
+    const callback = (mutationList, observer) => {
+        for (const mutation of mutationList) {
+            if (mutation.type === "attributes") {
+                approvedMaxMediaPage = parseInt(targetNode.value)
+            }
+        }
+    };
+
+    // Create an observer instance linked to the callback function
+    const observer = new MutationObserver(callback);
+
+    // Start observing the target node for configured mutations
+    observer.observe(targetNode, config);
 
 
 })

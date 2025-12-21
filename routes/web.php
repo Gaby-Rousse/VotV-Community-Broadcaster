@@ -110,7 +110,7 @@ Route::get('/', function () {
 });
 
 Route::get('/upload', function () {
-    return view('upload', ['title' => 'Upload', 'count' => 0, 'reportCount' => DB::table('reports')->count()]);
+    return view('upload', ['title' => 'Upload', 'count' => 0, 'reportCount' => DB::table('reports')->count(), 'approvedMaxPages' => ceil(DB::table(Functions::retrieveDestinationTable())->where('approved',1)->count()/10), 'pendingMaxPages' => ceil(DB::table(Functions::retrieveDestinationTable())->where('approved',0)->count() / 10)]);
 });
 
 

@@ -1,7 +1,7 @@
 @include('partials.header')
-<script src="scripts/musicUpload.js?v=2.9.4"></script>
-
-
+<script src="scripts/musicUpload.js?v=3.2.3"></script>
+<input type="hidden" id="approvedMaxPages" value="{{$approvedMaxPages}}">
+<input type="hidden" id="pendingMaxPages" value="{{$pendingMaxPages}}">
 
 
 @if(!Auth::check())
@@ -367,11 +367,6 @@
                 }
             });
 
-            const filterByChannel = $('#filterByChannel')
-
-            filterByChannel.on("sendChannel", () => {
-                MusicsPanel.command("/setChannel?value=" + filterByChannel.val());
-            })
 
 
         });
