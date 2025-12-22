@@ -62,12 +62,15 @@ class AutoRefreshedPanel {
      */
     refresh(forced = false) {
         if (!this.paused) {
-            $.ajax({
-                url: this.contentServiceURL + (forced ? (this.contentServiceURL.indexOf("?") > -1 ? "&" : "?") + "forceRefresh=true" : ""),
-                dataType: "html",
-                success: (htmlContent) => {
-                    this.replaceContent(htmlContent)
-                },
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: this.contentServiceURL + (forced ? (this.contentServiceURL.indexOf("?") > -1 ? "&" : "?") + "forceRefresh=true" : ""),
+                    dataType: "html",
+                    success: (htmlContent) => {
+                        this.replaceContent(htmlContent)
+                        resolve(true)
+                    },
+                })
             })
         }
     }

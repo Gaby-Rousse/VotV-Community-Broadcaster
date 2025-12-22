@@ -17,6 +17,7 @@ let ChannelDropdown;
 let WatchingChannelsDropdown
 
 
+
 $(() => {
 
 
@@ -665,7 +666,7 @@ $(() => {
                         toggleButton(where, whereMusics)
                         typeInput.val('media');
                         if (media_type === 'audios') {
-                            DestinationDropdown.updateOptions(['None', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
+                            DestinationDropdown.updateOptions(['None', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Metal', 'Pop', 'Rock', 'Video Game', 'Weird'])
                         }
                         if (media_type === 'videos') {
                             DestinationDropdown.updateOptions(['None', 'Animations', 'Documentaries', 'Horror', "Let's Plays", 'Memes', 'News', 'Shows', 'Vlogs'])
@@ -1039,7 +1040,7 @@ $(() => {
     //### Currently Broadcasting
 
     WatchingChannelsDropdown = new VotvDropdown('watchingChannels', 'monitoringChannel', 'updateMonitoringChannel', 20)
-    WatchingChannelsDropdown.updateOptions(['Everything', 'SFW', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
+    WatchingChannelsDropdown.updateOptions(['Everything', 'SFW', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi','Metal', 'Pop', 'Rock', 'Video Game', 'Weird'])
 
     //https://www.w3schools.com/jsref/met_win_setinterval.asp
 
@@ -1059,11 +1060,12 @@ $(() => {
         'Instrumental': 9,
         'Jazz': 10,
         'Mariachi': 14,
-        'Pop': 17,
-        'Rock': 18,
-        'SFW': 19,
-        'Video Game': 21,
-        'Weird': 23,
+        'Metal': 17,
+        'Pop': 18,
+        'Rock': 19,
+        'SFW': 20,
+        'Video Game': 22,
+        'Weird': 24,
     }
 
     const monitoringChannel = $('#monitoringChannel')
@@ -1397,7 +1399,7 @@ $(() => {
         toggleButton(listWhere, $(this))
         setListing("media")
         if (media_type === 'audios') {
-            ChannelDropdown.updateOptions(['Everything', 'None', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
+            ChannelDropdown.updateOptions(['Everything', 'None', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Metal', 'Pop', 'Rock', 'Video Game', 'Weird'])
         } else if (media_type === 'videos') {
             ChannelDropdown.updateOptions(['Everything', 'None', 'Animations', 'Documentaries', 'Horror', "Let's Plays", 'Memes', 'News', 'Shows', 'Vlogs'])
         }
@@ -1493,7 +1495,7 @@ $(() => {
     }
 
     /**
-     * Updates the autoplay prop
+     * Updates the loading prop
      * @event
      */
     autoplaySetting.click(function () {
@@ -1504,6 +1506,32 @@ $(() => {
         }
 
     })
+
+    let storageLoading = localStorage.getItem("loading");
+
+    if (!storageLoading) {
+        localStorage.setItem("loading", "0");
+    }
+
+    let loadingSetting = $('#loadingSetting');
+
+    if (storageLoading === "1") {
+        loadingSetting.attr('checked', true)
+    }
+
+    /**
+     * Updates the autoplay prop
+     * @event
+     */
+    loadingSetting.click(function () {
+        if ($(this).prop('checked')) {
+            localStorage.setItem("loading", "1");
+        } else {
+            localStorage.setItem("loading", "0");
+        }
+
+    })
+
 
     let settingScreen = $('#settings')
 
@@ -1522,6 +1550,7 @@ $(() => {
     $('#backButton').click(function () {
         hide(settingScreen);
         storageAutoplay = localStorage.getItem("autoplay");
+        storageLoading = localStorage.getItem("loading");
     })
 
     //### Fonctionnement dropdown
@@ -1583,29 +1612,104 @@ $(() => {
 
     //### Infinite scrolling
 
-    let approvedMediaPage = 0;
+    let mutexApproved = false;
+    let approvedMediaPage = 1;
+    let approvedMaxMediaPage = $('#approvedMaxPages').val()
     $('#MusicsPanel').on('scroll', function () {
+        if (approvedMediaPage >= approvedMaxMediaPage) {
+
+            return;
+        }
+
         let scrollTop = $(this).scrollTop();
         let containerHeight = $(this).innerHeight();
         let totalContentHeight = this.scrollHeight;
+        let oldScrollTop = $(this).scrollTop();
         if (scrollTop + containerHeight >= totalContentHeight - 1) {
+            if (mutexApproved)
+                return;
+            mutexApproved = true;
             approvedMediaPage++;
+            if (storageLoading === "1")
+            addLoadingScreen($(this))
             MusicsPanel.contentServiceURL = "/getMedias?page=" + approvedMediaPage;
-            MusicsPanel.refresh(true);
+            MusicsPanel.refresh(true).then(() => {
+                $('#MusicsPanel').scrollTop(oldScrollTop);
+                mutexApproved = false;
+            })
         }
     });
 
-    let pendingMediaPage = 0;
+    let mutexPending = false;
+    let pendingMediaPage = 1;
+    let pendingMaxMediaPage = $('#pendingMaxPages').val()
+
     $('#PendingPanel').on('scroll', function () {
+        if (pendingMediaPage >= pendingMaxMediaPage) {
+
+            return;
+        }
         let scrollTop = $(this).scrollTop();
         let containerHeight = $(this).innerHeight();
         let totalContentHeight = this.scrollHeight;
+        let oldScrollTop = $(this).scrollTop();
         if (scrollTop + containerHeight >= totalContentHeight - 1) {
+            if (mutexPending)
+                return;
+            mutexPending = true;
             pendingMediaPage++;
+            if (storageLoading === "1")
+            addLoadingScreen($(this))
             PendingPanel.contentServiceURL = "/getPendingMedias?page=" + pendingMediaPage;
-            PendingPanel.refresh(true);
+            PendingPanel.refresh(true).then(() => {
+                $('#PendingPanel').scrollTop(oldScrollTop);
+                mutexPending = false;
+            });
         }
     });
+
+    function addLoadingScreen(target) {
+        target.html(` <div class="m-auto flex flex-row">
+                    <img class="w-12 mx-auto" src="{{ asset('images/hourglass.gif') }}?v=1" alt="">
+                    <div class="border-3 border-solid p-1 w-100 h-12 flex flex-row">
+                        <div class="h-full loadingBar" style="background-color: #F8FE50;"></div>
+                    </div>
+                </div>`)
+    }
+
+    const filterByChannel = $('#filterByChannel')
+
+    filterByChannel.on("sendChannel", () => {
+        $('#MusicsPanel').scrollTop(0);
+        approvedMediaPage = 1;
+        MusicsPanel.contentServiceURL = "/getMedias?page=" + approvedMediaPage;
+        mutexApproved = true;
+        MusicsPanel.command("/setChannel?value=" + filterByChannel.val()).then(() => {
+            mutexApproved = false;
+        });
+    })
+
+    //I'm pissed, 1 nanoseconds between the actual value and the new channels, FUCK THIS.
+    //https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+    const targetNode = document.getElementById("approvedMaxPages");
+
+    // Options for the observer (which mutations to observe)
+    const config = {attributes: true, childList: true, subtree: true};
+
+    // Callback function to execute when mutations are observed
+    const callback = (mutationList, observer) => {
+        for (const mutation of mutationList) {
+            if (mutation.type === "attributes") {
+                approvedMaxMediaPage = parseInt(targetNode.value)
+            }
+        }
+    };
+
+    // Create an observer instance linked to the callback function
+    const observer = new MutationObserver(callback);
+
+    // Start observing the target node for configured mutations
+    observer.observe(targetNode, config);
 
 
 })

@@ -1,7 +1,7 @@
 @include('partials.header')
-<script src="scripts/musicUpload.js?v=2.9.5"></script>
-
-
+<script src="scripts/musicUpload.js?v=3.4.2"></script>
+<input type="hidden" id="approvedMaxPages" value="{{$approvedMaxPages}}">
+<input type="hidden" id="pendingMaxPages" value="{{$pendingMaxPages}}">
 
 
 @if(!Auth::check())

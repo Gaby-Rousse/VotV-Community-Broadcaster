@@ -226,7 +226,7 @@ class Functions
     static function generatePlaylist(string $pDestination)
     {
         $table = self::retrieveDestinationTable();
-        $availableChannels = ['christmas', 'classical', 'country', 'electronic', 'hip hop', 'instrumental', 'jazz', 'mariachi', 'pop', 'rock', 'video game', 'weird', 'animations', 'documentaries', 'horror', "let's plays", 'memes', 'news', 'shows', 'vlogs'];
+        $availableChannels = ['christmas', 'classical', 'country', 'electronic', 'hip hop', 'instrumental', 'jazz', 'mariachi', 'metal', 'pop', 'rock', 'video game', 'weird', 'animations', 'documentaries', 'horror', "let's plays", 'memes', 'news', 'shows', 'vlogs'];
         $eventChannels = ['strange [4%]', 'weird [2%]', 'bizarre [1%]', 'outlandish [0.4%]', 'unfathomable [0.2%]', 'otherworldly [0.1%]', 'transcendental [0.04%]'];
         $prefix = '';
 
