@@ -9,14 +9,15 @@ use FFMpeg\FFMpeg;
 use FFMpeg\Format\Video\X264;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 //https://github.com/imputnet/cobalt/blob/main/docs/api.md
 //https://laravel.com/docs/12.x/http-client
 
 class Cobalt
 {
-    public const API_URL = 'https://subito-c.meowing.de/';
-    public const API_LOCAL = 'localhost:9000';
+    public const API_URL = 'https://cobalt-api.kwiatekmiki.com/';
+    public const API_LOCAL = 'http://10.0.0.131:9001';
 
     /**
      * Download a file using a Cobalt remote API
@@ -41,27 +42,28 @@ class Cobalt
 
 
         foreach ($urls as $url) {
-
             try {
                 //https://github.com/imputnet/cobalt/blob/main/docs/api.md
                 $response = Http::withHeaders([
                     'Accept' => 'application/json',
                     'Content-Type' => 'application/json',
-                ])->post(self::API_URL, [
+                ])->post(self::API_LOCAL, [
                     'url' => $url,
                     'downloadMode' => $downloadMode,
                     'videoQuality' => '720',
+                    'youtubeHLS' => true,
+                    'alwaysProxy' => true,
                 ]);
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 Queries::insertNotification(new Notification(0, Auth::id(), $url . ' ' . $e->getMessage()));
             }
-
 
             $collection = $response->collect();
             if (isset($collection['error'])) {
                 echo json_encode(['type' => 'Error', 'message' => $collection['error']['code']]);
             }
 
+            \Log::info(json_encode($collection));
             if ($collection['status'] == "local-processing") {
                 $output = $collection['output'];
                 $filename = Functions::formatFilename($output['filename']);
@@ -127,7 +129,18 @@ class Cobalt
 
 
             }
-
+            if ($collection['status'] == "tunnel") {
+                ini_set('user_agent', 'Mozilla/4.0 (compatible; MSIE 6.0)');
+                $filename = Functions::formatFilename($collection['filename']);
+                $filepath = public_path('/temp_uploads/pending/' . $filename);
+                if (file_put_contents($filepath, file_get_contents($collection['url']))) {
+                    $media = new Media($filename, substr($filename, 0, -4), 'Unknown Artist', 'unknown.png', 'Unknown', 'Unknown', 'Unknown', 'None', $type, Auth::id());
+                    Queries::insertMedia($media, Functions::retrieveDestinationTable());
+                    Queries::insertNotification(new Notification(0, Auth::id(), $url . ' downloaded.'));
+                } else {
+                    Queries::insertNotification(new Notification(0, Auth::id(), $url . ' failed to download.'));
+                }
+            }
 
         }
     }

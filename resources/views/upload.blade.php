@@ -39,6 +39,15 @@
                 <span class="checkmark"></span>
             </label>
         </div>
+        <div class="settingItem h-8 flex flex-row">
+            <div class="mt-auto mb-auto ml-2">
+                Loading feedback when scrolling
+            </div>
+            <label class="ml-auto checkContainer">
+                <input id="loadingSetting" type="checkbox">
+                <span class="checkmark"></span>
+            </label>
+        </div>
         <div class="mt-auto flex flex-row">
             <button id="backButton" class="pl-8 pr-8 pt-1 pb-1">Back</button>
         </div>

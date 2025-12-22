@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use App\Models\Media;
 use App\Models\Message;
-use App\Models\Music;
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -71,7 +70,7 @@ class Queries
     static function isReported(string $filename): bool
     {
         if (Auth::check()) {
-            return DB::table('reports')->where('filename', $filename)->where('from', Auth::user()->username)->exists();
+            return DB::table('reports')->where('filename', $filename)->where('from', Auth::id())->exists();
         }
         return false;
     }
