@@ -53,7 +53,7 @@ class Cobalt
                     'videoQuality' => '720',
                 ]);
             } catch (\Exception $e) {
-                Queries::insertNotification(new Notification('', Auth::user()->username, $url . ' ' . $e->getMessage()));
+                Queries::insertNotification(new Notification(0, Auth::id(), $url . ' ' . $e->getMessage()));
             }
 
 
@@ -81,14 +81,14 @@ class Cobalt
                     $audio = $collection['tunnel'][0];
                     $cover = $collection['tunnel'][1];
                     if (file_put_contents($filepath, file_get_contents($audio))) {
-                        $media = new Media($filename, $title, $output['metadata']['artist'] ?? 'Unknown Artist', 'unknown.png', $output['metadata']['album'] ?? 'Unknown', 'Unknown', 'Unknown', 'None', $type, Auth::user()->username);
+                        $media = new Media($filename, $title, $output['metadata']['artist'] ?? 'Unknown Artist', 'unknown.png', $output['metadata']['album'] ?? 'Unknown', 'Unknown', 'Unknown', 'None', $type, Auth::id());
                         if (file_put_contents($coverFilepath, file_get_contents($cover))) {
                             $media->cover = $coverFilename;
                         }
                         Queries::insertMedia($media, Functions::retrieveDestinationTable());
-                        Queries::insertNotification(new Notification('', Auth::user()->username, $url . ' downloaded.'));
+                        Queries::insertNotification(new Notification(0, Auth::id(), $url . ' downloaded.'));
                     } else {
-                        Queries::insertNotification(new Notification('', Auth::user()->username, $url . ' failed to download.'));
+                        Queries::insertNotification(new Notification(0, Auth::id(), $url . ' failed to download.'));
                         //json_encode(['type' => 'Error', 'message' => "File failed to download"]);
                     }
                 } else if ($output['type'] == 'video/mp4') {
@@ -108,18 +108,18 @@ class Cobalt
                             //Tunnel[0] always contains a .mp4 file in x264
                             //Tunnel[1] always contains a .mp4 file in aac
                             $advancedMedia->map([], new X264('aac', 'libx264'), $filepath)->save();
-                            $media = new Media($filename, $title, $output['metadata']['artist'] ?? 'Unknown Artist', 'unknown.png', $output['metadata']['album'] ?? 'Unknown', 'Unknown', 'Unknown', 'None', $type, Auth::user()->username);
+                            $media = new Media($filename, $title, $output['metadata']['artist'] ?? 'Unknown Artist', 'unknown.png', $output['metadata']['album'] ?? 'Unknown', 'Unknown', 'Unknown', 'None', $type, Auth::id());
                             Queries::insertMedia($media, Functions::retrieveDestinationTable());
                             unlink($tmpVideo);
                             unlink($tmpAudio);
-                            Queries::insertNotification(new Notification('', Auth::user()->username, $url . ' downloaded.'));
+                            Queries::insertNotification(new Notification(0, Auth::id(), $url . ' downloaded.'));
                         } else {
-                            Queries::insertNotification(new Notification('', Auth::user()->username, $url . ' failed to download.'));
+                            Queries::insertNotification(new Notification(0, Auth::id(), $url . ' failed to download.'));
                             //      echo json_encode(['type' => 'Error', 'message' => "File failed to download"]);
                         }
 
                     } else {
-                        Queries::insertNotification(new Notification('', Auth::user()->username, $url . ' failed to download.'));
+                        Queries::insertNotification(new Notification(0, Auth::id(), $url . ' failed to download.'));
                         //      echo json_encode(['type' => 'Error', 'message' => "File failed to download"]);
                     }
 

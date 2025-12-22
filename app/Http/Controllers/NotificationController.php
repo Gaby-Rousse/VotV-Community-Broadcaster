@@ -26,9 +26,10 @@ class NotificationController extends Controller
             if (Auth::check()) {
                 $notifications = [];
                 //Unread first, then by time.
-                $values = DB::table('notifications')->where('to', Auth::user()->username)->orderBy('seen', 'asc')->orderBy('created_at', 'desc')->get();
+                $values = DB::table('notifications')->select('notifications.created_at', 'seen', 'notifications.id', 'users.username', 'content')->join('users', 'users.id', '=', 'notifications.from')->where('to', Auth::id())->orderBy('seen', 'asc')
+                    ->orderBy('notifications.created_at', 'desc')->get();
                 foreach ($values as $value) {
-                    $notif = new Notification($value->from, $value->to, $value->content);
+                    $notif = new Notification($value->username, 0, $value->content);
                     $notif->created_at = $value->created_at;
                     $notif->seen = $value->seen;
                     $notif->id = $value->id;
@@ -53,13 +54,13 @@ class NotificationController extends Controller
     {
         $id = $request->get('id');
         if ($id == 'readAll') {
-            DB::table('notifications')->where('to', Auth::user()->username)->update(['seen' => 1]);
+            DB::table('notifications')->where('to', Auth::id())->update(['seen' => 1]);
         }
         if ($id == 'deleteAll') {
-            DB::table('notifications')->where('to', Auth::user()->username)->delete();
+            DB::table('notifications')->where('to', Auth::id())->delete();
         }
         //La notification t'adresse t'elle?
-        if (DB::table('notifications')->where('id', $id)->value('to') == Auth::user()->username) {
+        if (DB::table('notifications')->where('id', $id)->value('to') == Auth::id()) {
             if (DB::table('notifications')->where('id', $id)->value('seen') == 0) {
                 DB::table('notifications')->where('id', $id)->update(['seen' => 1]);
             } else {

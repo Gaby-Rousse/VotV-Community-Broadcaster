@@ -83,11 +83,11 @@ class MediaController extends Controller
         $filename = $validated['filename'];
         if (Auth::check()) {
             if (DB::table(Functions::retrieveDestinationTable())->where('filename', $filename)->exists()) {
-                if (DB::table('favorites')->where('filename', $filename)->where('username', Auth::user()->username)->exists()) {
-                    DB::table('favorites')->where('filename', $filename)->where('username', Auth::user()->username)->delete();
+                if (DB::table('favorites')->where('filename', $filename)->where('userId', Auth::id())->exists()) {
+                    DB::table('favorites')->where('filename', $filename)->where('userId', Auth::id())->delete();
                     //return json_encode($filename . ' removed from favorites');
                 } else {
-                    DB::table('favorites')->insert(['filename' => $filename, 'username' => Auth::user()->username]);
+                    DB::table('favorites')->insert(['filename' => $filename, 'userId' => Auth::id()]);
                     //return json_encode($filename . ' added to favorites');
                 }
             } else {
@@ -134,7 +134,7 @@ class MediaController extends Controller
                     $currentFilename = $originalName;
 
                     if (DB::table($table)->get()->contains('filename', $originalName)) {
-                        if (DB::table($table)->where('filename', $originalName)->where('owner', Auth::user()->username)->exists()) {
+                        if (DB::table($table)->where('filename', $originalName)->where('ownerId', Auth::id())->exists()) {
                             return json_encode(['type' => 'Warning', 'message' => "A file with this name already exists. You may edit it"]);
                         }
                         return json_encode(['type' => 'Warning', 'message' => "A file with this name already exists."]);
@@ -382,7 +382,7 @@ class MediaController extends Controller
                     DB::table($mediaHelper->table)->where('filename', $filename)->delete();
                     DB::table('reports')->where('filename', $filename)->delete();
                     if ($validated['reason']) {
-                        Queries::insertNotification(new Notification(Auth::user()->username, $mediaHelper->media->owner, 'deleted ' . $filename . ' with the following reason: ' . $validated['reason']));
+                        Queries::insertNotification(new Notification(Auth::id(), $mediaHelper->media->ownerId, 'deleted ' . $filename . ' with the following reason: ' . $validated['reason']));
                     }
                     try {
                         unlink($mediaHelper->mediaPath);
@@ -427,7 +427,7 @@ class MediaController extends Controller
                 if (!File::exists(public_path('uploads/covers/') . $mediaHelper->media->cover)) {
                     File::move(public_path('temp_uploads/covers/') . $mediaHelper->media->cover, public_path('uploads/covers/') . $mediaHelper->media->cover);
                 }
-                Queries::insertNotification(new Notification(Auth::user()->username, $mediaHelper->media->owner, 'approved ' . $filename));
+                Queries::insertNotification(new Notification(Auth::id(), $mediaHelper->media->ownerId, 'approved ' . $filename));
             }
         }
     }
@@ -471,11 +471,11 @@ class MediaController extends Controller
             $query->where('destination', session('channel'));
         }
         if (session('owner') == 1 && Auth::check()) {
-            $query->where('owner', Auth::user()->username);
+            $query->where('ownerId', Auth::id());
         }
         if (session('favorite') == 1 && Auth::check()) {
             $favorites = DB::table('favorites')
-                ->where('username', Auth::user()->username)
+                ->where('userId', Auth::id())
                 ->pluck('filename');
             $query->whereIn('filename', $favorites);
         }
@@ -509,7 +509,7 @@ class MediaController extends Controller
                 if (Auth::user()->isAdmin()) {
                     $query = DB::table($table)->where('approved', '=', 0);
                 } else {
-                    $query = DB::table($table)->where('approved', '=', 0)->where('owner', Auth::user()->username);
+                    $query = DB::table($table)->where('approved', '=', 0)->where('ownerId', Auth::id());
                 }
 
 
@@ -589,7 +589,7 @@ class MediaController extends Controller
         if (!DB::table($table)->where('filename', '=', $filename)->exists()) {
             $message = "File doesn't exists.";
         }
-        if (!DB::table($table)->where('filename', '=', $filename)->where('owner', Auth::user()->username)->exists()) {
+        if (!DB::table($table)->where('filename', '=', $filename)->where('ownerId', Auth::id())->exists()) {
             $message = "A file with this name already exists.";
         }
         return json_encode($message);

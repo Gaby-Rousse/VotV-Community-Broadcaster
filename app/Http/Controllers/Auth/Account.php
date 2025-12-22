@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -34,17 +35,14 @@ class Account extends Controller
             return redirect('/');
         }
         if (strtolower($confirm) == 'y') {
-            $temp_audios = DB::table('audios')->where('approved', '=', 0)->where('owner', Auth::user()->username)->get();
+            /*$temp_audios = DB::table('audios')->where('approved', '=', 0)->where('owner', Auth::user()->username)->get();
             foreach ($temp_audios as $values) {
                 unlink(public_path('temp_uploads/musics/') . $values->filename);
             }
             $audios = DB::table('audios')->where('approved', '=', 1)->where('owner', Auth::user()->username)->get();
             foreach ($audios as $values) {
                 unlink(public_path('uploads/musics/') . $values->filename);
-            }
-            DB::table('audios')->where('owner', Auth::user()->username)->delete();
-            DB::table('users')->where('username', Auth::user()->username)->delete();
-            DB::table('notifications')->where('to', Auth::user()->username)->delete();
+            }*/
             Auth::logout();
             // Invalidate session
             $request->session()->invalidate();
@@ -56,10 +54,11 @@ class Account extends Controller
             'username' => 'required|unique:users|max:20'
         ]);
         if ($validated['username']) {
-            DB::table('audios')->where('owner', Auth::user()->username)->update(['owner' => $validated['username']]);
-            DB::table('users')->where('username', Auth::user()->username)->update(['username' => $validated['username']]);
-            DB::table('notifications')->where('to', Auth::user()->username)->update(['to' => $validated['username']]);
-            session()->flush();
+            User::where('id', Auth::id())->update(['username' => $validated['username']]);
+            Auth::logout();
+            // Invalidate session
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
             session()->flash('newUser', 'Account renamed, please re-authenticate');
             return Redirect('/signin');
         }

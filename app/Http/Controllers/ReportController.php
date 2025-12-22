@@ -21,7 +21,7 @@ class ReportController extends Controller
     /**
      * Send a new report. If the reason is empty it deletes it from the database.
      * @param Request $request
-     * @return void
+     *
      */
     function reportMedia(Request $request)
     {
@@ -32,18 +32,18 @@ class ReportController extends Controller
                 'reason' => '',
             ]);
             if (trim($validated['reason'])) {
-                DB::table('reports')->upsert(['filename' => $validated['filename'], 'from' => Auth::user()->username, 'reason' => trim($validated['reason'])], ['from', 'filename']);
+                DB::table('reports')->upsert(['filename' => $validated['filename'], 'from' => Auth::id(), 'reason' => trim($validated['reason'])], ['from', 'filename']);
                 $admins = DB::table('users')->where('isAdmin', '=', 1)->get();
                 foreach ($admins as $admin) {
-                    Queries::insertNotification(new Notification(Auth::user()->username, $admin->username, 'added a report for: ' . $validated['filename'] . ' open the reports tab for more info.'));
+                    Queries::insertNotification(new Notification(Auth::id(), $admin->id, 'added a report for: ' . $validated['filename'] . ' open the reports tab for more info.'));
                 }
+                return json_encode(['type' => 'Info', 'message' => 'File reported successfully!']);
             } else {
-                DB::table('reports')->where('from', Auth::user()->username)->where('filename', $validated['filename'])->delete();
+                DB::table('reports')->where('from', Auth::id())->where('filename', $validated['filename'])->delete();
+                return json_encode(['type' => 'Info', 'message' => 'Report deleted successfully!']);
             }
 
         }
-
-
     }
 
     /**

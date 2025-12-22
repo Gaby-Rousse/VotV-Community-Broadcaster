@@ -147,7 +147,7 @@ class Functions
             $description = $info['comment'][0];
         }
 
-        return new Media($filename, $title, $artist, $coverFileName, $album, $genre, $year, $description, $type, Auth::user()->username);
+        return new Media($filename, $title, $artist, $coverFileName, $album, $genre, $year, $description, $type, Auth::id());
     }
 
     static function updateMetadata(array $tags, $filepath)
@@ -386,7 +386,7 @@ class Functions
     {
         if ($table == 'notifications') {
             if (Auth::check())
-                session(['created_at' => DB::table($table)->orderBy('created_at', 'desc')->where('to', Auth::user()->username)->limit(1)->value('created_at')]);
+                session(['created_at' => DB::table($table)->orderBy('created_at', 'desc')->where('to', Auth::id())->limit(1)->value('created_at')]);
         }
         session(['last_update_' . $table => DB::table($table)->orderBy('updated_at', 'desc')->limit(1)->value('updated_at')]);
     }
@@ -401,7 +401,7 @@ class Functions
     {
         if ($table == 'notifications') {
             if (Auth::check())
-                $result = DB::table($table)->orderBy('created_at', 'desc')->where('to', Auth::user()->username)->limit(1)->value('created_at');
+                $result = DB::table($table)->orderBy('created_at', 'desc')->where('to', Auth::id())->limit(1)->value('created_at');
             if ($result) {
                 return session('created_at') != $result;
             } else {

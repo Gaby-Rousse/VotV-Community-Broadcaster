@@ -17,10 +17,10 @@ class MessageController extends Controller
 {
     function suggestions()
     {
-        $values = DB::table('suggestions')->orderBy('time', 'desc')->get();
+        $values = DB::table('suggestions')->select('suggestions.content', 'suggestions.id', 'users.username', 'seen', 'time')->join('users', 'suggestions.from', '=', 'users.id')->orderBy('time', 'desc')->get();
         $messages = [];
         foreach ($values as $value) {
-            $messages[] = new Message($value->content, $value->from, $value->seen, $value->time, $value->id);
+            $messages[] = new Message($value->content, $value->username, $value->seen, $value->time, $value->id);
         }
         return view('message', [
             'title' => 'Suggestions',
@@ -33,10 +33,10 @@ class MessageController extends Controller
 
     function bugs()
     {
-        $values = DB::table('bugs')->orderBy('time', 'desc')->get();
+        $values = DB::table('bugs')->select('bugs.content', 'bugs.id', 'users.username', 'seen', 'time')->join('users', 'bugs.from', '=', 'users.id')->orderBy('time', 'desc')->get();
         $messages = [];
         foreach ($values as $value) {
-            $messages[] = new Message($value->content, $value->from, $value->seen, $value->time, $value->id);
+            $messages[] = new Message($value->content, $value->username, $value->seen, $value->time, $value->id);
         }
         return view('message', [
             'title' => 'Bugs',
@@ -54,8 +54,8 @@ class MessageController extends Controller
                 'message' => 'required|max:2000',
                 'table' => 'required|in:suggestions,bugs'
             ]);
-            Queries::insertNotification(new Notification(Auth::user()->username, 'Gaby Rousse', 'added a new ' . substr_replace($validated['table'], "", -1) . '!'));
-            Queries::insertMessage(new Message($validated['message'], Auth::user()->username), $validated['table']);
+            Queries::insertNotification(new Notification(Auth::id(), 37, 'added a new ' . substr_replace($validated['table'], "", -1) . '!'));
+            Queries::insertMessage(new Message($validated['message'], Auth::id()), $validated['table']);
             return redirect($validated['table']);
         }
         return redirect()->back();

@@ -19,7 +19,7 @@ class Media
 
     public string $type;
     public string $destination;
-    public $owner;
+    public int $ownerId;
 
     //Get
     public int $approved = 0;
@@ -31,7 +31,8 @@ class Media
     public bool $isReported;
     public string $reportReason;
 
-    function __construct(string $filename, string $title, string $artist, string $cover, string $album, string $genre, string $year, string $description, string $type, string $owner, string $destination = 'None') {
+    function __construct(string $filename, string $title, string $artist, string $cover, string $album, string $genre, string $year, string $description, string $type, int $owner, string $destination = 'None')
+    {
         $this->filename = $filename;
         $this->title = $title;
         $this->artist = $artist;
@@ -41,7 +42,7 @@ class Media
         $this->year = $year;
         $this->description = $description;
         $this->type = $type;
-        $this->owner = $owner;
+        $this->ownerId = $owner;
         $this->destination = $destination;
     }
 

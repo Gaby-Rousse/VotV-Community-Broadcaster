@@ -31,7 +31,7 @@ class User extends Authenticatable
     {
         return DB::table('notifications')
             ->where('seen', 0)
-            ->where('to', $this->username)
+            ->where('to', $this->id)
             ->count();
     }
 }

@@ -5,12 +5,12 @@ namespace App\Models;
 class Message
 {
     public string $content;
-    public string $from;
+    public $from;
     public int $seen;
     public string $time;
     public $id;
 
-    public function __construct(string $content, string $from, int $seen = 0, $time = '', $id = null)
+    public function __construct(string $content, $from, int $seen = 0, $time = '', $id = null)
     {
         $this->content = $content;
         $this->from = $from;

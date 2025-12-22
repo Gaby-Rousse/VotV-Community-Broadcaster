@@ -37,14 +37,14 @@ class Queries
     static function receiveMedia(string $filename): Media
     {
         $value = DB::table(Functions::retrieveDestinationTable())->where('filename', $filename)->get();
-        $media = new Media($value[0]->filename, $value[0]->title, $value[0]->artist, $value[0]->cover, $value[0]->album, $value[0]->genre, $value[0]->year, $value[0]->description, $value[0]->type, $value[0]->owner, $value[0]->destination);
+        $media = new Media($value[0]->filename, $value[0]->title, $value[0]->artist, $value[0]->cover, $value[0]->album, $value[0]->genre, $value[0]->year, $value[0]->description, $value[0]->type, $value[0]->ownerId, $value[0]->destination);
         $media->approved = $value[0]->approved;
         $media->seconds = $value[0]->duration;
         $media->isFavorite = self::isFavorite($value[0]->filename);
         $media->favoriteCount = DB::table('favorites')->where('filename', $value[0]->filename)->count();
         $media->isReported = self::isReported($value[0]->filename);
         if (Auth::check()) {
-            $media->reportReason = DB::table('reports')->where('filename', $value[0]->filename)->where('from', Auth::user()->username)->value('reason') ?? '';
+            $media->reportReason = DB::table('reports')->where('filename', $value[0]->filename)->where('from', Auth::id())->value('reason') ?? '';
         }
         $media->explicit = $value[0]->explicit;
         return $media;
@@ -58,7 +58,7 @@ class Queries
     static function isFavorite(string $filename): bool
     {
         if (Auth::check()) {
-            return DB::table('favorites')->where('filename', $filename)->where('username', Auth::user()->username)->exists();
+            return DB::table('favorites')->where('filename', $filename)->where('userId', Auth::id())->exists();
         }
         return false;
     }
@@ -84,7 +84,7 @@ class Queries
      */
     static function isOwner(string $filename, string $table = 'audios'): bool
     {
-        return Auth::user()->username == DB::table($table)->where('filename', $filename)->value('owner');
+        return Auth::id() == DB::table($table)->where('filename', $filename)->value('ownerId');
     }
 
     /**
@@ -99,25 +99,13 @@ class Queries
 
     /**
      * Set a file as approved
-     * @param $filename - The filename to approve
-     * @param $table
+     * @param string $filename - The filename to approve
+     * @param string $table
      * @return void
      */
-    static function approveMedia($filename, $table = 'audios')
+    static function approveMedia(string $filename, string $table = 'audios'): void
     {
         DB::table($table)->where('filename', $filename)->update(['approved' => 1]);
-    }
-
-    //Users
-
-    /**
-     * Insert a user inside the database
-     * @param User $user - The user to insert
-     * @return void
-     */
-    static function insertUser(User $user): void
-    {
-        DB::table('users')->insert(['username' => $user->username, 'password' => $user->password, 'isAdmin' => $user->admin]);
     }
 
     //Notifications
@@ -152,7 +140,7 @@ class Queries
      */
     static function isOwnerOfMessage(int $id, string $table): bool
     {
-        return DB::table($table)->where('id', $id)->value('from') == Auth::user()->username;
+        return DB::table($table)->where('id', $id)->value('from') == Auth::id();
     }
 
 

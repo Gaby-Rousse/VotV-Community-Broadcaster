@@ -33,7 +33,7 @@
             </div>
             <div class="m-auto mr-1 gap-1 flex flex-row flex-shrink-0">
                 @auth
-                    @if(Auth::user()->isAdmin() || Auth::user()->username == $media->owner)
+                    @if(Auth::user()->isAdmin() || Auth::id() == $media->ownerId)
                         <img filename="{{$media->filename}}"
                              class="size-10 border-1 border-solid hover:cursor-pointer editAction"
                              style="border-color: #F8FE50" src={{asset('images/pencil.png')}} alt="edit">
