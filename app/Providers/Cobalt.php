@@ -136,6 +136,8 @@ class Cobalt
                 if (file_put_contents($filepath, file_get_contents($collection['url']))) {
                     $media = new Media($filename, substr($filename, 0, -4), 'Unknown Artist', 'unknown.png', 'Unknown', 'Unknown', 'Unknown', 'None', $type, Auth::id());
                     Queries::insertMedia($media, Functions::retrieveDestinationTable());
+                    //lame workaround
+                    session(['last_update_' . $destinationTable => '0000-00-00 00:00:00']);
                     Queries::insertNotification(new Notification(0, Auth::id(), $url . ' downloaded.'));
                 } else {
                     Queries::insertNotification(new Notification(0, Auth::id(), $url . ' failed to download.'));
