@@ -9,6 +9,7 @@ use App\Models\Notification;
 use App\Providers\Cobalt;
 use App\Providers\Functions;
 use App\Providers\Queries;
+use App\Providers\YTDLP;
 use FFMpeg\FFMpeg;
 use FFMpeg\Format\Audio\Mp3;
 use FFMpeg\Format\Video\X264;
@@ -245,7 +246,7 @@ class MediaController extends Controller
                 'url' => 'required',
                 'type' => 'required',
             ]);
-            Cobalt::download($validated['url'], $validated['type']);
+            YTDLP::download($validated['url'], $validated['type']);
         }
     }
 

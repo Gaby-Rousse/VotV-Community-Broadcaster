@@ -16,13 +16,11 @@
 
     </div>
 
-    <label for="fileupload" class="dos ml-1 hover:cursor-pointer ">Please upload a file... [Click or Drag&Drop
+    <label for="fileupload" class="dos ml-1 hover:cursor-pointer ">Please upload your file(s) [Click or Drag&Drop
         here]</label>
     <input multiple
            accept="{{session('media_type')  == 'audios' || session('media_type') == null ? 'audio/*' : 'video/*' }}"
            id="fileupload" type="file" class="opacity-0 flex-grow hover:cursor-pointer" name="mediaFile[]">
-
-
 
 
     @if(session('message'))

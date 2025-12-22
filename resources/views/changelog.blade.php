@@ -20,20 +20,32 @@
             <li>Voting system</li>
             <li>Rework suggestions and bugs forms</li>
             <li>Status page for streams</li>
-            <li>Metadata for video using custom  <a class="url hover:!text-blue-500 !text-blue-400" href="https://www.liquidsoap.info/doc-dev/icy_metadata.html"
-                                                    target="_blank">icy_metadata</a></li>
+            <li>Metadata for video using custom <a class="url hover:!text-blue-500 !text-blue-400"
+                                                   href="https://www.liquidsoap.info/doc-dev/icy_metadata.html"
+                                                   target="_blank">icy_metadata</a></li>
             <li>Batch editing</li>
+        </ul>
+    </div>
+    <div class=" text-xl sm:text-2xl md:text-3xl lg:text-4xl subtitle sm:text-left text-center">v0.3.6 (12/22/2025)
+    </div>
+    <div class="flex flex-col gap-2 mt-2 mb-6 items-center sm:items-baseline ">
+        <ul>
+            <li>Added Laravel Authentification</li>
+            <li>Cookies (remember me) now lasts 30 days</li>
+            <li>Added infinite scrolling (now loads 10 files at a time.)</li>
+            <li>Fixed YouTube Downloader (import from url), now uses YT-DLP instead of Cobalt</li>
+            <li>Code Refactoring</li>
         </ul>
     </div>
     <div class=" text-xl sm:text-2xl md:text-3xl lg:text-4xl subtitle sm:text-left text-center">v0.3.5 (10/25/2025)
     </div>
     <div class="flex flex-col gap-2 mt-2 mb-6 items-center sm:items-baseline ">
         <ul>
-           <li>Batch uploading</li>
-           <li>Batch downloading</li>
-           <li>Fixed a bug related to favorites and the share button</li>
-           <li>Files that are converted now have their metadata automatically parsed</li>
-           <li>Introduced compatibility mode, might help uploading some files that doesn't work</li>
+            <li>Batch uploading</li>
+            <li>Batch downloading</li>
+            <li>Fixed a bug related to favorites and the share button</li>
+            <li>Files that are converted now have their metadata automatically parsed</li>
+            <li>Introduced compatibility mode, might help uploading some files that doesn't work</li>
         </ul>
     </div>
     <div class=" text-xl sm:text-2xl md:text-3xl lg:text-4xl subtitle sm:text-left text-center">v0.3.4.5 (09/21/2025)
@@ -41,7 +53,7 @@
     <div class="flex flex-col gap-2 mt-2 mb-6 items-center sm:items-baseline ">
         <ul>
             <li>Replaced PHP-Audio with GetID3 to parse and write metadata in files</li>
-            <li>Now writes metadata in UTF-8 (for real this time) </li>
+            <li>Now writes metadata in UTF-8 (for real this time)</li>
             <li>Replaced yt-dlp with a self hosted instance of Cobalt</li>
             <li>Importing from an url is now faster!</li>
         </ul>
@@ -51,9 +63,13 @@
     <div class="flex flex-col gap-2 mt-2 mb-6 items-center sm:items-baseline ">
         <ul>
             <li>Various bug fixes</li>
-            <li>Added PHPDoc and JSDoc everywhere making the code more readable (1000+ lines of comments have been added)</li>
+            <li>Added PHPDoc and JSDoc everywhere making the code more readable (1000+ lines of comments have been
+                added)
+            </li>
             <li>Fixed a bug with the channel monitoring feature</li>
-            <li>Improved greatly the video media player (users can now adjust their playback volume + see the metadata of the video</li>
+            <li>Improved greatly the video media player (users can now adjust their playback volume + see the metadata
+                of the video
+            </li>
         </ul>
     </div>
     <div class=" text-xl sm:text-2xl md:text-3xl lg:text-4xl subtitle sm:text-left text-center">v0.3.4.3 (09/07/2025)

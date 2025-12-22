@@ -8,13 +8,15 @@
         <div class="flex flex-col ml-1">
             <div class="dos">File Importer</div>
         </div>
-        <button type="button" class="cross computerButton border-2 border-solid p-0.5 m-1 ml-auto pl-4 pr-4 hover:cursor-pointer">
+        <button type="button"
+                class="cross computerButton border-2 border-solid p-0.5 m-1 ml-auto pl-4 pr-4 hover:cursor-pointer">
             Upload from computer
         </button>
     </div>
 
     <div class="flex flex-row ml-1 w-full flex-grow">
-        <label for="url" class="dos hover:cursor-pointer ">URL:</label>
+        <label for="url" class="dos hover:cursor-pointer ">URL(s) (Seperate urls by a comma to import several files at
+            once.):</label>
         <textarea wrap="soft" class="dos flex-grow resize-none mr-1" id="url" type="text" name="url"></textarea>
     </div>
 
