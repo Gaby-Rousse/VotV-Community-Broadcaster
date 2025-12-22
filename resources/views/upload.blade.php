@@ -1,5 +1,5 @@
 @include('partials.header')
-<script src="scripts/musicUpload.js?v=3.2.3"></script>
+<script src="scripts/musicUpload.js?v=3.4.2"></script>
 <input type="hidden" id="approvedMaxPages" value="{{$approvedMaxPages}}">
 <input type="hidden" id="pendingMaxPages" value="{{$pendingMaxPages}}">
 
@@ -36,6 +36,15 @@
             </div>
             <label class="ml-auto checkContainer">
                 <input id="autoplaySetting" type="checkbox">
+                <span class="checkmark"></span>
+            </label>
+        </div>
+        <div class="settingItem h-8 flex flex-row">
+            <div class="mt-auto mb-auto ml-2">
+                Loading feedback when scrolling
+            </div>
+            <label class="ml-auto checkContainer">
+                <input id="loadingSetting" type="checkbox">
                 <span class="checkmark"></span>
             </label>
         </div>
@@ -337,7 +346,7 @@
 
             @if(!session('type') || session('type') == 'media')
             @if(App\Providers\Functions::retrieveDestinationTable() == 'audios')
-            ChannelDropdown.updateOptions(['Everything', 'None', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
+            ChannelDropdown.updateOptions(['Everything', 'None', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Metal', 'Pop', 'Rock', 'Video Game', 'Weird'])
             @else
             ChannelDropdown.updateOptions(['Everything', 'None', 'Animations', 'Documentaries', 'Horror', "Let's Plays", 'Memes', 'News', 'Shows', 'Vlogs'])
             @endif
