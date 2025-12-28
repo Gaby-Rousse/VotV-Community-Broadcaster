@@ -1,5 +1,6 @@
 @include('partials.header')
 <script src="scripts/musicUpload.js?v=3.4.2"></script>
+
 <input type="hidden" id="approvedMaxPages" value="{{$approvedMaxPages}}">
 <input type="hidden" id="pendingMaxPages" value="{{$pendingMaxPages}}">
 
@@ -62,62 +63,24 @@
 <!--- Écran au complet --->
 <div class="md:border-3 border-solid h-screen bg-black flex flex-col p-0.5">
 
-    <div class=" flex flex-row gap-1 border-solid border-3 md:m-0.5">
-        <div class="overflow-x-auto flex flex-row gap-1 flex-nowrap w-full">
-            <a class="computerButton hover:cursor-pointer border-2 border-solid p-0.5 mt-1 mb-1 ml-1 flex-shrink-0 flex"
-               href="/"><img class="size-6" src="{{asset('images/home.png')}}?v=0.1"></a>
-            <a href="/uploadAudio" id="navRadio"
-               class="{{session('media_type') == null || session('media_type') == 'audios' ? 'selected' : ''}} w-28 flex-shrink-0 navButton computerButton hover:cursor-pointer border-2 border-solid p-0.5 mt-1 mb-1 pl-4 pr-4">
-                Radio
-            </a>
-            <a href="/uploadVideo"
-               class="{{session('media_type') == 'videos' ? 'selected' : ''}} w-28 flex-shrink-0 navButton computerButton hover:cursor-pointer border-2 border-solid p-0.5 mt-1 mb-1 pl-4 pr-4">
-                TV
-            </a>
-            <div class="flex flex-row ml-auto flex-shrink-0">
-                @auth
-                    @if(Auth::user()->isAdmin())
-                        <a href="/reports"
-                           class="computerButton flex-shrink-0 border-2 w-35 border-solid p-0.5 mt-1 mb-1 mr-1 pl-4 pr-4 hover:cursor-pointer"
-                           id="reports">
-                            Reports ({{$reportCount}})
-                        </a>
-                    @endif
-                @endauth
-                <button
-                        id="settingButton"
-                        class="computerButton flex-shrink-0 border-2 w-28 border-solid p-0.5 mt-1 mb-1 mr-1 pl-4 pr-4 hover:cursor-pointer">
-                    Settings
-                </button>
-                @auth
-                    <button id="notificationButton"
-                            class="computerButton flex-shrink-0 hover:cursor-pointer border-2 border-solid p-0.5 pr-1 mt-1 mb-1 mr-1 flex flex-row">
-                        <img class="size-6" alt="notifications" src="{{asset('images/bell.png')}}">
-                        <div class="dos notifCount">0</div>
-                    </button>
-                @endauth
-            </div>
+    @include('partials.navPC')
+
+    <div class="ml-1 flex flex-col md:flex-row md:gap-1 ">
+        <div id="broadcasting" class="flex flex-row gap-1 hover:cursor-pointer">
+            <div class="dot flex-shrink-0 size-3 mt-auto mb-auto"></div>
+            <div class="dos text-nowrap">Currently broadcasting:</div>
+            <div class="dos metadata truncate">Loading...</div>
         </div>
+        <a class="md:ml-auto md:mr-1 dos url mr-auto" target="_blank"
+           href="https://radio.votvbroadcast.com/votv.mp3">
+            radio.votvbroadcast.com</a>
+
     </div>
-    @if(App\Providers\Functions::retrieveDestinationTable() == 'audios')
-        <div class="ml-1 flex flex-col md:flex-row md:gap-1 ">
-            <div id="broadcasting" class="flex flex-row gap-1 hover:cursor-pointer">
-                <div class="dot flex-shrink-0 size-3 mt-auto mb-auto"></div>
-                <div class="dos text-nowrap">Currently broadcasting:</div>
-                <div class="dos metadata truncate">Loading...</div>
-            </div>
-            <a class="md:ml-auto md:mr-1 dos url mr-auto" target="_blank"
-               href="https://radio.votvbroadcast.com/votv.mp3">
-                radio.votvbroadcast.com</a>
-
-        </div>
-        <div class="flex flex-row">
-            <div class="ml-1 dos">Currently monitoring:</div>
-            <div class="ml-1" id="watchingChannels"></div>
-            <input type="hidden" id="monitoringChannel">
-        </div>
-
-    @endif
+    <div class="flex flex-row">
+        <div class="ml-1 dos">Currently monitoring:</div>
+        <div class="ml-1" id="watchingChannels"></div>
+        <input type="hidden" id="monitoringChannel">
+    </div>
 
     <!--- Écrans --->
     <!--- Flex grow: Prend tout l'espace... Overflow-hidden: Mais empêche tes enfants de dépasser. --->

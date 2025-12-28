@@ -30,6 +30,15 @@
     </div>
     <div class="flex flex-col gap-2 mt-2 mb-6 items-center sm:items-baseline ">
         <ul>
+            <li>Picture are now back into the embed metadata (for audios)</li>
+            <li>Pictures are now stored according to their MD5 hash</li>
+            <li>You can now monitor what's playing over the TV</li>
+        </ul>
+    </div>
+    <div class=" text-xl sm:text-2xl md:text-3xl lg:text-4xl subtitle sm:text-left text-center">v0.3.6 (12/22/2025)
+    </div>
+    <div class="flex flex-col gap-2 mt-2 mb-6 items-center sm:items-baseline ">
+        <ul>
             <li>Added Laravel Authentification</li>
             <li>Cookies (remember me) now lasts 30 days</li>
             <li>Added infinite scrolling (now loads 10 files at a time.)</li>

@@ -14,7 +14,7 @@
 }
 
 html {
-  background-image: url("../images/bg.png");
+    background-image: url("../images/bg.png");
 }
 
 .title {
@@ -92,7 +92,6 @@ nav a:hover {
     border-color: #50eafe;
     color: #50eafe
 }
-
 
 
 @font-face {
@@ -240,13 +239,11 @@ window button:hover {
     cursor: pointer;
 }
 
-dropdown
-{
+dropdown {
     background-color: rgba(0, 0, 0, 0.80);
 }
 
-.option
-{
+.option {
     background-color: rgba(0, 0, 0, 0.80);
     padding-right: 12.5px;
 }
@@ -255,13 +252,13 @@ dropdown
     padding: 5px;
     border-radius: 5px;
     background-color: rgba(0, 0, 0, 0.8);
-    animation: pop-in 2s ease-in-out ;
+    animation: pop-in 2s ease-in-out;
     animation-fill-mode: forwards;
     font-family: modern-dos, serif;
 }
 
 .popout {
-    animation: pop-out 1s ease-in-out ;
+    animation: pop-out 1s ease-in-out;
     animation-fill-mode: forwards;
 }
 
@@ -342,18 +339,15 @@ dropdown
 }
 
 
-
 /* Show the checkmark when checked */
 .checkContainer input:checked ~ .checkmark:after {
     display: block;
 }
 
-.status
-{
+.status {
     height: 100vh;
 }
 
-.console
-{
+.console {
     font-family: "Courier New", Courier, monospace
 }

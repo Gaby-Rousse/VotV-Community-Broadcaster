@@ -10,11 +10,10 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "james-heinrich/getid3": "^1.9",
-        "kiwilan/php-audio": "^4.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "php-ffmpeg/php-ffmpeg": "*"
+        "php-ffmpeg/php-ffmpeg": "*",
+        "plutuss/getid3-laravel": "^1.5"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -76,6 +75,6 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "beta",
     "prefer-stable": true
 }

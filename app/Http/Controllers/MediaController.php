@@ -212,7 +212,7 @@ class MediaController extends Controller
                     }
 
                     if (!$fileResult) {
-                        return json_encode(['type' => 'Error', 'message' => "move_uploaded_file returned false. No additionnal information available."]);
+                        return json_encode(['type' => 'Error', 'message' => "move_uploaded_file returned false. No additional information available."]);
                     }
 
                     $filepath = public_path('/temp_uploads/pending/') . $currentFilename;
@@ -307,8 +307,11 @@ class MediaController extends Controller
             if ($request->hasFile('cover')) {
                 if ($request->file('cover')->isValid()) {
                     $cover = $request->file('cover');
-                    $mime = $cover->getClientMimeType();
-                    $coverFileName = Functions::formatFilename($cover->getClientOriginalName());
+                    $path = $cover->getRealPath();
+                    $mime = $cover->getMimeType();
+                    $ext = explode('/', $cover->getMimeType())[1];
+                    $coverFileName = md5_file($path) . '.' . $ext;
+                
                     //Is the cover an image?
                     if (str_starts_with($mime, 'image/')) {
                         //On vérifie qu'une image avec ce nom n'existe pas. S'il y a le même nom on va réutiliser l'image du serveur, l'écrire au fichier et la BD.
@@ -326,14 +329,6 @@ class MediaController extends Controller
             } else {
                 DB::table($mediaHelper->table)->where('filename', $filename)->update(['title' => $validated['title'], 'artist' => $validated['artist'], 'genre' => $validated['genre'], 'year' => $validated['year'], 'description' => $validated['description'], 'destination' => $validated['destination'], 'explicit' => $explicit, 'type' => $validated['type']]);
             }
-
-            $tags = array(
-                'title' => array($validated['title']),
-                'artist' => array($validated['artist']),
-                'genre' => array($validated['genre']),
-                'year' => array($validated['year']),
-                'comment' => array($validated['description']),
-            );
 
 
             if (!Queries::isPending($mediaHelper->media->filename)) {
@@ -353,8 +348,8 @@ class MediaController extends Controller
                 rename($sourceFile, $destinationPath . pathinfo($sourceFile, PATHINFO_BASENAME));
             }
 
-            if ($mediaHelper->table == 'audios')
-                Functions::updateMetadata($tags, $mediaHelper->mediaPath);
+            Functions::updateMetadataFromDB($filename);
+
         } catch (\Exception $e) {
             echo json_encode(['type' => 'Error', 'message' => $e->getMessage()]);
         }

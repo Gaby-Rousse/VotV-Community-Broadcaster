@@ -8,13 +8,15 @@ use App\Models\Music;
 use App\Models\Notification;
 use App\Models\User;
 use FFMpeg\FFProbe;
-use getID3;
-use getid3_writetags;
+
 use Illuminate\Foundation\Application;
 use Illuminate\Session\SessionManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use JamesHeinrich\GetID3\GetID3;
+use JamesHeinrich\GetID3\WriteTags;
 use Kiwilan\Audio\Audio;
 
 class Functions
@@ -102,10 +104,12 @@ class Functions
     static function parseMetadata(string $filename, string $type = 'media')
     {
         $getID3 = new getID3;
+
         $filepath = public_path('/temp_uploads/pending/' . $filename);
         $ext = pathinfo($filepath, PATHINFO_EXTENSION);
         $filenameWithoutExt = pathinfo($filepath, PATHINFO_FILENAME);
         $thisFileInfo = $getID3->analyze($filepath);
+        $getID3->CopyTagsToComments($thisFileInfo);
         if ($ext == 'mp3') {
             if (isset($thisFileInfo['tags']))
                 $info = $thisFileInfo['tags']['id3v2'];
@@ -123,12 +127,22 @@ class Functions
         $description = 'None';
         $coverFileName = 'unknown.png';
 
+        if (isset($thisFileInfo['comments']['picture'])) {
+            if ($coverData = $thisFileInfo['comments']['picture'][0]['data']) {
+                $coverMime = $thisFileInfo['comments']['picture'][0]['image_mime'];
+                $extension = explode("/", $coverMime)[1];
+                $extension = preg_replace('/[^a-zA-Z0-9]/', '', $extension);
+                $coverFileName = md5($coverData) . '.' . $extension;
+                $coverFilepath = public_path('/temp_uploads/covers/' . $coverFileName);
+                file_put_contents($coverFilepath, $coverData);
+            }
+        }
+
         if (isset($info['title'][0])) {
             $title = $info['title'][0];
         } else {
             //No title? We'll extract the filename and write it to the file immediately.
-            if (self::retrieveDestinationTable() == 'audios')
-                self::updateMetadata(array('title' => array($title)), $filepath);
+            self::updateMetadata(array('title' => array($title)), $filepath);
         }
 
         if (isset($info['artist'][0])) {
@@ -155,15 +169,64 @@ class Functions
         $TextEncoding = 'UTF-8';
         $getID3 = new getID3;
         $getID3->setOption(array('encoding' => $TextEncoding));
-        $tagwriter = new getid3_writetags();
+
+        $tagwriter = new WriteTags();
         $tagwriter->filename = $filepath;
-        $tagwriter->tagformats = array('id3v2.4');
-        $tagwriter->overwrite_tags = true;  // if true will erase existing tag data and write only passed data; if false will merge passed data with existing tag data (experimental)
-        $tagwriter->remove_other_tags = true; // if true removes other tag formats (e.g. ID3v1, ID3v2, APE, Lyrics3, etc) that may be present in the file and only write the specified tag format(s). If false leaves any unspecified tag formats as-is.
+
+        if (self::retrieveDestinationTable() == 'audios')
+            $tagwriter->tagformats = array('id3v2.4');
+        else
+            $tagwriter->tagformats = array('quicktime');
+
+
+        $tagwriter->overwrite_tags = true;
+        $tagwriter->remove_other_tags = true;
         $tagwriter->tag_encoding = $TextEncoding;
-        $TagData = $tags;
-        $tagwriter->tag_data = $TagData;
-        $tagwriter->WriteTags();
+
+        if (isset($tags['cover']) && file_exists($tags['cover'])) {
+            $imagePath = $tags['cover'];
+            $imageInfo = getimagesize($imagePath);
+
+            if ($imageInfo !== false) {
+                $tags['attached_picture'][0] = [
+                    'data' => file_get_contents($imagePath),
+                    //front
+                    'picturetypeid' => 0x03,
+                    'description' => 'cover',
+                    'mime' => $imageInfo['mime'],
+                ];
+                //not included in tag_data
+                unset($tags['cover']);
+            }
+        }
+
+        $tagwriter->tag_data = $tags;
+
+        if (!$tagwriter->WriteTags()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    static function updateMetadataFromDB($filename)
+    {
+        $mediaHelper = self::generateMediaHelper($filename);
+
+        if ($mediaHelper->media->approved == 0)
+            $coverFilePath = public_path('/temp_uploads/covers/');
+        else
+            $coverFilePath = public_path('/uploads/covers/');
+
+        $tags = [
+            'title' => array($mediaHelper->media->title),
+            'artist' => array($mediaHelper->media->artist),
+            'genre' => array($mediaHelper->media->genre),
+            'year' => array($mediaHelper->media->year),
+            'comment' => array($mediaHelper->media->description),
+            'cover' => $coverFilePath . $mediaHelper->media->cover,
+        ];
+        self::updateMetadata($tags, $mediaHelper->mediaPath);
     }
 
     /**

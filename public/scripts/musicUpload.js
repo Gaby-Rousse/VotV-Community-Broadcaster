@@ -17,7 +17,6 @@ let ChannelDropdown;
 let WatchingChannelsDropdown
 
 
-
 $(() => {
 
 
@@ -1038,9 +1037,19 @@ $(() => {
     }
 
     //### Currently Broadcasting
-
+    let everything = 0;
+    let sfwChannel = 21
     WatchingChannelsDropdown = new VotvDropdown('watchingChannels', 'monitoringChannel', 'updateMonitoringChannel', 20)
-    WatchingChannelsDropdown.updateOptions(['Everything', 'SFW', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi','Metal', 'Pop', 'Rock', 'Video Game', 'Weird'])
+    if (media_type === 'audios') {
+        everything = 0;
+        sfwChannel = 21;
+        WatchingChannelsDropdown.updateOptions(['Everything', 'SFW', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Metal', 'Pop', 'Rock', 'Video Game', 'Weird'])
+    } else if (media_type === 'videos') {
+        everything = 1;
+        sfwChannel = 22;
+        WatchingChannelsDropdown.updateOptions(['Everything', 'SFW', 'Animations', 'Documentaries', 'Horror', "Let's Plays", 'Lt30secs', 'Lt5mins', 'Memes', 'News', 'Shows', 'Vlogs'])
+    }
+
 
     //https://www.w3schools.com/jsref/met_win_setinterval.asp
 
@@ -1051,21 +1060,30 @@ $(() => {
     let monitoringInterval = setInterval(fetchMetadata, 5000);
     //TODO: Find a way to not hardcode these number.
     const channelsNumber = {
-        'Everything': 0,
-        'Christmas': 2,
-        'Classical': 3,
-        'Country': 4,
-        'Electronic': 6,
-        'Hip Hop': 7,
-        'Instrumental': 9,
-        'Jazz': 10,
-        'Mariachi': 14,
+        'Everything': everything,
+        'Animations': 2,
+        'Christmas': 3,
+        'Classical': 4,
+        'Country': 5,
+        'Documentaries': 6,
+        'Electronic': 7,
+        'Hip Hop': 8,
+        'Horror': 9,
+        'Instrumental': 10,
+        'Jazz': 11,
+        "Let's Plays": 12,
+        'Lt30secs': 13,
+        'Lt5mins': 14,
+        'Mariachi': 15,
+        'Memes': 16,
         'Metal': 17,
-        'Pop': 18,
-        'Rock': 19,
-        'SFW': 20,
-        'Video Game': 22,
-        'Weird': 24,
+        'News': 18,
+        'Pop': 19,
+        'Rock': 20,
+        'SFW': sfwChannel,
+        'Video Game': 23,
+        'Vlogs': 24,
+        'Weird': 25,
     }
 
     const monitoringChannel = $('#monitoringChannel')
@@ -1088,7 +1106,7 @@ $(() => {
      * @function
      * @param {number} source - The source to fetch from.
      */
-    function fetchMetadata(source = 0) {
+    function fetchMetadata(source = everything) {
         $.ajax({
             type: 'GET',
             url: 'https://radio.votvbroadcast.com/status-json.xsl',
@@ -1196,6 +1214,80 @@ $(() => {
             toggleScreen($("form[action|='/importMedia']"))
         })
     }
+
+    //### Settings
+//Settings are stored in localStorage. There isn't much yet.
+
+    let storageAutoplay = localStorage.getItem("autoplay");
+
+    if (!storageAutoplay) {
+        localStorage.setItem("autoplay", "0");
+    }
+
+    let autoplaySetting = $('#autoplaySetting');
+
+    if (storageAutoplay === "1") {
+        autoplaySetting.attr('checked', true)
+    }
+
+    /**
+     * Updates the loading prop
+     * @event
+     */
+    autoplaySetting.click(function () {
+        if ($(this).prop('checked')) {
+            localStorage.setItem("autoplay", "1");
+        } else {
+            localStorage.setItem("autoplay", "0");
+        }
+
+    })
+
+    let storageLoading = localStorage.getItem("loading");
+
+    if (!storageLoading) {
+        localStorage.setItem("loading", "0");
+    }
+
+    let loadingSetting = $('#loadingSetting');
+
+    if (storageLoading === "1") {
+        loadingSetting.attr('checked', true)
+    }
+
+    /**
+     * Updates the autoplay prop
+     * @event
+     */
+    loadingSetting.click(function () {
+        if ($(this).prop('checked')) {
+            localStorage.setItem("loading", "1");
+        } else {
+            localStorage.setItem("loading", "0");
+        }
+
+    })
+
+
+    let settingScreen = $('#settings')
+
+    /**
+     * Opens the setting tab
+     * @event
+     */
+    $('#settingButton').click(function () {
+        show(settingScreen);
+    });
+
+    /**
+     * Close the setting tab and apply the settings
+     * @event
+     */
+    $('#backButton').click(function () {
+        hide(settingScreen);
+        storageAutoplay = localStorage.getItem("autoplay");
+        storageLoading = localStorage.getItem("loading");
+    })
 
 
     //### Queries
@@ -1479,79 +1571,6 @@ $(() => {
         typeInput.val('segue');
     });
 
-    //### Settings
-    //Settings are stored in localStorage. There isn't much yet.
-
-    let storageAutoplay = localStorage.getItem("autoplay");
-
-    if (!storageAutoplay) {
-        localStorage.setItem("autoplay", "0");
-    }
-
-    let autoplaySetting = $('#autoplaySetting');
-
-    if (storageAutoplay === "1") {
-        autoplaySetting.attr('checked', true)
-    }
-
-    /**
-     * Updates the loading prop
-     * @event
-     */
-    autoplaySetting.click(function () {
-        if ($(this).prop('checked')) {
-            localStorage.setItem("autoplay", "1");
-        } else {
-            localStorage.setItem("autoplay", "0");
-        }
-
-    })
-
-    let storageLoading = localStorage.getItem("loading");
-
-    if (!storageLoading) {
-        localStorage.setItem("loading", "0");
-    }
-
-    let loadingSetting = $('#loadingSetting');
-
-    if (storageLoading === "1") {
-        loadingSetting.attr('checked', true)
-    }
-
-    /**
-     * Updates the autoplay prop
-     * @event
-     */
-    loadingSetting.click(function () {
-        if ($(this).prop('checked')) {
-            localStorage.setItem("loading", "1");
-        } else {
-            localStorage.setItem("loading", "0");
-        }
-
-    })
-
-
-    let settingScreen = $('#settings')
-
-    /**
-     * Opens the setting tab
-     * @event
-     */
-    $('#settingButton').click(function () {
-        show(settingScreen);
-    });
-
-    /**
-     * Close the setting tab and apply the settings
-     * @event
-     */
-    $('#backButton').click(function () {
-        hide(settingScreen);
-        storageAutoplay = localStorage.getItem("autoplay");
-        storageLoading = localStorage.getItem("loading");
-    })
 
     //### Fonctionnement dropdown
 
@@ -1631,7 +1650,7 @@ $(() => {
             mutexApproved = true;
             approvedMediaPage++;
             if (storageLoading === "1")
-            addLoadingScreen($(this))
+                addLoadingScreen($(this))
             MusicsPanel.contentServiceURL = "/getMedias?page=" + approvedMediaPage;
             MusicsPanel.refresh(true).then(() => {
                 $('#MusicsPanel').scrollTop(oldScrollTop);
@@ -1659,7 +1678,7 @@ $(() => {
             mutexPending = true;
             pendingMediaPage++;
             if (storageLoading === "1")
-            addLoadingScreen($(this))
+                addLoadingScreen($(this))
             PendingPanel.contentServiceURL = "/getPendingMedias?page=" + pendingMediaPage;
             PendingPanel.refresh(true).then(() => {
                 $('#PendingPanel').scrollTop(oldScrollTop);
