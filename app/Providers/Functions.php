@@ -8,14 +8,14 @@ use App\Models\Notification;
 use App\Models\User;
 use FFMpeg\FFProbe;
 
-use getID3;
-use getid3_writetags;
 use Illuminate\Foundation\Application;
 use Illuminate\Session\SessionManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use JamesHeinrich\GetID3\GetID3;
+use JamesHeinrich\GetID3\WriteTags;
 
 class Functions
 {
@@ -168,7 +168,7 @@ class Functions
         $getID3 = new GetID3();
         $getID3->setOption(array('encoding' => $TextEncoding));
 
-        $tagwriter = new Getid3_writetags();
+        $tagwriter = new WriteTags();
         $tagwriter->filename = $filepath;
 
         if (self::retrieveDestinationTable() == 'audios')
