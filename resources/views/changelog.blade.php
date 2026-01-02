@@ -26,7 +26,7 @@
             <li>Batch editing</li>
         </ul>
     </div>
-    <div class=" text-xl sm:text-2xl md:text-3xl lg:text-4xl subtitle sm:text-left text-center">v0.3.6 (12/22/2025)
+    <div class=" text-xl sm:text-2xl md:text-3xl lg:text-4xl subtitle sm:text-left text-center">v0.3.6.1 (12/28/2025)
     </div>
     <div class="flex flex-col gap-2 mt-2 mb-6 items-center sm:items-baseline ">
         <ul>

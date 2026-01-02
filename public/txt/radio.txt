@@ -8,12 +8,18 @@ VCB Country
 https://radio.votvbroadcast.com/votv_country.mp3
 VCB Classical
 https://radio.votvbroadcast.com/votv_classical.mp3
+VCB Electronic
+https://radio.votvbroadcast.com/votv_electronic.mp3
 VCB Hip Hop
 https://radio.votvbroadcast.com/votv_hiphop.mp3
+VCB Instrumental
+https://radio.votvbroadcast.com/votv_instrumental.mp3
 VCB Jazz
 https://radio.votvbroadcast.com/votv_jazz.mp3
 VCB Mariachi
 https://radio.votvbroadcast.com/votv_mariachi.mp3
+VCB Metal
+https://radio.votvbroadcast.com/votv_metal.mp3
 VCB Pop
 https://radio.votvbroadcast.com/votv_pop.mp3
 VCB Rock

@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Media;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class YTDLP
 {
@@ -35,11 +36,10 @@ class YTDLP
             $url = escapeshellarg($url);
             $retrieveTitle = 'yt-dlp --no-cache-dir --skip-download --print "%(title)s" ' . $url;
             $retrieveUploader = 'yt-dlp --no-cache-dir --skip-download --print "%(uploader)s" ' . $url;
-
             $title = trim(shell_exec($retrieveTitle));
             $artist = trim(shell_exec($retrieveUploader));
 
-            $filename = escapeshellarg(Functions::formatFilename($title . $ext));
+            $filename = Functions::formatFilename($title . $ext);
             $filepath = public_path('/temp_uploads/pending/' . $filename);
             $coverDirectory = public_path('/temp_uploads/covers/');
             $thumbnailBase = $coverDirectory . 'thumbnail_' . uniqid();
@@ -60,7 +60,8 @@ class YTDLP
                     rename($coverFilepathTemp, $coverDirectory . $finalCoverFilename);
                 }
 
-                if (file_exists($downloadedThumbnail)) unlink($downloadedThumbnail);
+                if (file_exists($downloadedThumbnail))
+                    unlink($downloadedThumbnail);
             }
 
             if ($ext == '.mp3') {
@@ -74,7 +75,7 @@ class YTDLP
             $media = new Media($filename, $title, $artist, $finalCoverFilename, 'Unknown', 'Unknown', 'Unknown', 'None', $type, Auth::id());
             Queries::insertMedia($media, $table);
             Functions::updateMetadataFromDB($filename);
-            Queries::insertNotification(new Notification(0, Auth::id(), $url . ' downloaded.'));
+            Queries::insertNotification(new Notification(0, Auth::id(), str_replace("'", "",$url) . ' downloaded.'));
         }
     }
 

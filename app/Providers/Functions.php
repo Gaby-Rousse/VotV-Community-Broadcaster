@@ -4,20 +4,18 @@ namespace App\Providers;
 
 use App\Models\Media;
 use App\Models\MediaHelper;
-use App\Models\Music;
 use App\Models\Notification;
 use App\Models\User;
 use FFMpeg\FFProbe;
 
+use getID3;
+use getid3_writetags;
 use Illuminate\Foundation\Application;
 use Illuminate\Session\SessionManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use JamesHeinrich\GetID3\GetID3;
-use JamesHeinrich\GetID3\WriteTags;
-use Kiwilan\Audio\Audio;
 
 class Functions
 {
@@ -103,7 +101,7 @@ class Functions
      */
     static function parseMetadata(string $filename, string $type = 'media')
     {
-        $getID3 = new getID3;
+        $getID3 = new GetID3();
 
         $filepath = public_path('/temp_uploads/pending/' . $filename);
         $ext = pathinfo($filepath, PATHINFO_EXTENSION);
@@ -167,10 +165,10 @@ class Functions
     static function updateMetadata(array $tags, $filepath)
     {
         $TextEncoding = 'UTF-8';
-        $getID3 = new getID3;
+        $getID3 = new GetID3();
         $getID3->setOption(array('encoding' => $TextEncoding));
 
-        $tagwriter = new WriteTags();
+        $tagwriter = new Getid3_writetags();
         $tagwriter->filename = $filepath;
 
         if (self::retrieveDestinationTable() == 'audios')
