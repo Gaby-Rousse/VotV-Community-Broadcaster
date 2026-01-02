@@ -1115,7 +1115,7 @@ $(() => {
                 let str = data.icestats.source[source].title;
                 $(".metadata").text(str);
                 //https://bobbyhadz.com/blog/javascript-get-substring-before-specific-character#get-substring-before-the-last-occurrence-of-a-specific-character
-                currentlyPlayingTitle = str.slice(str.indexOf('-') + 1);
+                currentlyPlayingTitle = str;
             },
             error: function () {
                 $(".metadata").text("Err")
@@ -1125,6 +1125,7 @@ $(() => {
 
 
     /**
+     * @deprecated FINALLY YAAAAAAAAAAAAAAAAAAAAY!!!!!!!!!!!!!!
      * Retrieve the filename from using the title
      * @function
      * @param {string} title - The title to which we need to find the original filename
@@ -1172,7 +1173,8 @@ $(() => {
      * @function
      */
     broadcasting.click(function () {
-        ajaxRequestFilename(currentlyPlayingTitle)
+        ajaxRequestPlayMedia(currentlyPlayingTitle)
+        toggleScreen($('#playScreen'))
     })
 
 
