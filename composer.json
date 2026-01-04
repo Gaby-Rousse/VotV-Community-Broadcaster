@@ -13,7 +13,8 @@
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "php-ffmpeg/php-ffmpeg": "*",
-        "plutuss/getid3-laravel": "^1.5"
+        "plutuss/getid3-laravel": "^1.5",
+        "ext-zip": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -22,6 +22,9 @@ class AutoRefreshedPanel {
         this.refreshRate = refreshRate * 1000;
         this.paused = false;
         this.refresh(true);
+
+        this.sfx_click = new Audio('https://votvbroadcast.com/sfx/sfx_click.mp3?v=2')
+        this.sfx_error = new Audio('https://votvbroadcast.com/sfx/sfx_error.mp3')
         setInterval(() => {
             this.refresh()
         }, this.refreshRate);
@@ -90,8 +93,7 @@ class AutoRefreshedPanel {
                 method: 'GET',
                 success: (response) => {
                     this.refresh(true);
-                    if(response)
-                    {
+                    if (response) {
                         this.notify(response)
                     }
                     resolve(true);
@@ -125,9 +127,8 @@ class AutoRefreshedPanel {
                 data: data,
                 success: (response) => {
                     this.refresh(true);
-                    if(response)
-                    {
-                      this.notify(response)
+                    if (response) {
+                        this.notify(response)
                     }
                     resolve(true);
                 },
@@ -138,6 +139,7 @@ class AutoRefreshedPanel {
 
         });
     }
+
 
     //TODO Use external functions dude
     /**
@@ -150,9 +152,13 @@ class AutoRefreshedPanel {
         //clearTimeout(timeoutID)
         //$('.popup').remove();
         let icon = type.toLowerCase();
-        let html = `<div class="popup gap-2 inline-flex flex-row"><img src="https://votvbroadcast.com/images/${icon}.png" > <div class="mt-auto mb-auto dos !text-white">${message}</div></div>`
+        let html = `<div class="popup gap-2 inline-flex flex-row"><img class="size-8 my-auto" src="https://votvbroadcast.com/images/${icon}.png" > <div class="mt-auto mb-auto dos !text-white">${message}</div></div>`
         $('#popups').append(html);
         let popup = $('.popup')
+        if (icon == 'info')
+            this.sfx_click.play();
+        else
+            this.sfx_error.play();
         setTimeout(function () {
             popup.addClass('popout');
             setTimeout(function () {
@@ -161,11 +167,10 @@ class AutoRefreshedPanel {
         }, 3000);
     }
 
-    notify(response)
-    {
+    notify(response) {
         let parsedResponse = JSON.parse(response)
-        if(Array.isArray(parsedResponse))
-            parsedResponse.forEach(error => this.popin(error.type,error.message));
+        if (Array.isArray(parsedResponse))
+            parsedResponse.forEach(error => this.popin(error.type, error.message));
         else
             this.popin(parsedResponse.type, parsedResponse.message)
     }

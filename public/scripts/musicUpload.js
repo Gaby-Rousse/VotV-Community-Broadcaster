@@ -93,7 +93,8 @@ $(() => {
 
     //https://developer.mozilla.org/en-US/docs/Web/API/Window/clearTimeout
     let timeoutID;
-    const sfx_click = new Audio('https://votvbroadcast.com/sfx/sfx_click.mp3')
+    const sfx_click = new Audio('https://votvbroadcast.com/sfx/sfx_click.mp3?v=2')
+    const sfx_error = new Audio('https://votvbroadcast.com/sfx/sfx_error.mp3')
 
     /**
      * Adds a pop-up to the right
@@ -105,8 +106,11 @@ $(() => {
         //clearTimeout(timeoutID)
         //$('.popup').remove();
         let icon = type.toLowerCase();
-        let html = `<div class="popup gap-2 inline-flex flex-row"><img src="https://votvbroadcast.com/images/${icon}.png" > <div class="mt-auto mb-auto dos !text-white">${message}</div></div>`
-        sfx_click.play();
+        let html = `<div class="popup gap-2 inline-flex flex-row"><img class="size-8 my-auto" src="https://votvbroadcast.com/images/${icon}.png" > <div class="mt-auto mb-auto dos !text-white">${message}</div></div>`
+        if (icon == 'info')
+            sfx_click.play();
+        else
+            sfx_error.play();
         clearTimeout(timeoutID)
         $('#popups').append(html);
         let popup = $('.popup')
@@ -295,6 +299,10 @@ $(() => {
         });
     }
 
+    let selectedFiles = [];
+    let selectedCount = $('.selectedCount');
+    let batchMenu = $('#batchMenu');
+
     /**
      * eventListeners from a refresh panel must be added this way, otherwise the listener dies
      * These are events for both the approved files and the pending files
@@ -350,6 +358,132 @@ $(() => {
                 popin('info', `${filename} approved!`)
             });
         });
+
+        /**
+         * Mark a file as selected
+         * @event
+         */
+        $('.selectAction').on('click', function () {
+            let prev = $(this).prev();
+            let filename = $(this).attr("filename")
+            if (prev.hasClass('hidden')) {
+                selectedFiles.push(filename);
+                console.log(selectedFiles)
+                prev.removeClass('hidden');
+            } else {
+                //https://stackoverflow.com/questions/5767325/how-can-i-remove-a-specific-item-from-an-array-in-javascript
+                let index = selectedFiles.indexOf(filename)
+                if (index > -1) { // only splice array when item is found
+                    selectedFiles.splice(index, 1); // 2nd parameter means remove one item only
+                }
+                console.log(selectedFiles)
+                prev.addClass('hidden');
+            }
+            selectedCount.html(selectedFiles.length)
+
+            if (selectedFiles.length === 1) {
+                show(batchMenu)
+            } else if (selectedFiles.length < 1) {
+                hide(batchMenu)
+            }
+
+        });
+
+        remarkAsSelected()
+    }
+
+    //*** BATCH RELATED SECTION ***//
+    function remarkAsSelected() {
+        selectedFiles.forEach((file, index) => {
+            $(`img[filename="${file}"]`).prev().removeClass('hidden');
+        })
+    }
+
+    function unmarkEverything() {
+        selectedFiles = [];
+        $(`.cover`).prev().addClass('hidden');
+    }
+
+    function closeBatchMenu() {
+        hide(batchMenu)
+        unmarkEverything()
+    }
+
+    $('.closeSelected').on('click', () => {
+        closeBatchMenu()
+    })
+
+    $('.generateList').on('click', () => {
+        popin('info', 'Generating online.txt, please wait...')
+        let data = new FormData();
+        data.append("filenames", selectedFiles)
+        closeBatchMenu();
+        ajaxGenerateAndDownloadOnlineTXT(data).then(() => {
+            popin('info', 'online.txt generated!')
+        })
+    })
+
+    $('.downloadFiles').on('click', () => {
+        popin('info', 'Generating a .zip file, please wait...')
+        let data = new FormData();
+        data.append("filenames", selectedFiles)
+        closeBatchMenu();
+        ajaxDownloadAllSelectedFiles(data).then(() => {
+            popin('info', '.zip file generated!')
+        })
+    })
+
+    $('.deleteFiles').on('click', () => {
+        popin('info', 'W.I.P')
+    })
+
+    $('.editFiles').on('click', () => {
+        popin('info', 'W.I.P')
+    })
+
+    function ajaxGenerateAndDownloadOnlineTXT(data) {
+        console.log(data)
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: '/generateOnlineTXT',
+                method: 'POST',
+                processData: false,
+                contentType: false,
+                data: data,
+                success: (response) => {
+                    let file = new File([response], "online.txt", {type: "text/plain;charset=utf-8"});
+                    saveAs(file);
+                    resolve(true)
+                },
+                error: () => {
+                    resolve(true);
+                }
+            });
+        })
+    }
+
+    function ajaxDownloadAllSelectedFiles(data) {
+        console.log(data)
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: '/downloadAllSelectedFiles',
+                method: 'POST',
+                processData: false,
+                contentType: false,
+                data: data,
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: (response) => {
+                    let file = new File([response], "files.zip", {type: 'application/zip'});
+                    saveAs(file);
+                    resolve(true)
+                },
+                error: () => {
+                    resolve(true);
+                }
+            });
+        })
     }
 
 
@@ -1689,9 +1823,10 @@ $(() => {
         }
     });
 
+
     function addLoadingScreen(target) {
         target.html(` <div class="m-auto flex flex-row">
-                    <img class="w-12 mx-auto" src="{{ asset('images/hourglass.gif') }}?v=1" alt="">
+                    <img class="w-12 mx-auto" src="https://votvbroadcast/images/hourglass.gif?v=1" alt="">
                     <div class="border-3 border-solid p-1 w-100 h-12 flex flex-row">
                         <div class="h-full loadingBar" style="background-color: #F8FE50;"></div>
                     </div>

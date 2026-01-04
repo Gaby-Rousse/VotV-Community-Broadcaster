@@ -20,6 +20,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
+use ZipArchive;
 
 class MediaController extends Controller
 {
@@ -311,7 +313,7 @@ class MediaController extends Controller
                     $mime = $cover->getMimeType();
                     $ext = explode('/', $cover->getMimeType())[1];
                     $coverFileName = md5_file($path) . '.' . $ext;
-                
+
                     //Is the cover an image?
                     if (str_starts_with($mime, 'image/')) {
                         //On vérifie qu'une image avec ce nom n'existe pas. S'il y a le même nom on va réutiliser l'image du serveur, l'écrire au fichier et la BD.
@@ -591,5 +593,76 @@ class MediaController extends Controller
         return json_encode($message);
     }
 
+    /**
+     * Generate an Online.txt file with the given filenames
+     */
+    public function generateOnlineTXT(Request $request)
+    {
+        $online = "";
+        $filenames = collect(explode(',', $request->input('filenames')));
+        $values = DB::table(Functions::retrieveDestinationTable())->select('filename', 'type', 'title', 'artist', 'approved')->whereIn('filename', $filenames)->where('approved', 1)->get();
+        foreach ($values as $value) {
+            switch ($value->type) {
+                case 'media':
+                    $folder = 'medias';
+                    break;
+                case 'event':
+                    $folder = 'events';
+                    break;
+                case 'ad':
+                    $folder = 'advertisements';
+                    break;
+                case 'segue':
+                    $folder = 'segues';
+                    break;
+            }
+            $path = url('/uploads/' . Functions::retrieveDestinationTable() . '/' . $folder . '/' . $value->filename);
+
+            $online .= trim($value->artist) . ' - ' . trim($value->title) . "\n";
+            $online .= $path . "\n";
+        }
+        log::info($online);
+        return $online;
+    }
+
+    public function downloadAllSelectedFiles(Request $request)
+    {
+        //https://dev.to/asif_sheikh_d7d74ce8b9c9d/create-zip-file-using-php-4b31
+        $zip = new ZipArchive();
+
+        //temporary file like the covers
+        $tempFile = tempnam(sys_get_temp_dir(), 'zip');
+
+        $filenames = collect(explode(',', $request->input('filenames')));
+        $values = DB::table(Functions::retrieveDestinationTable())->select('filename', 'type', 'title', 'artist')->whereIn('filename', $filenames)->get();
+        log::info($values);
+
+        if ($zip->open($tempFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+            foreach ($values as $value) {
+                switch ($value->type) {
+                    case 'media':
+                        $folder = 'medias';
+                        break;
+                    case 'event':
+                        $folder = 'events';
+                        break;
+                    case 'ad':
+                        $folder = 'advertisements';
+                        break;
+                    case 'segue':
+                        $folder = 'segues';
+                        break;
+                }
+
+                $zip->addFile(public_path('/uploads/' . Functions::retrieveDestinationTable() . '/' . $folder . '/' . $value->filename), $value->filename);
+            }
+
+
+        }
+        $zip->close();
+        return response()->download($tempFile, 'files.zip', [
+            'Content-Type' => 'application/zip',
+        ])->deleteFileAfterSend(true);
+    }
 }
 

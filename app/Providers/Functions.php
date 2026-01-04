@@ -113,7 +113,8 @@ class Functions
                 $info = $thisFileInfo['tags']['id3v2'];
         } else if ($ext == 'mp4') {
             if (isset($thisFileInfo['tags']))
-                $info = $thisFileInfo['tags']['quicktime'];
+                if (isset($thisFileInfo['tags']['quicktime']))
+                    $info = $thisFileInfo['tags']['quicktime'];
         }
 
         //Default values
@@ -265,7 +266,7 @@ class Functions
      * Retrieve the table according to the value stored in the session
      * @return string
      */
-    static function retrieveDestinationTable()
+    static function retrieveDestinationTable(): string
     {
         $table = session('media_type');
         if (!$table) {
@@ -431,7 +432,7 @@ class Functions
     static function validateFile(string $filepath): bool
     {
         $escapedFilepath = escapeshellarg($filepath);
-        $cmd = "ffmpeg -v error -i $escapedFilepath -c copy -f null - > /dev/null 2>&1";
+        $cmd = "ffmpeg -v error -i $escapedFilepath -f null - > /dev/null 2>&1";
         exec($cmd, $output, $return_var);
         return $return_var == 0;
     }

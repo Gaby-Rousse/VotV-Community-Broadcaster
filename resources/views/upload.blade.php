@@ -4,6 +4,30 @@
 <input type="hidden" id="approvedMaxPages" value="{{$approvedMaxPages}}">
 <input type="hidden" id="pendingMaxPages" value="{{$pendingMaxPages}}">
 
+<div id="batchMenu" class="z-10 bg-black px-1 hidden absolute top-0 w-full h-14 border-3">
+    <div class="dos flex gap-1 flex-row">Files selected:
+        <div class="dos selectedCount">0</div>
+    </div>
+    <div class="flex flex-row gap-1 m-auto mr-0">
+        <img class="size-10 border-1 border-solid hover:cursor-pointer editFiles"
+             style="border-color: #F8FE50" src={{asset('images/pencil.png')}} alt="edit"
+             title="Edit partially the selected files">
+        <img class="size-10 border-1 border-solid hover:cursor-pointer deleteFiles"
+             style="border-color: #F8FE50" src={{asset('images/trash.png')}} alt="delete"
+             title="Delete the selected files">
+        <img class="size-10 downloadFiles border-1 border-solid hover:cursor-pointer" style="border-color: #F8FE50"
+             src={{asset('images/download.png')}} alt="download"
+             title="Download the selected files">
+        <img class="size-10 generateList border-1 border-solid hover:cursor-pointer" style="border-color: #F8FE50"
+             src={{asset('images/generateList.png')}} alt="generateList"
+             title="Generate an online.txt with the selected files">
+        <img class="m-auto closeSelected size-10 border-1 border-solid hover:cursor-pointer mr-0"
+             src="{{asset('images/cross.png')}}" alt="" style="border-color:#F8FE50"
+             title="Close this tab and reset the selected files">
+    </div>
+
+
+</div>
 
 @if(!Auth::check())
     <div id="overlay" class="flex fixed w-full h-full top-0 left-0 right-0 bottom-0 z-50 hover:cursor-pointer"
@@ -201,6 +225,7 @@
                 @include('toggleableScreens.musics.upload')
                 @include('toggleableScreens.musics.delete')
                 @include('toggleableScreens.musics.edit')
+                @include('toggleableScreens.musics.editBatch')
                 @include('toggleableScreens.musics.loading')
                 @include('toggleableScreens.musics.report')
             @endauth
