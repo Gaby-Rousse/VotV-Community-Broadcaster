@@ -14,8 +14,8 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
             integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jscroll/2.4.1/jquery.jscroll.min.js"></script>
-    <script src="{{asset("/scripts/autoRefreshPanel.js?v=0.9")}}"></script>
-    <script src="{{asset("scripts/votvDropdown.js?v=0.7")}}"></script>
+    <script src="{{asset("/scripts/autoRefreshPanel.js?v=1.0")}}"></script>
+    <script src="{{asset("scripts/votvDropdown.js?v=0.8")}}"></script>
     <title>{{$title}}</title>
     @if($title == "VOTV Community Broadcaster")
         <meta content="VOTV Community Broadcaster" property="og:title"/>

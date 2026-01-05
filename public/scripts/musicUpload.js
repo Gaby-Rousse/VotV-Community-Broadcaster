@@ -469,6 +469,7 @@ $(() => {
     $('.editFiles').on('click', () => {
         batchEditForm[0].reset();
         toggleScreen(batchEditForm);
+        $('#b_currentCover').attr('src', '');
         $('#destinationBatchDropdown' + ' .dropdownTitle').text('Unchanged');
         $('#frequencyBatchDropdown' + ' .dropdownTitle').text('Unchanged');
 
@@ -1940,5 +1941,18 @@ $(() => {
             closeBatchMenu();
         })
     }
+
+    //### Image preview
+    function updateCover(target, file) {
+        target.attr('src', window.URL.createObjectURL(file));
+    }
+
+    $('#cover').on('change', function () {
+        updateCover($('#currentCover'), $(this)[0].files[0]);
+    })
+
+    $('#b_cover').on('change', function () {
+        updateCover($('#b_currentCover'), $(this)[0].files[0]);
+    })
 
 })

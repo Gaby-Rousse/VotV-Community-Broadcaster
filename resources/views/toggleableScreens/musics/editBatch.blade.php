@@ -66,7 +66,7 @@
 
 
         <div class="flex flex-row flex-grow">
-            <img id="currentCover" class="w-12 cover" alt="">
+            <img id="b_currentCover" class="w-12 cover" alt="">
             <div class="hidden xl:flex flex-col ml-1">
                 <div class="dos">Editing:</div>
                 <div class="flex gap-1 flex-row">

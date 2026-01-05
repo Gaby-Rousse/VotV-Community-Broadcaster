@@ -13,17 +13,25 @@
                    target="_blank">discord</a> rules)
             </li>
             <li>Fix display for tablet users</li>
-            <li>Allow users to create a custom broadcast/playlist (?!)</li>
             <li>Segmented programmes</li>
             <li>Avoiding Repetitions (p84 of cookbook)(not soon)</li>
             <li>Segmented uploader (solve 100mb limit)</li>
             <li>Voting system</li>
             <li>Rework suggestions and bugs forms</li>
             <li>Status page for streams</li>
-            <li>Metadata for video using custom <a class="url hover:!text-blue-500 !text-blue-400"
-                                                   href="https://www.liquidsoap.info/doc-dev/icy_metadata.html"
-                                                   target="_blank">icy_metadata</a></li>
-            <li>Batch editing</li>
+        </ul>
+    </div>
+    <div class=" text-xl sm:text-2xl md:text-3xl lg:text-4xl subtitle sm:text-left text-center">v0.3.7 (01/05/2026)
+    </div>
+    <div class="flex flex-col gap-2 mt-2 mb-6 items-center sm:items-baseline ">
+        <ul>
+            <li>Monitoring tab now returns a filename</li>
+            <li>Monitoring tab is now in UTF-8!</li>
+            <li>Added batch actions:</li>
+            <li class="ml-5">Users can now generate a online.txt file with the files they select</li>
+            <li class="ml-5">Users can now edit, delete and download several files at once</li>
+            <li>A preview of the cover appears when editing a file</li>
+            <li>Several bug fixes</li>
         </ul>
     </div>
     <div class=" text-xl sm:text-2xl md:text-3xl lg:text-4xl subtitle sm:text-left text-center">v0.3.6.1 (12/28/2025)

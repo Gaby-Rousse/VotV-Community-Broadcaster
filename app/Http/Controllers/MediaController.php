@@ -290,6 +290,11 @@ class MediaController extends Controller
             $filename = $validated['filename'];
 
             $mediaHelper = Functions::generateMediaHelper($filename);
+
+            if ($mediaHelper->media->type != $validated['type']) {
+                $validated['destination'] = "None";
+            }
+
             //Take the old destination and the new one and regenerate both playlist
             $oldDestination = $mediaHelper->media->destination;
             $newDestination = $validated['destination'];
@@ -345,9 +350,17 @@ class MediaController extends Controller
             //If the file is already approved we need to move it now.
             //Otherwise, approving it will move it.
             if (!Queries::isPending($filename)) {
-                $sourceFile = $mediaHelper->mediaPath;
-                $destinationPath = public_path('uploads/' . $mediaHelper->table . '/' . $validated['type'] . 's/');
-                rename($sourceFile, $destinationPath . pathinfo($sourceFile, PATHINFO_BASENAME));
+                if ($mediaHelper->media->type != $validated['type']) {
+                    $sourceFile = $mediaHelper->mediaPath;
+                    $folder = match ($validated['type']) {
+                        "media" => "medias",
+                        "ad" => "advertisements",
+                        "event" => "events",
+                        "segue" => "segues",
+                    };
+                    $destinationPath = public_path('uploads/' . $mediaHelper->table . '/' . $folder . '/');
+                    rename($sourceFile, $destinationPath . pathinfo($sourceFile, PATHINFO_BASENAME));
+                }
             }
 
             Functions::updateMetadataFromDB($filename);
@@ -368,11 +381,10 @@ class MediaController extends Controller
         if (Auth::check()) {
             $validated = $request->validate([
                 //Si quelqu'un gosse avec le hidden
-                'confirm' => 'required',
                 'filename' => 'required',
                 'reason' => '',
             ]);
-            if (strtolower($validated['confirm']) == 'y') {
+            if (strtolower($request->input('confirm')) == 'y') {
                 $filename = $validated['filename'];
                 $mediaHelper = functions::generateMediaHelper($filename);
                 //es tu le propriétaire ou admin
@@ -392,7 +404,8 @@ class MediaController extends Controller
                 } else {
                     return json_encode(['type' => 'Error', 'message' => "Not owner of the file"]);
                 }
-            }
+            } else
+                return json_encode(['type' => 'Warning', 'message' => "Confirmation required."]);
         }
 
     }
@@ -420,7 +433,7 @@ class MediaController extends Controller
                 Functions::generateDurationsPlaylist();
                 Functions::generateSafePlaylist();
 
-                
+
                 File::move(public_path('temp_uploads/pending/') . $filename, $mediaHelper->mediaPath);
                 Queries::insertNotification(new Notification(Auth::id(), $mediaHelper->media->ownerId, 'approved ' . $filename));
             }
@@ -645,8 +658,6 @@ class MediaController extends Controller
             $newValues["year"] = trim($request->input('year'));
         if (trim($request->input('description')))
             $newValues["description"] = trim($request->input('description'));
-        if (trim($request->input('destination')) !== "Unchanged")
-            $newValues["destination"] = trim($request->input('destination'));
 
         if ($request->hasFile('cover')) {
             if ($request->file('cover')->isValid()) {
@@ -664,19 +675,26 @@ class MediaController extends Controller
             }
         }
 
-
+        $count = 0;
         if ($newValues) {
             if (Auth::user()->isAdmin())
-                DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->update($newValues);
+                $count = DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->update($newValues);
             else
-                DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->where('ownerId', '=', Auth::id())->update($newValues);
+                $count = DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->where('ownerId', '=', Auth::id())->update($newValues);
+        }
+
+        if (trim($request->input('destination')) !== "Unchanged") {
+            if (Auth::user()->isAdmin())
+                $count += DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->where('type', '=', 'media')->update(['destination' => trim($request->input('destination'))]);
+            else
+                $count += DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->where('type', '=', 'media')->where('ownerId', '=', Auth::id())->update(['destination' => trim($request->input('frequency'))]);
         }
 
         if (trim($request->input('frequency')) !== "Unchanged") {
             if (Auth::user()->isAdmin())
-                DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->where('type', '=', 'event')->update(['destination' => trim($request->input('frequency'))]);
+                $count += DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->where('type', '=', 'event')->update(['destination' => trim($request->input('frequency'))]);
             else
-                DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->where('type', '=', 'event')->where('ownerId', '=', Auth::id())->update(['destination' => trim($request->input('frequency'))]);
+                $count += DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->where('type', '=', 'event')->where('ownerId', '=', Auth::id())->update(['destination' => trim($request->input('frequency'))]);
 
         }
 
@@ -692,14 +710,17 @@ class MediaController extends Controller
             }
         }
 
-
+        return json_encode(['type' => 'Info', 'message' => $count . ' file(s) updated.']);
     }
 
     public function batchDeleteSelectedFiles(Request $request)
     {
-        $filenames = collect(explode(',', $request->input('filenames')));
         if ($request->input('confirm') && strtolower($request->input('confirm')) == 'y') {
-            $values = DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->get();
+            $filenames = collect(explode(',', $request->input('filenames')));
+            if (Auth::user()->isAdmin())
+                $values = DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->get();
+            else
+                $values = DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->where('ownerId', '=', Auth::id())->get();
             if ($request->input('reason') && Auth::user()->isAdmin()) {
                 foreach ($values as $value) {
                     Queries::insertNotification(new Notification(Auth::id(), $value->ownerId, 'deleted ' . $value->filename . ' with the following reason: ' . $request->input('reason')));
