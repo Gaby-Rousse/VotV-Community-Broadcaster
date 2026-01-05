@@ -420,11 +420,8 @@ class MediaController extends Controller
                 Functions::generateDurationsPlaylist();
                 Functions::generateSafePlaylist();
 
-
+                
                 File::move(public_path('temp_uploads/pending/') . $filename, $mediaHelper->mediaPath);
-                if (!File::exists(public_path('uploads/covers/') . $mediaHelper->media->cover)) {
-                    File::move(public_path('temp_uploads/covers/') . $mediaHelper->media->cover, public_path('uploads/covers/') . $mediaHelper->media->cover);
-                }
                 Queries::insertNotification(new Notification(Auth::id(), $mediaHelper->media->ownerId, 'approved ' . $filename));
             }
         }
@@ -661,10 +658,7 @@ class MediaController extends Controller
 
                 //Is the cover an image?
                 if (str_starts_with($mime, 'image/')) {
-                    //dumass that stores the cover either in temp_uploads or uploads
-                    //you stupid af
-                    $cover->move(public_path('/temp_uploads/covers/'), $coverFileName);
-                    File::copy(public_path('/temp_uploads/covers/') . $coverFileName, public_path('/uploads/covers/') . $coverFileName);
+                    $cover->move(public_path('/uploads/covers/'), $coverFileName);
                     $newValues["cover"] = $coverFileName;
                 }
             }

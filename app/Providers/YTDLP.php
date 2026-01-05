@@ -41,7 +41,7 @@ class YTDLP
 
             $filename = Functions::formatFilename($title . $ext);
             $filepath = public_path('/temp_uploads/pending/' . $filename);
-            $coverDirectory = public_path('/temp_uploads/covers/');
+            $coverDirectory = public_path('/uploads/covers/');
             $thumbnailBase = $coverDirectory . 'thumbnail_' . uniqid();
             $coverFilepathTemp = $coverDirectory . 'temp_' . uniqid() . '.png';
 
@@ -75,7 +75,7 @@ class YTDLP
             $media = new Media($filename, $title, $artist, $finalCoverFilename, 'Unknown', 'Unknown', 'Unknown', 'None', $type, Auth::id());
             Queries::insertMedia($media, $table);
             Functions::updateMetadataFromDB($filename);
-            Queries::insertNotification(new Notification(0, Auth::id(), str_replace("'", "",$url) . ' downloaded.'));
+            Queries::insertNotification(new Notification(0, Auth::id(), str_replace("'", "", $url) . ' downloaded.'));
         }
     }
 

@@ -132,7 +132,7 @@ class Functions
                 $extension = explode("/", $coverMime)[1];
                 $extension = preg_replace('/[^a-zA-Z0-9]/', '', $extension);
                 $coverFileName = md5($coverData) . '.' . $extension;
-                $coverFilepath = public_path('/temp_uploads/covers/' . $coverFileName);
+                $coverFilepath = public_path('/uploads/covers/' . $coverFileName);
                 file_put_contents($coverFilepath, $coverData);
             }
         }
@@ -212,10 +212,7 @@ class Functions
     {
         $mediaHelper = self::generateMediaHelper($filename);
 
-        if ($mediaHelper->media->approved == 0)
-            $coverFilePath = public_path('/temp_uploads/covers/');
-        else
-            $coverFilePath = public_path('/uploads/covers/');
+        $coverFilePath = public_path('/uploads/covers/');
 
         $tags = [
             'title' => array($mediaHelper->media->title),
@@ -230,10 +227,8 @@ class Functions
 
     static function updateMetadataFromMediaObject($filepath, $media)
     {
-        if ($media->approved == 0)
-            $coverFilePath = public_path('/temp_uploads/covers/');
-        else
-            $coverFilePath = public_path('/uploads/covers/');
+
+        $coverFilePath = public_path('/uploads/covers/');
 
         $tags = [
             'title' => array($media->title),
@@ -257,25 +252,14 @@ class Functions
         $folder = self::retrieveDestinationTable();
 
         $media = Queries::receiveMedia($filename);
-
-        $mediaPath = '';
-        if (Queries::isPending($filename, $folder) && !$approving) {
-            $mediaPath = public_path('/temp_uploads/pending/' . $filename);
-            $coverPath = public_path('/temp_uploads/covers/');
-            $media->isPending = true;
-        } else {
-            if ($media->type === 'media') {
-                $mediaPath = public_path('/uploads/' . $folder . '/medias/' . $filename);
-            } else if ($media->type === 'event') {
-                $mediaPath = public_path('/uploads/' . $folder . '/events/' . $filename);
-            } else if ($media->type === 'ad') {
-                $mediaPath = public_path('/uploads/' . $folder . '/advertisements/' . $filename);
-            } else if ($media->type === 'segue') {
-                $mediaPath = public_path('/uploads/' . $folder . '/segues/' . $filename);
-            }
-            $coverPath = public_path('/uploads/covers/');
-            $media->isPending = false;
+        //overrider
+        if ($approving) {
+            $media->approved = 1;
         }
+
+        $coverPath = public_path('/uploads/covers/');
+        $mediaPath = self::buildFilePath($filename, $folder, $media->type, $media->approved, false);
+        $media->isPending = (Queries::isPending($filename, $folder) && !$approving);
         return new MediaHelper($media, $folder, $mediaPath, $coverPath);
     }
 

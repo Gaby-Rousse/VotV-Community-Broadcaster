@@ -824,11 +824,7 @@ $(() => {
                     toggleScreen($("form[action|='/uploadMedia']"))
                     log("Err.")
                 } else {
-                    let isPending = response.isPending;
                     let coverPath = '/uploads/covers/';
-                    if (isPending) {
-                        coverPath = '/temp_uploads/covers/'
-                    }
                     fileType = response.type;
                     hide(channelDiv);
                     if (response.type === 'media') {
@@ -1083,7 +1079,6 @@ $(() => {
 
                     let musicPath = '/uploads/audios/medias/';
                     if (isPending) {
-                        coverPath = '/temp_uploads/covers/'
                         musicPath = '/temp_uploads/pending/';
                     } else {
                         let type = response.type;
@@ -1103,7 +1098,6 @@ $(() => {
                     coverPath = '/uploads/covers/';
                     let videoPath = '/uploads/videos/medias/';
                     if (isPending) {
-                        coverPath = '/temp_uploads/covers/'
                         videoPath = '/temp_uploads/pending/';
                     } else {
                         let type = response.type;

@@ -76,7 +76,7 @@ class Cobalt
                 ini_set('user_agent', 'Mozilla/4.0 (compatible; MSIE 6.0)');
 
                 $filepath = public_path('/temp_uploads/pending/' . $filename);
-                $coverFilepath = public_path('/temp_uploads/covers/' . $coverFilename);
+                $coverFilepath = public_path('/uploads/covers/' . $coverFilename);
 
                 if ($output['type'] == 'audio/mpeg') {
 
