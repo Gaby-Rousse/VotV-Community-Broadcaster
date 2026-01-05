@@ -16,7 +16,7 @@
             }
         @endphp
         <div class=" h-12 w-full flex flex-row " style="border-bottom: solid white 1px">
-            <div class="w-12 h-12 relative">
+            <div class="flex-shrink-0 w-12 h-12 relative">
                 <div class="absolute hidden pointer-events-none w-full h-full bg-[#0000004d] top-0 left-0 ">
                     <div class="absolute -top-1 right-0.5 dos">*</div>
                 </div>

@@ -88,10 +88,10 @@ class MediaController extends Controller
             if (DB::table(Functions::retrieveDestinationTable())->where('filename', $filename)->exists()) {
                 if (DB::table('favorites')->where('filename', $filename)->where('userId', Auth::id())->exists()) {
                     DB::table('favorites')->where('filename', $filename)->where('userId', Auth::id())->delete();
-                    //return json_encode($filename . ' removed from favorites');
+                    return json_encode(['type' => 'info', 'message' => $filename . ' removed from favorites']);
                 } else {
                     DB::table('favorites')->insert(['filename' => $filename, 'userId' => Auth::id()]);
-                    //return json_encode($filename . ' added to favorites');
+                    return json_encode(['type' => 'info', 'message' => $filename . ' added to favorites']);
                 }
             } else {
                 echo json_encode(['type' => 'Error', 'message' => "File doesn't exists!"]);
@@ -705,10 +705,17 @@ class MediaController extends Controller
     {
         $filenames = collect(explode(',', $request->input('filenames')));
         if ($request->input('confirm') && strtolower($request->input('confirm')) == 'y') {
+            $values = DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->get();
             if ($request->input('reason') && Auth::user()->isAdmin()) {
-                $values = DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->get();
                 foreach ($values as $value) {
                     Queries::insertNotification(new Notification(Auth::id(), $value->ownerId, 'deleted ' . $value->filename . ' with the following reason: ' . $request->input('reason')));
+                }
+            }
+            foreach ($values as $value) {
+                try {
+                    unlink(trim(Functions::buildFilePath($value->filename, Functions::retrieveDestinationTable(), $value->type, $value->approved, false)));
+                } catch (\Exception $e) {
+                    return json_encode(['type' => 'Error', 'message' => $e->getMessage()]);
                 }
             }
             if (Auth::user()->isAdmin())

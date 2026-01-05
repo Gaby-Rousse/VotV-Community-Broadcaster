@@ -2,7 +2,16 @@
 
     @foreach($medias as $media)
         <div class=" h-12 w-full flex flex-row " style="border-bottom: solid white 1px">
-            <img class="w-12 cover" loading="lazy" src="{{asset('temp_uploads/covers/' . $media->cover)}}" alt="cover">
+            <div class="flex-shrink-0 w-12 h-12 relative">
+                <div class="absolute hidden pointer-events-none w-full h-full bg-[#0000004d] top-0 left-0 ">
+                    <div class="absolute -top-1 right-0.5 dos">*</div>
+                </div>
+
+                <img filename="{{$media->filename}}" class="w-12 h-12 hover:cursor-pointer selectAction cover "
+                     loading="lazy"
+                     src="{{asset('uploads/covers/' . $media->cover)}}"
+                     alt="cover">
+            </div>
             {{-- Pour permettre un flex-grow de réduire en dessous de la taille de son contenu, min-width = 0 --}}
             <div class="ml-1 flex flex-col flex-grow min-w-0">
                 <div class="dos truncate">{{$media->artist}}</div>
@@ -32,8 +41,8 @@
 
 <script>
 
-        $('.count2').text({{$count}});
-        $('#pendingMaxPages').val({{ceil($count /10)}})
+    $('.count2').text({{$count}});
+    $('#pendingMaxPages').val({{ceil($count /10)}})
 
 </script>
 

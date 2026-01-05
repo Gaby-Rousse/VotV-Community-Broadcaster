@@ -495,9 +495,9 @@ class Functions
     {
         if ($approved == 0) {
             if ($url)
-                return url("/temp_uploads/pending" . $filename);
+                return url("/temp_uploads/pending/" . $filename);
             else
-                return public_path("/temp_uploads/pending" . $filename);
+                return public_path("/temp_uploads/pending/" . $filename);
         } else {
             $path = '/uploads/' . $table . '/';
             $folder = match ($type) {

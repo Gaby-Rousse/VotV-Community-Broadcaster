@@ -25,7 +25,7 @@
         <div class="flex flex-grow flex-row">
             <label for="b_reason" class="dos ml-1 hover:cursor-pointer ">Reason: </label>
             <textarea id="b_reason" type="text" class="dos border-none hover:cursor-pointer flex-grow ml-0.5"
-                      name="b_reason"></textarea>
+                      name="reason"></textarea>
         </div>
     @endif
 

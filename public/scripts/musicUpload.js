@@ -243,18 +243,14 @@ $(() => {
      * @event
      */
     favorite.on("click", function () {
-        let message
         MusicsPanel.command('/toggleFavorite?filename=' + encodeURIComponent(lastFilename));
         if ($(this).attr('src') === 'https://votvbroadcast.com/images/empty_heart.png') {
-            message = `${lastFilename} added to favorites!`
+
             $(this).attr('src', 'https://votvbroadcast.com/images/filled_heart.png')
         } else {
-            message = `${lastFilename} removed from favorites!`
+
             $(this).attr('src', 'https://votvbroadcast.com/images/empty_heart.png')
         }
-
-        popin('Info', message);
-
     })
 
     /**
@@ -332,8 +328,9 @@ $(() => {
          * Open the file in the editing tab
          * @event
          */
-        $(".editAction").off('click');
-        $(".editAction").click(function () {
+        let editAction = $(".editAction");
+        editAction.off('click');
+        editAction.on("click", function () {
             let filename = $(this).attr("filename")
             ajaxRequestMedia(filename);
         });
@@ -342,8 +339,9 @@ $(() => {
          * Open the file in the deleting tab
          * @event
          */
-        $(".deleteAction").off('click');
-        $(".deleteAction").click(function () {
+        let deleteAction = $(".deleteAction");
+        deleteAction.off('click');
+        deleteAction.on("click", function () {
             let filename = $(this).attr("filename")
             toggleScreen($("form[action|='/deleteMedia']"))
             $("#hiddenFileToDelete").val(filename);
@@ -355,8 +353,9 @@ $(() => {
          * Open the file in the media player
          * @event
          */
-        $(".playAction").off('click');
-        $(".playAction").click(function () {
+        let playAction = $(".playAction")
+        playAction.off('click');
+        playAction.on("click", function () {
             let filename = $(this).attr("filename")
             toggleScreen($('#playScreen'))
             //Requête ajax seulement si la musique n'est pas déjà chargé
@@ -369,8 +368,9 @@ $(() => {
          * Approve a file
          * @event
          */
-        $(".approveAction").off('click');
-        $(".approveAction").click(function () {
+        let approveAction = $(".approveAction")
+        approveAction.off('click');
+        approveAction.on("click", function () {
             let filename = $(this).attr("filename")
             toggleScreen($("#loadingScreen"))
             approveMedia(filename).then(() => {
@@ -385,8 +385,9 @@ $(() => {
          * Mark a file as selected
          * @event
          */
-        $('.selectAction').off('click');
-        $('.selectAction').on('click', function () {
+        let selectAction = $('.selectAction')
+        selectAction.off('click');
+        selectAction.on('click', function () {
             let prev = $(this).prev();
             let filename = $(this).attr("filename")
             if (prev.hasClass('hidden')) {
