@@ -12,6 +12,10 @@ let NotificationsPanel;
 
 let DestinationDropdown;
 
+let DestinationBatchDropdown
+
+let FrequencyBatchDropdown
+
 let ChannelDropdown;
 
 let WatchingChannelsDropdown
@@ -177,6 +181,20 @@ $(() => {
                     importMedia();
                 }
             });
+        } else if (target.is($("form[action|='/updateBatch']"))) {
+            $(document).on('keypress', function (e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    submitBatchEditForm()
+                }
+            });
+        } else if (target.is($("form[action|='/deleteBatch']"))) {
+            $(document).on('keypress', function (e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    submitBatchDeleteForm()
+                }
+            });
         }
     }
 
@@ -314,6 +332,7 @@ $(() => {
          * Open the file in the editing tab
          * @event
          */
+        $(".editAction").off('click');
         $(".editAction").click(function () {
             let filename = $(this).attr("filename")
             ajaxRequestMedia(filename);
@@ -323,6 +342,7 @@ $(() => {
          * Open the file in the deleting tab
          * @event
          */
+        $(".deleteAction").off('click');
         $(".deleteAction").click(function () {
             let filename = $(this).attr("filename")
             toggleScreen($("form[action|='/deleteMedia']"))
@@ -335,6 +355,7 @@ $(() => {
          * Open the file in the media player
          * @event
          */
+        $(".playAction").off('click');
         $(".playAction").click(function () {
             let filename = $(this).attr("filename")
             toggleScreen($('#playScreen'))
@@ -348,6 +369,7 @@ $(() => {
          * Approve a file
          * @event
          */
+        $(".approveAction").off('click');
         $(".approveAction").click(function () {
             let filename = $(this).attr("filename")
             toggleScreen($("#loadingScreen"))
@@ -363,6 +385,7 @@ $(() => {
          * Mark a file as selected
          * @event
          */
+        $('.selectAction').off('click');
         $('.selectAction').on('click', function () {
             let prev = $(this).prev();
             let filename = $(this).attr("filename")
@@ -384,7 +407,7 @@ $(() => {
             if (selectedFiles.length === 1) {
                 show(batchMenu)
             } else if (selectedFiles.length < 1) {
-                hide(batchMenu)
+                closeBatchMenu()
             }
 
         });
@@ -405,6 +428,7 @@ $(() => {
     }
 
     function closeBatchMenu() {
+        toggleScreen($('#playScreen'))
         hide(batchMenu)
         unmarkEverything()
     }
@@ -417,7 +441,7 @@ $(() => {
         popin('info', 'Generating online.txt, please wait...')
         let data = new FormData();
         data.append("filenames", selectedFiles)
-        closeBatchMenu();
+
         ajaxGenerateAndDownloadOnlineTXT(data).then(() => {
             popin('info', 'online.txt generated!')
         })
@@ -427,19 +451,30 @@ $(() => {
         popin('info', 'Generating a .zip file, please wait...')
         let data = new FormData();
         data.append("filenames", selectedFiles)
-        closeBatchMenu();
+
         ajaxDownloadAllSelectedFiles(data).then(() => {
             popin('info', '.zip file generated!')
         })
     })
 
+    let batchDeleteForm = $("form[action|='/deleteBatch']")
     $('.deleteFiles').on('click', () => {
-        popin('info', 'W.I.P')
+        batchDeleteForm[0].reset();
+        toggleScreen(batchDeleteForm);
     })
 
+    //edit files form
+    let batchEditForm = $("form[action|='/updateBatch']")
     $('.editFiles').on('click', () => {
-        popin('info', 'W.I.P')
+        batchEditForm[0].reset();
+        toggleScreen(batchEditForm);
+        $('#destinationBatchDropdown' + ' .dropdownTitle').text('Unchanged');
+        $('#frequencyBatchDropdown' + ' .dropdownTitle').text('Unchanged');
+
+        $('#batchDestination').val('Unchanged')
+        $('#batchFrequency').val('Unchanged')
     })
+
 
     function ajaxGenerateAndDownloadOnlineTXT(data) {
         console.log(data)
@@ -1608,6 +1643,7 @@ $(() => {
      * @param {string} type - The folder to display (medias, events, ads, segues)
      */
     function setListing(type) {
+        console.log('setType:' + type)
         MusicsPanel.command("/setType?type=" + type);
     }
 
@@ -1626,6 +1662,7 @@ $(() => {
     $('#listWhere button:contains("Musics"), #listWhere button:contains("Videos")').click(function () {
         toggleButton(listWhere, $(this))
         setListing("media")
+
         if (media_type === 'audios') {
             ChannelDropdown.updateOptions(['Everything', 'None', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Metal', 'Pop', 'Rock', 'Video Game', 'Weird'])
         } else if (media_type === 'videos') {
@@ -1867,5 +1904,46 @@ $(() => {
     // Start observing the target node for configured mutations
     observer.observe(targetNode, config);
 
+
+    //#### Batch editing
+
+
+    DestinationBatchDropdown = new VotvDropdown('destinationBatchDropdown', 'batchDestination', null, 20, "Unchanged")
+    if (media_type === 'audios') {
+        DestinationBatchDropdown.updateOptions(['Unchanged', 'Everything', 'SFW', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Metal', 'Pop', 'Rock', 'Video Game', 'Weird'])
+    } else if (media_type === 'videos') {
+        DestinationBatchDropdown.updateOptions(['Unchanged', 'Everything', 'SFW', 'Animations', 'Documentaries', 'Horror', "Let's Plays", 'Lt30secs', 'Lt5mins', 'Memes', 'News', 'Shows', 'Vlogs'])
+    }
+
+    FrequencyBatchDropdown = new VotvDropdown('frequencyBatchDropdown', 'batchFrequency', null, 10, "Unchanged")
+    FrequencyBatchDropdown.updateOptions(['Unchanged', 'Strange [4%]', 'Weird [2%]', 'Bizarre [1%]', 'Outlandish [0.4%]', 'Unfathomable [0.2%]', 'Otherworldly [0.1%]', 'Transcendental [0.04%]'])
+
+    $('#updateBatchButton').on('click', () => {
+        submitBatchEditForm()
+    })
+
+    function submitBatchEditForm() {
+        toggleScreen($("#loadingScreen"))
+        const formData = new FormData($("form[action|='/updateBatch']")[0]);
+        formData.set('filenames', selectedFiles);
+        hide(batchMenu)
+        MusicsPanel.postCommand('/updateBatch', formData).then(() => {
+            PendingPanel.refresh(true);
+            toggleScreen($("#playScreen"))
+            closeBatchMenu();
+        })
+    }
+
+    function submitBatchDeleteForm() {
+        toggleScreen($("#loadingScreen"))
+        const formData = new FormData($("form[action|='/deleteBatch']")[0]);
+        formData.set('filenames', selectedFiles);
+        hide(batchMenu)
+        MusicsPanel.postCommand('/deleteBatch', formData).then(() => {
+            PendingPanel.refresh(true);
+            toggleScreen($("#playScreen"))
+            closeBatchMenu();
+        })
+    }
 
 })

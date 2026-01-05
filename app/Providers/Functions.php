@@ -228,6 +228,24 @@ class Functions
         self::updateMetadata($tags, $mediaHelper->mediaPath);
     }
 
+    static function updateMetadataFromMediaObject($filepath, $media)
+    {
+        if ($media->approved == 0)
+            $coverFilePath = public_path('/temp_uploads/covers/');
+        else
+            $coverFilePath = public_path('/uploads/covers/');
+
+        $tags = [
+            'title' => array($media->title),
+            'artist' => array($media->artist),
+            'genre' => array($media->genre),
+            'year' => array($media->year),
+            'comment' => array($media->description),
+            'cover' => $coverFilePath . $media->cover,
+        ];
+        self::updateMetadata($tags, $filepath);
+    }
+
     /**
      * Creates a mediaHelper (see class)
      * @param string $filename
@@ -471,5 +489,28 @@ class Functions
             }
         }
         return session('last_update_' . $table) != DB::table($table)->orderBy('updated_at', 'desc')->limit(1)->value('updated_at');
+    }
+
+    static function buildFilePath(string $filename, string $table, string $type, int $approved, bool $url): string
+    {
+        if ($approved == 0) {
+            if ($url)
+                return url("/temp_uploads/pending" . $filename);
+            else
+                return public_path("/temp_uploads/pending" . $filename);
+        } else {
+            $path = '/uploads/' . $table . '/';
+            $folder = match ($type) {
+                "media" => "medias",
+                "event" => "events",
+                "ad" => "advertisements",
+                "segue" => "segues",
+            };
+            $path .= $folder . '/' . $filename;
+            if ($url)
+                return url($path);
+            else
+                return public_path($path);
+        }
     }
 }

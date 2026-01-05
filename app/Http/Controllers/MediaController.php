@@ -602,26 +602,9 @@ class MediaController extends Controller
         $filenames = collect(explode(',', $request->input('filenames')));
         $values = DB::table(Functions::retrieveDestinationTable())->select('filename', 'type', 'title', 'artist', 'approved')->whereIn('filename', $filenames)->where('approved', 1)->get();
         foreach ($values as $value) {
-            switch ($value->type) {
-                case 'media':
-                    $folder = 'medias';
-                    break;
-                case 'event':
-                    $folder = 'events';
-                    break;
-                case 'ad':
-                    $folder = 'advertisements';
-                    break;
-                case 'segue':
-                    $folder = 'segues';
-                    break;
-            }
-            $path = url('/uploads/' . Functions::retrieveDestinationTable() . '/' . $folder . '/' . $value->filename);
-
             $online .= trim($value->artist) . ' - ' . trim($value->title) . "\n";
-            $online .= $path . "\n";
+            $online .= Functions::buildFilePath($value->filename, Functions::retrieveDestinationTable(), $value->type, 1, true) . "\n";
         }
-        log::info($online);
         return $online;
     }
 
@@ -635,26 +618,14 @@ class MediaController extends Controller
 
         $filenames = collect(explode(',', $request->input('filenames')));
         $values = DB::table(Functions::retrieveDestinationTable())->select('filename', 'type', 'title', 'artist')->whereIn('filename', $filenames)->get();
-        log::info($values);
 
         if ($zip->open($tempFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
             foreach ($values as $value) {
-                switch ($value->type) {
-                    case 'media':
-                        $folder = 'medias';
-                        break;
-                    case 'event':
-                        $folder = 'events';
-                        break;
-                    case 'ad':
-                        $folder = 'advertisements';
-                        break;
-                    case 'segue':
-                        $folder = 'segues';
-                        break;
-                }
+                try {
+                    $zip->addFile(Functions::buildFilePath($value->filename, Functions::retrieveDestinationTable(), $value->type, 1, false), $value->filename);
+                } catch (\Throwable $adressMe) {
 
-                $zip->addFile(public_path('/uploads/' . Functions::retrieveDestinationTable() . '/' . $folder . '/' . $value->filename), $value->filename);
+                }
             }
 
 
@@ -664,5 +635,90 @@ class MediaController extends Controller
             'Content-Type' => 'application/zip',
         ])->deleteFileAfterSend(true);
     }
+
+    public function batchEditSelectedFiles(Request $request)
+    {
+        $filenames = collect(explode(',', $request->input('filenames')));
+        $newValues = [];
+        if (trim($request->input('artist')))
+            $newValues["artist"] = trim($request->input('artist'));
+        if (trim($request->input('genre')))
+            $newValues["genre"] = trim($request->input('genre'));
+        if (trim($request->input('year')))
+            $newValues["year"] = trim($request->input('year'));
+        if (trim($request->input('description')))
+            $newValues["description"] = trim($request->input('description'));
+        if (trim($request->input('destination')) !== "Unchanged")
+            $newValues["destination"] = trim($request->input('destination'));
+
+        if ($request->hasFile('cover')) {
+            if ($request->file('cover')->isValid()) {
+                $cover = $request->file('cover');
+                $path = $cover->getRealPath();
+                $mime = $cover->getMimeType();
+                $ext = explode('/', $cover->getMimeType())[1];
+                $coverFileName = md5_file($path) . '.' . $ext;
+
+                //Is the cover an image?
+                if (str_starts_with($mime, 'image/')) {
+                    //dumass that stores the cover either in temp_uploads or uploads
+                    //you stupid af
+                    $cover->move(public_path('/temp_uploads/covers/'), $coverFileName);
+                    File::copy(public_path('/temp_uploads/covers/') . $coverFileName, public_path('/uploads/covers/') . $coverFileName);
+                    $newValues["cover"] = $coverFileName;
+                }
+            }
+        }
+
+
+        if ($newValues) {
+            if (Auth::user()->isAdmin())
+                DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->update($newValues);
+            else
+                DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->where('ownerId', '=', Auth::id())->update($newValues);
+        }
+
+        if (trim($request->input('frequency')) !== "Unchanged") {
+            if (Auth::user()->isAdmin())
+                DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->where('type', '=', 'event')->update(['destination' => trim($request->input('frequency'))]);
+            else
+                DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->where('type', '=', 'event')->where('ownerId', '=', Auth::id())->update(['destination' => trim($request->input('frequency'))]);
+
+        }
+
+        //Update metadata only if I updated something related to the metadata.
+        if (array_key_exists('artist', $newValues) || array_key_exists('genre', $newValues) || array_key_exists('year', $newValues) || array_key_exists('description', $newValues) || array_key_exists('cover', $newValues)) {
+            if (Auth::user()->isAdmin())
+                $values = DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->get();
+            else
+                $values = DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->where('ownerId', '=', Auth::id())->get();
+            foreach ($values as $value) {
+                $filepath = Functions::buildFilePath($value->filename, Functions::retrieveDestinationTable(), $value->type, 1, false);
+                Functions::updateMetadataFromMediaObject($filepath, $value);
+            }
+        }
+
+
+    }
+
+    public function batchDeleteSelectedFiles(Request $request)
+    {
+        $filenames = collect(explode(',', $request->input('filenames')));
+        if ($request->input('confirm') && strtolower($request->input('confirm')) == 'y') {
+            if ($request->input('reason') && Auth::user()->isAdmin()) {
+                $values = DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->get();
+                foreach ($values as $value) {
+                    Queries::insertNotification(new Notification(Auth::id(), $value->ownerId, 'deleted ' . $value->filename . ' with the following reason: ' . $request->input('reason')));
+                }
+            }
+            if (Auth::user()->isAdmin())
+                $count = DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->delete();
+            else
+                $count = DB::table(Functions::retrieveDestinationTable())->whereIn('filename', $filenames)->where('ownerId', '=', Auth::id())->delete();
+            return json_encode(['type' => 'Info', 'message' => $count . ' file(s) deleted.']);
+        }
+        return json_encode(['type' => 'Warning', 'message' => "Confirmation required."]);
+    }
+
 }
 

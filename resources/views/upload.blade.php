@@ -9,12 +9,14 @@
         <div class="dos selectedCount">0</div>
     </div>
     <div class="flex flex-row gap-1 m-auto mr-0">
-        <img class="size-10 border-1 border-solid hover:cursor-pointer editFiles"
-             style="border-color: #F8FE50" src={{asset('images/pencil.png')}} alt="edit"
-             title="Edit partially the selected files">
-        <img class="size-10 border-1 border-solid hover:cursor-pointer deleteFiles"
-             style="border-color: #F8FE50" src={{asset('images/trash.png')}} alt="delete"
-             title="Delete the selected files">
+        @if(Auth::check())
+            <img class="size-10 border-1 border-solid hover:cursor-pointer editFiles"
+                 style="border-color: #F8FE50" src={{asset('images/pencil.png')}} alt="edit"
+                 title="Edit partially the selected files">
+            <img class="size-10 border-1 border-solid hover:cursor-pointer deleteFiles"
+                 style="border-color: #F8FE50" src={{asset('images/trash.png')}} alt="delete"
+                 title="Delete the selected files">
+        @endif
         <img class="size-10 downloadFiles border-1 border-solid hover:cursor-pointer" style="border-color: #F8FE50"
              src={{asset('images/download.png')}} alt="download"
              title="Download the selected files">
@@ -224,6 +226,7 @@
                 @include('toggleableScreens.musics.import')
                 @include('toggleableScreens.musics.upload')
                 @include('toggleableScreens.musics.delete')
+                @include('toggleableScreens.musics.deleteBatch')
                 @include('toggleableScreens.musics.edit')
                 @include('toggleableScreens.musics.editBatch')
                 @include('toggleableScreens.musics.loading')

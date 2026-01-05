@@ -151,6 +151,9 @@ class AutoRefreshedPanel {
     popin(type, message) {
         //clearTimeout(timeoutID)
         //$('.popup').remove();
+        if (!type) {
+            type = 'info';
+        }
         let icon = type.toLowerCase();
         let html = `<div class="popup gap-2 inline-flex flex-row"><img class="size-8 my-auto" src="https://votvbroadcast.com/images/${icon}.png" > <div class="mt-auto mb-auto dos !text-white">${message}</div></div>`
         $('#popups').append(html);
