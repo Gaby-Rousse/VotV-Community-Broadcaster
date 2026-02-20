@@ -359,6 +359,10 @@ class Functions
                 $values = DB::table($table)->where('explicit', '=', 0)->where('type', '=', $folder)->get();
                 $i = 1;
                 foreach ($values as $value) {
+                    if($folder = 'ad')
+                    {
+                        $folder = "advertisement";
+                    }
                     fwrite($file, "file" . $i . "=../public/uploads/" . $table . '/' . $folder . 's' . '/' . $value->filename . "\n");
                     $i++;
                 }

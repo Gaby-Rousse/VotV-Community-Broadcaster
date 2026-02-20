@@ -1207,11 +1207,11 @@ $(() => {
     WatchingChannelsDropdown = new VotvDropdown('watchingChannels', 'monitoringChannel', 'updateMonitoringChannel', 20)
     if (media_type === 'audios') {
         everything = 0;
-        sfwChannel = 21;
-        WatchingChannelsDropdown.updateOptions(['Everything', 'SFW', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Metal', 'Pop', 'Rock', 'Video Game', 'Weird'])
+        sfwChannel = 20;
+        WatchingChannelsDropdown.updateOptions(['Everything', 'SFW', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Metal', 'Pop', 'Rock', 'Video Game', 'Weird'])
     } else if (media_type === 'videos') {
         everything = 1;
-        sfwChannel = 22;
+        sfwChannel = 21;
         WatchingChannelsDropdown.updateOptions(['Everything', 'SFW', 'Animations', 'Documentaries', 'Horror', "Let's Plays", 'Lt30secs', 'Lt5mins', 'Memes', 'News', 'Shows', 'Vlogs'])
     }
 
@@ -1227,25 +1227,25 @@ $(() => {
     const channelsNumber = {
         'Everything': everything,
         'Animations': 2,
-        'Christmas': 3,
-        'Classical': 4,
-        'Country': 5,
-        'Documentaries': 6,
-        'Electronic': 7,
-        'Hip Hop': 8,
-        'Horror': 9,
-        'Instrumental': 10,
-        'Jazz': 11,
-        "Let's Plays": 12,
-        'Lt30secs': 13,
-        'Lt5mins': 14,
-        'Mariachi': 15,
-        'Memes': 16,
-        'Metal': 17,
-        'News': 18,
-        'Pop': 19,
-        'Rock': 20,
+        'Classical': 3,
+        'Country': 4,
+        'Documentaries': 5,
+        'Electronic': 6,
+        'Hip Hop': 7,
+        'Horror': 8,
+        'Instrumental': 9,
+        'Jazz': 10,
+        "Let's Plays": 11,
+        'Lt30secs': 12,
+        'Lt5mins': 13,
+        'Mariachi': 14,
+        'Memes': 15,
+        'Metal': 16,
+        'News': 17,
+        'Pop': 18,
+        'Rock': 19,
         'SFW': sfwChannel,
+        'Shows': 22,
         'Video Game': 23,
         'Vlogs': 24,
         'Weird': 25,

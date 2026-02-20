@@ -2,8 +2,6 @@ VotV Community Broadcast
 https://radio.votvbroadcast.com/votv.mp3
 VCB SFW
 https://radio.votvbroadcast.com/votv_sfw.mp3
-VCB Christmas
-https://radio.votvbroadcast.com/votv_christmas.mp3
 VCB Country
 https://radio.votvbroadcast.com/votv_country.mp3
 VCB Classical
