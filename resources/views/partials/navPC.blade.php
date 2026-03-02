@@ -11,6 +11,10 @@
             TV
         </a>
         <div class="flex flex-row ml-auto flex-shrink-0">
+            <a href="/help"
+               class="computerButton flex-shrink-0 border-2 w-28 border-solid p-0.5 mt-1 mb-1 mr-1 pl-4 pr-4 hover:cursor-pointer">
+                Help
+            </a>
             @auth
                 @if(Auth::user()->isAdmin())
                     <a href="/reports"

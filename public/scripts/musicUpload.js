@@ -105,8 +105,9 @@ $(() => {
      * @function
      * @param {string} type - The icon to show
      * @param {string} message - The message to show
+     * @param {number} delay - Amount of time the pop up stays on screen
      */
-    function popin(type, message) {
+    function popin(type, message, delay = 3000) {
         //clearTimeout(timeoutID)
         //$('.popup').remove();
         let icon = type.toLowerCase();
@@ -122,8 +123,8 @@ $(() => {
             popup.addClass('popout');
             timeoutID = setTimeout(function () {
                 popup.remove();
-            }, 3000);
-        }, 3000);
+            }, delay);
+        }, delay);
     }
 
 
@@ -1398,7 +1399,7 @@ $(() => {
     }
 
     /**
-     * Updates the loading prop
+     * Updates the autoplay prop
      * @event
      */
     autoplaySetting.click(function () {
@@ -1423,7 +1424,7 @@ $(() => {
     }
 
     /**
-     * Updates the autoplay prop
+     * Updates the loading prop
      * @event
      */
     loadingSetting.click(function () {
@@ -1431,6 +1432,31 @@ $(() => {
             localStorage.setItem("loading", "1");
         } else {
             localStorage.setItem("loading", "0");
+        }
+
+    })
+
+    let storagePopup = localStorage.getItem("popup_onstart");
+
+    if (!storagePopup) {
+        localStorage.setItem("popup_onstart", "1");
+    }
+
+    let popupSetting = $('#popupSetting');
+
+    if (storagePopup === "1") {
+        popupSetting.attr('checked', true)
+    }
+
+    /**
+     * Updates the popup prop
+     * @event
+     */
+    popupSetting.click(function () {
+        if ($(this).prop('checked')) {
+            localStorage.setItem("popup_onstart", "1");
+        } else {
+            localStorage.setItem("popup_onstart", "0");
         }
 
     })
@@ -1954,5 +1980,19 @@ $(() => {
     $('#b_cover').on('change', function () {
         updateCover($('#b_currentCover'), $(this)[0].files[0]);
     })
+
+    //### On Start?
+    async function onStart() {
+        popin("info", "You can click on a cover to access batch actions (editing, downloading, online.txt generation).", 6000)
+        await delay(3000)
+        popin("info", "If you need help you can open the help section above.", 6000)
+        await delay(3000)
+        popin("info", 'Finally, if you want to disable these pop-up on start, go to settings and uncheck "Show pop-ups on start".', 6000)
+    }
+
+    if (localStorage.getItem("popup_onstart") === "1") {
+        onStart();
+    }
+
 
 })

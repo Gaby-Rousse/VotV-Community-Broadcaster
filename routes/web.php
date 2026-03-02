@@ -164,3 +164,5 @@ Route::post('/generateOnlineTXT', [MediaController::class, 'generateOnlineTXT'])
 Route::post('/downloadAllSelectedFiles', [MediaController::class, 'downloadAllSelectedFiles']);
 Route::post('/updateBatch', [MediaController::class, 'batchEditSelectedFiles']);
 Route::post('/deleteBatch', [MediaController::class, 'batchDeleteSelectedFiles']);
+
+Route::view('/help', 'help', ['title' => 'Help']);

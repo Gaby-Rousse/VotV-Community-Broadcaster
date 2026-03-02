@@ -31,6 +31,7 @@ nav {
     top: 0;
     width: 100%;
     background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
 }
 
 a {
@@ -237,6 +238,11 @@ window .header {
 window button:hover {
     background-color: #333333;
     cursor: pointer;
+}
+
+.active {
+    background-color: #242424;
+!important;
 }
 
 dropdown {

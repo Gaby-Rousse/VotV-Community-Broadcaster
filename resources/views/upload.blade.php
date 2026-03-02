@@ -1,5 +1,5 @@
 @include('partials.header')
-<script src="scripts/musicUpload.js?v=3.5.0"></script>
+<script src="scripts/musicUpload.js?v=3.5.5"></script>
 
 <input type="hidden" id="approvedMaxPages" value="{{$approvedMaxPages}}">
 <input type="hidden" id="pendingMaxPages" value="{{$pendingMaxPages}}">
@@ -32,16 +32,8 @@
 </div>
 
 @if(!Auth::check())
-    <div id="overlay" class="flex fixed w-full h-full top-0 left-0 right-0 bottom-0 z-50 hover:cursor-pointer"
-         style="background-color: rgba(0,0,0,0.5)">
-        <div class="w-[75%] h-[75%] flex border-3 gap-1 flex-col border-solid m-auto bg-black">
-            <div class="dos ml-1">It seems you're not connected.</div>
-            <div class="dos ml-1">Functionalities will be limited.</div>
-            <div class="dos ml-1">Please connect if you want to upload files.</div>
-            <a href="/signin" class="url dos ml-1 mr-auto">Click here to login</a>
-            <div class="dos m-auto mb-5">Click anywhere to close this pop-up</div>
-        </div>
-    </div>
+    <div class="fixed bottom-0 w-full h-8 bg-black/80 dos text-center">Not connected, functionalities are limited.
+        Please <a class="dos url" href="/signin">[sign in]</a></div>
 @endif
 <div id="settings" class="hidden fixed w-full h-full top-0 left-0 right-0 bottom-0 z-30"
      style="background-color: rgba(0,0,0,0.5)">
@@ -72,6 +64,15 @@
             </div>
             <label class="ml-auto checkContainer">
                 <input id="loadingSetting" type="checkbox">
+                <span class="checkmark"></span>
+            </label>
+        </div>
+        <div class="settingItem h-8 flex flex-row">
+            <div class="mt-auto mb-auto ml-2">
+                Show pop-ups on start
+            </div>
+            <label class="ml-auto checkContainer">
+                <input id="popupSetting" type="checkbox">
                 <span class="checkmark"></span>
             </label>
         </div>
