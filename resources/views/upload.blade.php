@@ -1,5 +1,5 @@
 @include('partials.header')
-<script src="scripts/musicUpload.js?v=3.5.5"></script>
+<script src="scripts/musicUpload.js?v=3.5.9"></script>
 
 <input type="hidden" id="approvedMaxPages" value="{{$approvedMaxPages}}">
 <input type="hidden" id="pendingMaxPages" value="{{$pendingMaxPages}}">
