@@ -1440,6 +1440,7 @@ $(() => {
 
     if (!storagePopup) {
         localStorage.setItem("popup_onstart", "1");
+        storagePopup = 1;
     }
 
     let popupSetting = $('#popupSetting');
