@@ -52,7 +52,7 @@
             <div class="flex relative flex-col gap-4 mt-2 mb-6 items-center sm:items-baseline">
                 <a class="p-2 w-90 home" href="/changelog">Changelog</a>
                 <a class="p-2 w-90 home" href="/credits">Credits</a>
-                <a class="p-2 w-90 home" href="/later">Guidelines</a>
+                <a class="p-2 w-90 home" href="/history">History</a>
                 <a class="p-2 w-90 home" href="/help">Help</a>
                 <div class="flex flex-row w-full justify-between">
                     <a class="p-2 w-40 home" href="https://votvbroadcast.com/txt/radio.txt">Radios Streams</a>

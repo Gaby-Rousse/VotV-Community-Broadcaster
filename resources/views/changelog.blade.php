@@ -21,6 +21,18 @@
             <li>Status page for streams</li>
         </ul>
     </div>
+    <div class=" text-xl sm:text-2xl md:text-3xl lg:text-4xl subtitle sm:text-left text-center">v0.3.8 (03/02/2026)
+    </div>
+    <div class="flex flex-col gap-2 mt-2 mb-6 items-center sm:items-baseline ">
+        <ul>
+            <li>Improved home page</li>
+            <li>Added history page (so you can see what played previously in a channel)</li>
+            <li>Added help page</li>
+            <li>Added online.txt generator</li>
+            <li>Removed invasive overlay when not connected</li>
+            <li>Added popups to tell users that batch actions exists</li>
+        </ul>
+    </div>
     <div class=" text-xl sm:text-2xl md:text-3xl lg:text-4xl subtitle sm:text-left text-center">v0.3.7 (01/05/2026)
     </div>
     <div class="flex flex-col gap-2 mt-2 mb-6 items-center sm:items-baseline ">

@@ -299,10 +299,20 @@ class Functions
         if (!in_array($channel, $availableChannels) && !in_array($channel, $eventChannels)) {
             return;
         }
+
+        $cleanFilename = $channel;
+        if ($channel === 'hip hop') {
+            $cleanFilename = 'hiphop';
+        } elseif ($channel === 'video game') {
+            $cleanFilename = 'video_game';
+        } elseif ($channel === "let's plays") {
+            $cleanFilename = 'letsplays';
+        }
+
         if ($table == 'videos' && in_array($channel, $eventChannels)) {
             $prefix = 'v_';
         }
-        $file = fopen(public_path('uploads/playlists/' . $prefix . $channel) . '.pls', "w");
+        $file = fopen(public_path('uploads/playlists/' . $prefix . $cleanFilename) . '.pls', "w");
         fwrite($file, "[playlist]\n");
         $values = DB::table($table)->where('destination', $channel)->get();
         $i = 1;

@@ -355,5 +355,11 @@ dropdown {
 }
 
 .console {
-    font-family: "Courier New", Courier, monospace
+    font-family: Terminal, Courier, monospace;
+    text-align: left;
+}
+
+@font-face {
+    font-family: Terminal;
+    src: url('fonts/ModernDOS9x14.ttf');
 }

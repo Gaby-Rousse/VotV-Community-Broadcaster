@@ -166,3 +166,4 @@ Route::post('/updateBatch', [MediaController::class, 'batchEditSelectedFiles']);
 Route::post('/deleteBatch', [MediaController::class, 'batchDeleteSelectedFiles']);
 
 Route::view('/help', 'help', ['title' => 'Help']);
+Route::view('/history', 'history', ['title' => 'History']);
