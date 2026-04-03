@@ -290,7 +290,7 @@ class Functions
     static function generatePlaylist(string $pDestination)
     {
         $table = self::retrieveDestinationTable();
-        $availableChannels = ['christmas', 'classical', 'country', 'electronic', 'hip hop', 'instrumental', 'jazz', 'mariachi', 'metal', 'pop', 'rock', 'video game', 'weird', 'animations', 'documentaries', 'horror', "let's plays", 'memes', 'news', 'shows', 'vlogs'];
+        $availableChannels = ['christmas', 'alternative', 'chiptune', 'classical', 'country', 'electronic', 'hip hop', 'industrial', 'instrumental', 'jazz', 'mariachi', 'metal', 'pop', 'rock', 'video game', 'weird', 'animations', 'cartoons', 'documentaries', 'horror', "let's plays", 'memes', 'music videos', 'news', 'shows', 'vlogs'];
         $eventChannels = ['strange [4%]', 'weird [2%]', 'bizarre [1%]', 'outlandish [0.4%]', 'unfathomable [0.2%]', 'otherworldly [0.1%]', 'transcendental [0.04%]'];
         $prefix = '';
 
@@ -301,13 +301,14 @@ class Functions
         }
 
         $cleanFilename = $channel;
-        if ($channel === 'hip hop') {
+        if ($channel === 'hip hop')
             $cleanFilename = 'hiphop';
-        } elseif ($channel === 'video game') {
+        elseif ($channel === 'video game')
             $cleanFilename = 'video_game';
-        } elseif ($channel === "let's plays") {
+        elseif ($channel === "let's plays")
             $cleanFilename = 'letsplays';
-        }
+        elseif ($channel === 'music videos')
+            $cleanFilename = 'music_videos';
 
         if ($table == 'videos' && in_array($channel, $eventChannels)) {
             $prefix = 'v_';
@@ -339,18 +340,22 @@ class Functions
      */
     static function generateDurationsPlaylist()
     {
-        $channels = ['lt30sec' => '30', 'lt5min' => '300', 'lt15min' => '900'];
-        foreach ($channels as $channel => $time) {
-            $file = fopen(public_path('uploads/playlists/' . $channel) . '.pls', "w");
-            fwrite($file, "[playlist]\n");
-            $values = DB::table('videos')->where('type', '=', 'media')->where('duration', '<', $time)->get();
-            $i = 1;
-            foreach ($values as $value) {
-                fwrite($file, "file" . $i . "=../public/uploads/videos/medias/" . $value->filename . "\n");
-                $i++;
+        $channels = ['lt30sec' => '30', 'lt5min' => '300'/*, 'lt15min' => '900'*/];
+        $mediaTypes = ['media' => '', 'event' => 'event_', 'ad' => 'ad_'];
+        foreach ($mediaTypes as $mediaType => $prefix) {
+            foreach ($channels as $channel => $time) {
+                $file = fopen(public_path('uploads/playlists/' . $prefix . $channel) . '.pls', "w");
+                fwrite($file, "[playlist]\n");
+                $values = DB::table('videos')->where('type', '=', $mediaType)->where('duration', '<', $time)->get();
+                $i = 1;
+                foreach ($values as $value) {
+                    fwrite($file, "file" . $i . "=../public/uploads/videos/medias/" . $value->filename . "\n");
+                    $i++;
+                }
+                fclose($file);
             }
-            fclose($file);
         }
+
     }
 
     /**
@@ -369,8 +374,7 @@ class Functions
                 $values = DB::table($table)->where('explicit', '=', 0)->where('type', '=', $folder)->get();
                 $i = 1;
                 foreach ($values as $value) {
-                    if($folder = 'ad')
-                    {
+                    if ($folder = 'ad') {
                         $folder = "advertisement";
                     }
                     fwrite($file, "file" . $i . "=../public/uploads/" . $table . '/' . $folder . 's' . '/' . $value->filename . "\n");

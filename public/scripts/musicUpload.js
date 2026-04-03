@@ -833,10 +833,10 @@ $(() => {
                         toggleButton(where, whereMusics)
                         typeInput.val('media');
                         if (media_type === 'audios') {
-                            DestinationDropdown.updateOptions(['None', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Metal', 'Pop', 'Rock', 'Video Game', 'Weird'])
+                            DestinationDropdown.updateOptions(['None', 'Alternative', 'Chiptune', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Industrial', 'Instrumental', 'Jazz', 'Mariachi', 'Metal', 'Pop', 'Rock', 'Video Game', 'Weird'])
                         }
                         if (media_type === 'videos') {
-                            DestinationDropdown.updateOptions(['None', 'Animations', 'Documentaries', 'Horror', "Let's Plays", 'Memes', 'News', 'Shows', 'Vlogs'])
+                            DestinationDropdown.updateOptions(['None', 'Animations', 'Cartoons', 'Documentaries', 'Horror', "Let's Plays", 'Memes', 'Music Videos', 'News', 'Shows', 'Vlogs'])
                         }
                         channelText.text('Channel:')
                         show(channelDiv);
@@ -1933,9 +1933,9 @@ $(() => {
 
     DestinationBatchDropdown = new VotvDropdown('destinationBatchDropdown', 'batchDestination', null, 20, "Unchanged")
     if (media_type === 'audios') {
-        DestinationBatchDropdown.updateOptions(['Unchanged', 'Everything', 'SFW', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Metal', 'Pop', 'Rock', 'Video Game', 'Weird'])
+        DestinationBatchDropdown.updateOptions(['None', 'Alternative', 'Chiptune', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Industrial', 'Instrumental', 'Jazz', 'Mariachi', 'Metal', 'Pop', 'Rock', 'Video Game', 'Weird'])
     } else if (media_type === 'videos') {
-        DestinationBatchDropdown.updateOptions(['Unchanged', 'Everything', 'SFW', 'Animations', 'Documentaries', 'Horror', "Let's Plays", 'Lt30secs', 'Lt5mins', 'Memes', 'News', 'Shows', 'Vlogs'])
+        DestinationBatchDropdown.updateOptions(['None', 'Animations', 'Cartoons', 'Documentaries', 'Horror', "Let's Plays", 'Memes', 'Music Videos', 'News', 'Shows', 'Vlogs'])
     }
 
     FrequencyBatchDropdown = new VotvDropdown('frequencyBatchDropdown', 'batchFrequency', null, 10, "Unchanged")

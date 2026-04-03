@@ -7,10 +7,13 @@
         <a href="txt/Main_Radio_history.txt" class="console">│&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Main</span></a>
         <a href="txt/SFW_Main_Radio_history.txt" class="console">│&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">SFW</span></a>
         <div class="console">│&nbsp;&nbsp;&nbsp;└──&nbsp;[Channels]</div>
+        <a href="txt/alternative_history.txt" class="console">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Alternative</span></a>
+        <a href="txt/chiptune_history.txt" class="console">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Chiptune</span></a>
         <a href="txt/classical_history.txt" class="console">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Classical</span></a>
         <a href="txt/country_history.txt" class="console">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Country</span></a>
         <a href="txt/electronic_history.txt" class="console">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Electronic</span></a>
         <a href="txt/hiphop_history.txt" class="console">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Hip Hop</span></a>
+        <a href="txt/industrial_history.txt" class="console">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Industrial</span></a>
         <a href="txt/instrumental_history.txt" class="console">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Instrumental</span></a>
         <a href="txt/jazz_history.txt" class="console">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Jazz</span></a>
         <a href="txt/mariachi_history.txt" class="console">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Mariachi</span></a>
@@ -25,10 +28,12 @@
         <a href="txt/SFW_Main_TV_history.txt" class="console">&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">SFW</span></a>
         <div class="console">&nbsp;&nbsp;&nbsp;&nbsp;└──&nbsp;[Channels]</div>
         <a href="txt/animations_history.txt" class="console">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Animations</span></a>
+        <a href="txt/cartoons_history.txt" class="console">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Cartoons</span></a>
         <a href="txt/documentaries_history.txt" class="console">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Documentaries</span></a>
         <a href="txt/horror_history.txt" class="console">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Horror</span></a>
         <a href="txt/letsplays_history.txt" class="console">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Let's plays</span></a>
         <a href="txt/memes_history.txt" class="console">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Memes</span></a>
+        <a href="txt/music_videos_history.txt" class="console">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Music Videos</span></a>
         <a href="txt/shows_history.txt" class="console">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Shows</span></a>
         <a href="txt/vlogs_history.txt" class="console">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">Vlogs</span></a>
         <a href="txt/news_history.txt" class="console">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;<span class="url console">News</span></a>
