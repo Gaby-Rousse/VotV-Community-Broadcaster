@@ -429,7 +429,7 @@ class MediaController extends Controller
                 $mediaHelper = functions::generateMediaHelper($filename, true);
                 Queries::approveMedia($filename, $mediaHelper->table);
 
-                Functions::generatePlaylist($mediaHelper->media->genre);
+                Functions::generatePlaylist($mediaHelper->media->destination);
                 Functions::generateDurationsPlaylist();
                 Functions::generateSafePlaylist();
 

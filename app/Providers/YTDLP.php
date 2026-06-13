@@ -33,7 +33,7 @@ class YTDLP
         //But let start by the notification tab.
 
         foreach ($urls as $url) {
-            $url = escapeshellarg($url);
+            $url = escapeshellarg(trim($url));
             $retrieveTitle = 'yt-dlp --no-cache-dir --skip-download --print "%(title)s" ' . $url;
             $retrieveUploader = 'yt-dlp --no-cache-dir --skip-download --print "%(uploader)s" ' . $url;
             $title = trim(shell_exec($retrieveTitle));

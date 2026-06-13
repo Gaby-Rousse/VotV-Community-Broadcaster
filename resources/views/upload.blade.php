@@ -1,5 +1,5 @@
 @include('partials.header')
-<script src="scripts/musicUpload.js?v=3.6.0"></script>
+<script src="scripts/musicUpload.js?v=3.6.4"></script>
 
 <input type="hidden" id="approvedMaxPages" value="{{$approvedMaxPages}}">
 <input type="hidden" id="pendingMaxPages" value="{{$pendingMaxPages}}">
@@ -338,9 +338,9 @@
 
             @if(!session('type') || session('type') == 'media')
             @if(App\Providers\Functions::retrieveDestinationTable() == 'audios')
-            ChannelDropdown.updateOptions(['Everything', 'None', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Pop', 'Rock', 'Video Game', 'Weird'])
+            ChannelDropdown.updateOptions(['Everything', 'None', 'Alternative', 'Chiptune', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Industrial', 'Instrumental', 'Jazz', 'Mariachi', 'Metal', 'Pop', 'Rock', 'Video Game', 'Weird'])
             @else
-            ChannelDropdown.updateOptions(['Everything', 'None', 'Animations', 'Documentaries', 'Horror', "Let's Plays", 'Memes', 'News', 'Shows', 'Vlogs'])
+            ChannelDropdown.updateOptions(['Everything', 'None', 'Animations', 'Cartoons', 'Documentaries', 'Horror', "Let's Plays", 'Memes', 'Music Videos', 'News', 'Shows', 'Vlogs'])
             @endif
             @elseif(session('type') == 'event')
             ChannelDropdown.updateOptions(['Everything', 'Strange [4%]', 'Weird [2%]', 'Bizarre [1%]', 'Outlandish [0.4%]', 'Unfathomable [0.2%]', 'Otherworldly [0.1%]', 'Transcendental [0.04%]'])

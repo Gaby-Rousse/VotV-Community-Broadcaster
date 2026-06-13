@@ -2,6 +2,10 @@ VotV Community Broadcast
 https://radio.votvbroadcast.com/votv.mp3
 VCB SFW
 https://radio.votvbroadcast.com/votv_sfw.mp3
+VCB Alternative
+https://radio.votvbroadcast.com/votv_alternative.mp3
+VCB Chiptune
+https://radio.votvbroadcast.com/votv_chiptune.mp3
 VCB Country
 https://radio.votvbroadcast.com/votv_country.mp3
 VCB Classical
@@ -10,6 +14,8 @@ VCB Electronic
 https://radio.votvbroadcast.com/votv_electronic.mp3
 VCB Hip Hop
 https://radio.votvbroadcast.com/votv_hiphop.mp3
+VCB Industrial
+https://radio.votvbroadcast.com/votv_industrial.mp3
 VCB Instrumental
 https://radio.votvbroadcast.com/votv_instrumental.mp3
 VCB Jazz

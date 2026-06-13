@@ -1204,16 +1204,16 @@ $(() => {
 
     //### Currently Broadcasting
     let everything = 0;
-    let sfwChannel = 21
+    let sfwChannel = 20;
     WatchingChannelsDropdown = new VotvDropdown('watchingChannels', 'monitoringChannel', 'updateMonitoringChannel', 20)
     if (media_type === 'audios') {
         everything = 0;
-        sfwChannel = 20;
-        WatchingChannelsDropdown.updateOptions(['Everything', 'SFW', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Metal', 'Pop', 'Rock', 'Video Game', 'Weird'])
+        sfwChannel = 25;
+        WatchingChannelsDropdown.updateOptions(['Everything', 'SFW', 'Alternative', 'Chiptune', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Industrial', 'Instrumental', 'Jazz', 'Mariachi', 'Metal', 'Pop', 'Rock', 'Video Game', 'Weird'])
     } else if (media_type === 'videos') {
         everything = 1;
-        sfwChannel = 21;
-        WatchingChannelsDropdown.updateOptions(['Everything', 'SFW', 'Animations', 'Documentaries', 'Horror', "Let's Plays", 'Lt30secs', 'Lt5mins', 'Memes', 'News', 'Shows', 'Vlogs'])
+        sfwChannel = 26;
+        WatchingChannelsDropdown.updateOptions(['Everything', 'SFW', 'Animations', 'Cartoons', 'Documentaries', 'Horror', "Let's Plays", 'Memes', 'Music Videos', 'News', 'Shows', 'Vlogs'])
     }
 
 
@@ -1227,30 +1227,35 @@ $(() => {
     //TODO: Find a way to not hardcode these number.
     const channelsNumber = {
         'Everything': everything,
-        'Animations': 2,
-        'Classical': 3,
-        'Country': 4,
-        'Documentaries': 5,
-        'Electronic': 6,
-        'Hip Hop': 7,
-        'Horror': 8,
-        'Instrumental': 9,
-        'Jazz': 10,
-        "Let's Plays": 11,
-        'Lt30secs': 12,
-        'Lt5mins': 13,
-        'Mariachi': 14,
-        'Memes': 15,
-        'Metal': 16,
-        'News': 17,
-        'Pop': 18,
-        'Rock': 19,
+        'Alternative': 2,
+        'Animations': 3,
+        'Cartoons': 4,
+        'Chiptune': 5,
+        'Classical': 6,
+        'Country': 7,
+        'Documentaries': 8,
+        'Electronic': 9,
+        'Hip Hop': 10,
+        'Horror': 11,
+        'Industrial': 12,
+        'Instrumental': 13,
+        'Jazz': 14,
+        "Let's Plays": 15,
+        'Lt30secs': 16,
+        'Lt5mins': 17,
+        'Mariachi': 18,
+        'Memes': 19,
+        'Metal': 20,
+        'Music Videos': 21,
+        'News': 22,
+        'Pop': 23,
+        'Rock': 24,
         'SFW': sfwChannel,
-        'Shows': 22,
-        'Video Game': 23,
-        'Vlogs': 24,
-        'Weird': 25,
-    }
+        'Shows': 27,
+        'Video Game': 28,
+        'Vlogs': 29,
+        'Weird': 30
+    };
 
     const monitoringChannel = $('#monitoringChannel')
 
@@ -1687,9 +1692,9 @@ $(() => {
         setListing("media")
 
         if (media_type === 'audios') {
-            ChannelDropdown.updateOptions(['Everything', 'None', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Instrumental', 'Jazz', 'Mariachi', 'Metal', 'Pop', 'Rock', 'Video Game', 'Weird'])
+            ChannelDropdown.updateOptions(['Everything', 'None', 'Alternative', 'Chiptune', 'Christmas', 'Classical', 'Country', 'Electronic', 'Hip Hop', 'Industrial', 'Instrumental', 'Jazz', 'Mariachi', 'Metal', 'Pop', 'Rock', 'Video Game', 'Weird'])
         } else if (media_type === 'videos') {
-            ChannelDropdown.updateOptions(['Everything', 'None', 'Animations', 'Documentaries', 'Horror', "Let's Plays", 'Memes', 'News', 'Shows', 'Vlogs'])
+            ChannelDropdown.updateOptions(['Everything', 'None', 'Animations', 'Cartoons', 'Documentaries', 'Horror', "Let's Plays", 'Memes', 'Music Videos', 'News', 'Shows', 'Vlogs'])
         }
 
     })
