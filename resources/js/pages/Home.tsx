@@ -1,3 +1,3 @@
 export default function Home() {
-    return <h1>It works</h1>;
+    return <h1 className="text-blue-500">It works</h1>;
 }
