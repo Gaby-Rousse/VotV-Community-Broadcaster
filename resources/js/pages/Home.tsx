@@ -5,10 +5,10 @@ import {isAuthenticated} from "../models/interfaces/User.ts";
 
 export default function Home() {
     return (
-        <>
+        <div className="vcb">
             <Nav/>
             <Content/>
-        </>
+        </div>
     );
 }
 
@@ -84,8 +84,8 @@ export function Content() {
                 VotV Community Broadcaster
             </h1>
 
-            <div className="vcb-home-content">
-                <div className="vcb-home-panel">
+            <div className="home-content">
+                <div className="home-panel">
                     <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl subtitle sm:text-left text-center">
                         Description
                     </div>
@@ -115,7 +115,7 @@ export function Content() {
                     </div>
                 </div>
 
-                <div className="vcb-home-panel vcb-home-links">
+                <div className="home-panel home-links">
                     <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl subtitle sm:text-left text-center">
                         Links
                     </div>
