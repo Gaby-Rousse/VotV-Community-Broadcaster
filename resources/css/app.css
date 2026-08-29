@@ -82,36 +82,38 @@ nav a:hover {
 }
 
 .vcb {
-    & .home-content {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap-reverse;
-        margin: 3.75rem auto 2.5rem 0;
-    }
-
-    & .home-panel {
-        display: flex;
-        flex-direction: column;
-        max-width: 37.5rem;
-        padding: 1rem;
-        background-color: rgba(0, 0, 0, 0.8);
-    }
-
-    & .home-links {
-        margin-right: auto;
-        margin-left: auto;
-    }
-
-    @media (min-width: 640px) {
-        & .home-content {
-            margin-left: 5rem;
+    & .home {
+        & .content {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap-reverse;
+            margin: 3.75rem auto 2.5rem 0;
         }
-    }
 
-    @media (min-width: 1024px) {
-        & .home-links {
-            margin-left: 6.25rem;
-            margin-right: 0;
+        & .panel {
+            display: flex;
+            flex-direction: column;
+            max-width: 37.5rem;
+            padding: 1rem;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        & .links {
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        @media (min-width: 640px) {
+            & .content {
+                margin-left: 5rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            & .links {
+                margin-left: 6.25rem;
+                margin-right: 0;
+            }
         }
     }
 }
