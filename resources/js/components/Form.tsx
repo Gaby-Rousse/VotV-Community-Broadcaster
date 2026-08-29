@@ -36,7 +36,7 @@ export function Form({ handleSubmit, lines }: {
 
                     <Lines visibleCount={visibleCount}>
                         {lines.map(value =>
-                            value == "$error" ? <div className="dos red">ERR: {error}</div> : <Line>{value}</Line>
+                            value == "$error" ? (error ? <div className="dos red">ERR: {error}</div> : <></>) : <Line>{value}</Line>
                         )}
                     </Lines>
                     <button type="submit" className="dos url w-4 sm:hidden">Submit!</button>
