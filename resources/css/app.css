@@ -81,6 +81,39 @@ nav a:hover {
     color: #50eafe;
 }
 
+.vcb-home-content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap-reverse;
+    margin: 3.75rem auto 2.5rem 0;
+}
+
+.vcb-home-panel {
+    display: flex;
+    flex-direction: column;
+    max-width: 37.5rem;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.vcb-home-links {
+    margin-right: auto;
+    margin-left: auto;
+}
+
+@media (min-width: 640px) {
+    .vcb-home-content {
+        margin-left: 5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .vcb-home-links {
+        margin-left: 6.25rem;
+        margin-right: 0;
+    }
+}
+
 .dos {
     font-family: fsex300, serif;
     color: #F8FE50
