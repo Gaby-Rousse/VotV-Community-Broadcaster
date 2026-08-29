@@ -122,32 +122,32 @@ export function Content() {
                         Links
                     </div>
                     <div className="flex relative flex-col gap-4 mt-2 mb-6 items-center sm:items-baseline">
-                        <Link className="p-2 w-90 home" to="/changelog">Changelog</Link>
-                        <Link className="p-2 w-90 home" to="/credits">Credits</Link>
-                        <Link className="p-2 w-90 home" to="/history">History</Link>
-                        <Link className="p-2 w-90 home" to="/help">Help</Link>
+                        <Link className="p-2 w-90 home-button" to="/changelog">Changelog</Link>
+                        <Link className="p-2 w-90 home-button" to="/credits">Credits</Link>
+                        <Link className="p-2 w-90 home-button" to="/history">History</Link>
+                        <Link className="p-2 w-90 home-button" to="/help">Help</Link>
 
                         <div className="flex flex-row w-full justify-between gap-10">
-                            <a className="p-2 w-40 home" href="https://votvbroadcast.com/txt/radio.txt">
+                            <a className="p-2 w-40 home-button" href="https://votvbroadcast.com/txt/radio.txt">
                                 Radios Streams
                             </a>
-                            <a className="p-2 w-40 home" href="https://votvbroadcast.com/txt/tv.txt">
+                            <a className="p-2 w-40 home-button" href="https://votvbroadcast.com/txt/tv.txt">
                                 TV Streams
                             </a>
                         </div>
                         <div className="flex flex-row w-full justify-between gap-10">
-                            <Link className="p-2 w-40 home" to="/suggestions">Suggestions</Link>
-                            <Link className="p-2 w-40 home" to="/bugs">Bugs</Link>
+                        <Link className="p-2 w-40 home-button" to="/suggestions">Suggestions</Link>
+                        <Link className="p-2 w-40 home-button" to="/bugs">Bugs</Link>
                         </div>
 
                         <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl subtitle">External</div>
                         <div className="flex flex-row w-full justify-between gap-10">
-                            <a className="p-2 w-40 home" href="https://votv.dev">votv.dev</a>
-                            <a className="p-2 w-40 home" href="https://assets.votvbroadcast.com/">Assets Hub</a>
+                            <a className="p-2 w-40 home-button" href="https://votv.dev">votv.dev</a>
+                            <a className="p-2 w-40 home-button" href="https://assets.votvbroadcast.com/">Assets Hub</a>
                         </div>
 
                         <a
-                            className="p-2 w-90 home"
+                            className="p-2 w-90 home-button"
                             href="https://github.com/Foxaryse/ArchiveCommunityBranch/tree/main/linux/scripts/onlinevideoworkaround"
                         >
                             onlinevideoworkaround

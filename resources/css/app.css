@@ -37,13 +37,13 @@ a {
     text-align: center;
 }
 
-.home {
+.home-button {
     border: 3px solid #04a96c;
     background-color: black;
     transition: background-color 0.2s, color 0.2s;
 }
 
-.home:hover {
+.home-button:hover {
     background-color: #006741;
     color: #c1bebe;
     cursor: pointer;
