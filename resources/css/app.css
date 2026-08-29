@@ -1,9 +1,150 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 @import 'tailwindcss';
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+
+
+* {
+    box-sizing: border-box;
+    font-family: "Share Tech Mono", monospace;
+    font-weight: 400;
+    font-style: normal;
+    color: white;
+}
+
+
+@font-face {
+    font-family: 'fsex300';
+    src: url("../fonts/FSEX300.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+html {
+    background-image: url("https://votvbroadcast.com/images/bg.png");
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+nav {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+a {
+    text-align: center;
+}
+
+.home {
+    border: 3px solid #04a96c;
+    background-color: black;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.home:hover {
+    background-color: #006741;
+    color: #c1bebe;
+    cursor: pointer;
+}
+
+nav a {
+
+    border: 3px solid #04a96c;
+    background-color: black;
+    transition: background-color 0.2s, color 0.2s;
+    z-index: 1000;
+}
+
+nav a:hover {
+    background-color: #006741;
+    color: #c1bebe;
+    cursor: pointer;
+}
+
+.title {
+    text-shadow: #8a8a8a 1.3px 1.3px 8px, #8a8a8a -1.3px -1.3px 8px;
+}
+
+.subtitle {
+    text-shadow: #04AA6D 1.3px 1.3px 8px, #04AA6D -1.3px -1.3px 8px;
+}
+
+.computerButton {
+    font-family: fsex300, serif;
+    border-color: #F8FE50;
+    color: #F8FE50
+}
+
+.url:hover {
+    color: #50eafe;
+}
+
+.dos {
+    font-family: fsex300, serif;
+    color: #F8FE50
+}
+
+.red {
+    color: #fe5050;
+    border-color: #fe5050;
+}
+
+.purple {
+    color: #FF00DC;
+    border-color: #FF00DC;
+}
+
+.selected {
+    border-color: #50eafe;
+    color: #50eafe
+}
+
+input:focus, textarea:focus {
+    border-color: #50eafe;
+    color: #50eafe;
+    outline: none;
+    box-shadow: none;
+}
+
+.slider {
+    -webkit-appearance: none;
+    height: 6px;
+    background: #222222;
+    outline: none;
+    border: none;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 10px;
+    height: 20px;
+    border-radius: 0;
+    background: #F8FE50;
+    cursor: pointer;
+    border: none;
+}
+
+.slider::-moz-range-thumb {
+    width: 10px;
+    height: 20px;
+    border-radius: 0;
+    background: #F8FE50;
+    cursor: pointer;
+    border: none;
+}
+
+
+
+button:active {
+    transform: translateY(2px);
+    border-color: #a5aa37 !important;
+    color: #a5aa37 !important;
+}
+
+button:hover
+{
+    cursor:pointer;
 }
