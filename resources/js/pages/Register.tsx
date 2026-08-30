@@ -43,14 +43,14 @@ export default function register() {
     }
 
     const lines = [
-        <div className="dos">Welcome new user.</div>,
-        <div className="dos">Enter the username and the password you wish to use.</div>,
+        <div>Welcome new user.</div>,
+        <div>Enter the username and the password you wish to use.</div>,
         "$error",
-        <><div className="dos">Username:</div><input name="username" type="text" className="dos w-full"/></>,
-        <><div className="dos text-nowrap">Email (Optional):</div><input name="email" type="text" className="dos w-full"/></>,
-        <><div className="dos">Password:</div><input name="password" type="password" className="dos w-full"/></>,
-        <><div className="dos text-nowrap">Password confirmation:</div><input name="password_confirmation" type="password" className="dos w-full"/></>,
-        <Link className="dos url" to="/login">Already have an account? Click here to login</Link>
+        <><div >Username:</div><input name="username" type="text" className=" w-full"/></>,
+        <><div className="text-nowrap">Email (Optional):</div><input name="email" type="text" className="w-full"/></>,
+        <><div >Password:</div><input name="password" type="password" className="w-full"/></>,
+        <><div className="text-nowrap">Password confirmation:</div><input name="password_confirmation" type="password" className="w-full"/></>,
+        <Link to="/login">Already have an account? Click here to login</Link>
     ]
 
     return <Form lines={lines} handleSubmit={handleSubmit} ></Form>

@@ -82,50 +82,50 @@ export function Nav() {
 export function Content() {
     return (
         <>
-            <h1 className="text-center title text-2xl sm:text-4xl md:text-5xl lg:text-6xl">
+            <h1 className="text-center my-5 title text-4xl md:text-5xl lg:text-6xl">
                 VotV Community Broadcaster
             </h1>
 
-            <div className="content">
-                <div className="panel">
-                    <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl subtitle sm:text-left text-center">
+            <div className="panels">
+                <div className="panel mx-auto xl:m-0">
+                    <div className="subtitle">
                         Description
                     </div>
-                    <div className="flex flex-col gap-2 mt-2 mb-6 items-center sm:items-baseline">
-                        <div className="w-[70%]">
+                    <div className="text flex flex-col gap-2 mt-2 mb-6">
+                        <div>
                             VotV Community Broadcaster is a fan made website and is not affiliated with MrDrNose.
                         </div>
-                        <div className="w-[70%]">
+                        <div>
                             Its purpose is to provide an in-game radio station and tv station that broadcasts medias
                             shared by the community.
                         </div>
                         <br/>
-                        <div className="w-[70%]">
+                        <div>
                             Don't know how to add the streams to your online.txt? Check out the{" "}
-                            <Link className="subtitle url" to="/help">Help</Link> page.
+                            <Link to="/help">Help</Link> page.
                         </div>
                     </div>
 
-                    <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl subtitle sm:text-left text-center">
+                    <div className="subtitle">
                         Features
                     </div>
-                    <div className="flex flex-col gap-2 mt-2 mb-2 items-center sm:items-baseline">
-                        <div className="w-[70%]">Access a radio and tv station both available 24/7</div>
-                        <div className="w-[70%]">Upload files that will be automatically parsed into these stations</div>
-                        <div className="w-[70%]">Adjust file metadata</div>
-                        <div className="w-[70%]">Download files uploaded by the community</div>
+                    <div className="text flex flex-col gap-2 mt-2 mb-2">
+                        <div>Access a radio and tv station both available 24/7</div>
+                        <div>Upload files that will be automatically parsed into these stations</div>
+                        <div>Adjust file metadata</div>
+                        <div>Download files uploaded by the community</div>
                     </div>
                 </div>
 
                 <div className="panel links">
-                    <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl subtitle sm:text-left text-center">
+                    <div className="subtitle text-center">
                         Links
                     </div>
                     <div className="flex relative flex-col gap-4 mt-2 mb-6 items-center sm:items-baseline">
-                        <Link className="p-2 w-90 home-button" to="/changelog">Changelog</Link>
-                        <Link className="p-2 w-90 home-button" to="/credits">Credits</Link>
-                        <Link className="p-2 w-90 home-button" to="/history">History</Link>
-                        <Link className="p-2 w-90 home-button" to="/help">Help</Link>
+                        <Link className="p-2 w-full" to="/changelog">Changelog</Link>
+                        <Link className="p-2" to="/credits">Credits</Link>
+                        <Link className="p-2" to="/history">History</Link>
+                        <Link className="p-2" to="/help">Help</Link>
 
                         <div className="flex flex-row w-full justify-between gap-10">
                             <a className="p-2 w-40 home-button" href="https://votvbroadcast.com/txt/radio.txt">
@@ -155,6 +155,7 @@ export function Content() {
                         </a>
                     </div>
                 </div>
+                <div className="panel invisible">Gallery here</div>
             </div>
         </>
     );
