@@ -8,79 +8,33 @@ use Illuminate\Support\Facades\DB;
 
 class ChannelsController extends Controller
 {
-    private const RADIO_CHANNELS = [
-        'everything',
-        'sfw',
-        'country',
-        'classical',
-        'electronic',
-        'hip_hop',
-        'instrumental',
-        'jazz',
-        'mariachi',
-        'metal',
-        'pop',
-        'rock',
-        'video_game',
-        'weird',
-    ];
-
-    private const TV_CHANNELS = [
-        'everything',
-        'sfw',
-        'animations',
-        'documentaries',
-        'horror',
-        'let_s_plays',
-        'memes',
-        'shows',
-        'vlogs',
-        'news',
-    ];
+    private const RADIO = 1;
+    private const TV = 2;
 
     public function index(): JsonResponse
     {
         $channels = DB::table('channels')
             ->select(['id', 'name', 'normalized_name'])
-            ->get()
-            ->keyBy('normalized_name');
-
-        $radio = collect(self::RADIO_CHANNELS)
-            ->map(fn (string $channel) => $this->channelData($channels->get($channel), 'radio', $channel))
-            ->filter()
-            ->values();
-
-        $tv = collect(self::TV_CHANNELS)
-            ->map(fn (string $channel) => $this->channelData($channels->get($channel), 'tv', $channel))
-            ->filter()
-            ->values()
-            ->push([
-                'id' => 'tv-lt5min',
-                'name' => 'VCB < 5min',
-                'url' => 'https://tv.votvbroadcast.com/votv_lt5min.mp4',
-            ])
-            ->push([
-                'id' => 'tv-chaotic',
-                'name' => 'VCB CHAOTIC',
-                'url' => 'https://tv.votvbroadcast.com/votv_lt30sec.mp4',
-            ]);
+            ->orderBy('id');
 
         return response()->json([
-            'radio' => $radio,
-            'tv' => $tv,
+            'radio' => (clone $channels)
+                ->whereRaw('(display_rules & ?) = ?', [self::RADIO, self::RADIO])
+                ->get()
+                ->map(fn (object $channel) => $this->channelData($channel, 'radio')),
+            'tv' => (clone $channels)
+                ->whereRaw('(display_rules & ?) = ?', [self::TV, self::TV])
+                ->get()
+                ->map(fn (object $channel) => $this->channelData($channel, 'tv')),
         ]);
     }
 
-    private function channelData(?object $channel, string $station, string $normalizedName): ?array
+    private function channelData(object $channel, string $station): array
     {
-        if ($channel === null) {
-            return null;
-        }
-
         return [
             'id' => "{$station}-{$channel->id}",
-            'name' => $normalizedName === 'everything' ? 'VotV Community Broadcast' : "VCB {$channel->name}",
-            'url' => $this->streamUrl($station, $normalizedName),
+            'name' => $channel->normalized_name === 'everything' ? 'VotV Community Broadcast' : "VCB {$channel->name}",
+            'url' => $this->streamUrl($station, $channel->normalized_name),
         ];
     }
 
@@ -88,7 +42,10 @@ class ChannelsController extends Controller
     {
         $streamName = match ($channel) {
             'everything' => 'votv',
+            'hip_hop' => 'votv_hiphop',
             'let_s_plays' => 'votv_letsplays',
+            '5min' => 'votv_lt5min',
+            'chaotic' => 'votv_lt30sec',
             default => "votv_{$channel}",
         };
         $extension = $station === 'radio' ? 'mp3' : 'mp4';
