@@ -241,6 +241,11 @@ html {
             text-shadow: var(--votv-subtitle-shadow);
         }
 
+        .stream-example {
+            width: min(100%, 67rem);
+            margin: 0.5rem auto;
+        }
+
         .generator {
             display: flex;
             flex-direction: column;
@@ -265,6 +270,13 @@ html {
         .generator button:hover {
             background-color: #333333;
             cursor: pointer;
+        }
+
+        .generator button:disabled,
+        .generator button:disabled:hover {
+            color: #9A6B34;
+            background-color: #303030;
+            cursor: default;
         }
 
         .generator-tabs button {

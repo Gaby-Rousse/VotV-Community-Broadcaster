@@ -70,6 +70,7 @@ function HowTo() {
                 <h3 className="subtitle">How to add the streams to your online.txt</h3>
                 <p>Every <span className="help-emphasis">odd</span> line is a label, the name you want to give the stream in-game.</p>
                 <p>Every <span className="help-emphasis">even</span> line is the URL toward the stream.</p>
+                <img className="stream-example" src="/images/ex.png" alt="Example online.txt file with alternating labels and stream URLs"/>
                 <p>Once done, do not forget to <span className="help-emphasis">save</span> the file.</p>
             </div>
         </section>
@@ -81,11 +82,13 @@ function OnlineTxtGenerator() {
     const [channels, setChannels] = useState<ChannelsByStation>({radio: [], tv: []});
     const [selected, setSelected] = useState<number[]>([]);
     const [error, setError] = useState<string>();
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         api.get<ChannelsByStation>("/api/v1/channels")
             .then(response => setChannels(response.data))
-            .catch(() => setError("Unable to load channels."));
+            .catch(() => setError("Unable to load channels."))
+            .finally(() => setLoading(false));
     }, []);
 
     const currentChannels = channels[station];
@@ -105,8 +108,13 @@ function OnlineTxtGenerator() {
     };
 
     const generate = () => {
-        const content = currentChannels
-            .filter(channel => selected.includes(channel.id))
+        const chosenChannels = currentChannels
+            .filter(channel => selected.includes(channel.id));
+        if (chosenChannels.length === 0) {
+            return;
+        }
+
+        const content = chosenChannels
             .map(channel => channel.name + "\n" + channel.url + "\n")
             .join("");
         const link = document.createElement("a");
@@ -127,7 +135,8 @@ function OnlineTxtGenerator() {
                 <div className="generator-title">{station === "radio" ? "Radio" : "TV"}</div>
                 <div className="generator-list">
                     {error && <p className="generator-message red">{error}</p>}
-                    {!error && currentChannels.length === 0 && <p className="generator-message">Loading channels...</p>}
+                    {loading && <p className="generator-message">Loading channels...</p>}
+                    {!loading && !error && currentChannels.length === 0 && <p className="generator-message">No channels available.</p>}
                     {currentChannels.map(channel => (
                         <label key={channel.id} className="generator-channel">
                             <span>{channel.name}</span>
@@ -140,11 +149,17 @@ function OnlineTxtGenerator() {
                             type="checkbox"
                             checked={currentChannels.length > 0 && currentChannels.every(channel => selected.includes(channel.id))}
                             onChange={toggleAll}
+                            disabled={currentChannels.length === 0}
                         />
                     </label>
                 </div>
                 <div className="generator-footer">
-                    <button onClick={generate}>Generate!</button>
+                    <button
+                        onClick={generate}
+                        disabled={!currentChannels.some(channel => selected.includes(channel.id))}
+                    >
+                        Generate!
+                    </button>
                 </div>
             </div>
         </section>
