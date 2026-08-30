@@ -155,20 +155,22 @@ function CommonIssues() {
     return (
         <section id="common-issues" className="help-section">
             <h2 className="subtitle">Common issues</h2>
-            <div className="help-content">
-                <h3 className="subtitle">List is empty, I do not see the files I added to online.txt</h3>
-                <p>First, make sure you saved your file with CTRL+S or File → Save.</p>
-                <p>Then try refreshing assets directly in the in-game settings.</p>
+            <div className="help-content common-issues-content">
+                <h3 className="subtitle">List is empty, I don't see the files I added to online.txt</h3>
+                <p>First, make sure you saved your file by doing CTRL+S or File -&gt; Save</p>
+                <p>Once done, try refreshing assets directly in the in-game settings</p>
                 <h3 className="subtitle">Status stuck to none</h3>
-                <p>Make sure the TV is plugged in.</p>
+                <p>Make sure the TV is plugged in</p>
                 <h3 className="subtitle">Status stuck to failed</h3>
-                <p>VCB might be down or blocked where you live. Try opening the streams directly:</p>
+                <p>VotV Community Broadcaster might be down or blocked where you live.</p>
+                <p>Try accessing the streams directly in your browser, try those ones:</p>
                 <a href="https://radio.votvbroadcast.com/votv.mp3">VotV Community Radio</a>
                 <a href="https://tv.votvbroadcast.com/votv.mp4">VotV Community TV</a>
                 <h3 className="subtitle">Linux shenanigans</h3>
-                <p>Use this launch option:</p>
-                <p className="subtitle">WINE_DO_NOT_CREATE_DXGI_DEVICE_MANAGER=1 %command%</p>
-                <p>For TV playback on Linux, use the <a href="https://github.com/Foxaryse/ArchiveCommunityBranch/tree/main/linux/scripts/onlinevideoworkaround">workaround</a>.</p>
+                <p>Make sure you have this launch option first:</p>
+                <p className="help-emphasis">WINE_DO_NOT_CREATE_DXGI_DEVICE_MANAGER=1 %command%</p>
+                <p>This makes the radio works flawlessly. As for the TV you will hear the audio but see nothing.</p>
+                <p>To make the TV work on Linux please use this <a href="https://github.com/Foxaryse/ArchiveCommunityBranch/tree/main/linux/scripts/onlinevideoworkaround">workaround</a></p>
             </div>
         </section>
     );
