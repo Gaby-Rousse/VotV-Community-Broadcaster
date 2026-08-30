@@ -239,32 +239,90 @@ html {
         .generator {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
-            padding: 1rem;
-            background-color: var(--votv-panel-bg);
+            width: 100%;
+            background-color: #1A1A1A;
+            border: 3px outset #A5A5A5;
+            border-top: 0;
         }
 
         .generator-tabs {
-            display: flex;
-            gap: 0.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
         }
 
         .generator button {
-            padding: 0.5rem 1rem;
-            border: var(--votv-border);
-            background-color: black;
+            height: 2.5rem;
+            color: #FF8900;
+            background-color: #404040;
+            border: 3px outset #838383;
         }
 
-        .generator button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .generator button:hover {
+            background-color: #333333;
+            cursor: pointer;
+        }
+
+        .generator-tabs button {
+            height: 2.5rem;
+        }
+
+        .generator-tabs .active {
+            background-color: #242424;
+        }
+
+        .generator-title {
+            height: 2rem;
+            line-height: 1.65rem;
+            text-align: center;
+            border: 3px outset #838383;
+            border-right: 0;
+            border-left: 0;
+        }
+
+        .generator-list {
+            display: flex;
+            flex-direction: column;
         }
 
         .generator-channel {
             display: flex;
+            align-items: center;
             justify-content: space-between;
+            min-height: 2rem;
+            padding-left: 0.5rem;
+            border-bottom: 3px solid #303030;
+        }
+
+        .generator-channel input {
+            appearance: none;
+            width: 1.875rem;
+            height: 1.875rem;
+            margin: 0;
+            flex: 0 0 auto;
+            background-color: #444444;
+            border: 5px outset #B0B0B0;
+            cursor: pointer;
+        }
+
+        .generator-channel input:checked {
+            background-color: #C66200;
+            border-width: 3px;
+        }
+
+        .generator-message {
+            min-height: 2rem;
             padding: 0.35rem 0.5rem;
-            border-bottom: var(--votv-border);
+            border-bottom: 3px solid #303030;
+        }
+
+        .generator-footer {
+            display: flex;
+            min-height: 2.5rem;
+        }
+
+        .generator-footer button {
+            width: 9.25rem;
+            margin-left: auto;
         }
     }
 }

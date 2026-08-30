@@ -93,6 +93,11 @@ function OnlineTxtGenerator() {
         setSelected(current => visibleIds.every(id => current.includes(id)) ? current.filter(id => !visibleIds.includes(id)) : [...new Set([...current, ...visibleIds])]);
     };
 
+    const changeStation = (nextStation: Station) => {
+        setStation(nextStation);
+        setSelected([]);
+    };
+
     const generate = () => {
         const content = channels
             .filter(channel => selected.includes(channel.id))
@@ -110,19 +115,31 @@ function OnlineTxtGenerator() {
             <h2 className="subtitle">Online.txt generator</h2>
             <div className="generator">
                 <div className="generator-tabs">
-                    <button className={station === "radio" ? "selected" : ""} onClick={() => setStation("radio")}>Radio</button>
-                    <button className={station === "tv" ? "selected" : ""} onClick={() => setStation("tv")}>TV</button>
+                    <button className={station === "radio" ? "active" : ""} onClick={() => changeStation("radio")}>Radio</button>
+                    <button className={station === "tv" ? "active" : ""} onClick={() => changeStation("tv")}>TV</button>
                 </div>
-                {error && <p className="red">{error}</p>}
-                {!error && channels.length === 0 && <p>Loading channels...</p>}
-                {channels.map(channel => (
-                    <label key={channel.id} className="generator-channel">
-                        <span>{channel.name}</span>
-                        <input type="checkbox" checked={selected.includes(channel.id)} onChange={() => toggleChannel(channel.id)}/>
+                <div className="generator-title">{station === "radio" ? "Radio" : "TV"}</div>
+                <div className="generator-list">
+                    {error && <p className="generator-message red">{error}</p>}
+                    {!error && channels.length === 0 && <p className="generator-message">Loading channels...</p>}
+                    {channels.map(channel => (
+                        <label key={channel.id} className="generator-channel">
+                            <span>{channel.id === 1 ? "VotV Community Broadcast" : `VCB ${channel.name}`}</span>
+                            <input type="checkbox" checked={selected.includes(channel.id)} onChange={() => toggleChannel(channel.id)}/>
+                        </label>
+                    ))}
+                    <label className="generator-channel">
+                        <span>Toggle All</span>
+                        <input
+                            type="checkbox"
+                            checked={channels.length > 0 && channels.every(channel => selected.includes(channel.id))}
+                            onChange={toggleAll}
+                        />
                     </label>
-                ))}
-                <button onClick={toggleAll}>Toggle all</button>
-                <button onClick={generate} disabled={selected.length === 0}>Generate!</button>
+                </div>
+                <div className="generator-footer">
+                    <button onClick={generate}>Generate!</button>
+                </div>
             </div>
         </section>
     );
