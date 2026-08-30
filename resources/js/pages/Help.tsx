@@ -57,7 +57,7 @@ function HowTo() {
     return (
         <section id="how-to" className="help-section">
             <h2 className="subtitle">How to</h2>
-            <div className="help-content">
+            <div className="help-content stream-instructions">
                 <h3 className="subtitle">Paths</h3>
                 <p><span className="path-label">Windows (Radio):</span> %LOCALAPPDATA%\VotV\Assets\radio</p>
                 <p><span className="path-label">Windows (TV):</span> %LOCALAPPDATA%\VotV\Assets\tv</p>
