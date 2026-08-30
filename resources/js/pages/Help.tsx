@@ -5,10 +5,14 @@ import api from "../lib/axios.ts";
 type Station = "radio" | "tv";
 
 type Channel = {
-    id: number;
+    id: string;
     name: string;
-    radio_url: string;
-    tv_url: string;
+    url: string;
+};
+
+type ChannelsByStation = {
+    radio: Channel[];
+    tv: Channel[];
 };
 
 export default function Help() {
@@ -74,22 +78,24 @@ function HowTo() {
 
 function OnlineTxtGenerator() {
     const [station, setStation] = useState<Station>("radio");
-    const [channels, setChannels] = useState<Channel[]>([]);
-    const [selected, setSelected] = useState<number[]>([]);
+    const [channels, setChannels] = useState<ChannelsByStation>({radio: [], tv: []});
+    const [selected, setSelected] = useState<string[]>([]);
     const [error, setError] = useState<string>();
 
     useEffect(() => {
-        api.get<Channel[]>("/api/v1/channels")
+        api.get<ChannelsByStation>("/api/v1/channels")
             .then(response => setChannels(response.data))
             .catch(() => setError("Unable to load channels."));
     }, []);
 
-    const toggleChannel = (id: number) => {
+    const currentChannels = channels[station];
+
+    const toggleChannel = (id: string) => {
         setSelected(current => current.includes(id) ? current.filter(channelId => channelId !== id) : [...current, id]);
     };
 
     const toggleAll = () => {
-        const visibleIds = channels.map(channel => channel.id);
+        const visibleIds = currentChannels.map(channel => channel.id);
         setSelected(current => visibleIds.every(id => current.includes(id)) ? current.filter(id => !visibleIds.includes(id)) : [...new Set([...current, ...visibleIds])]);
     };
 
@@ -99,9 +105,9 @@ function OnlineTxtGenerator() {
     };
 
     const generate = () => {
-        const content = channels
+        const content = currentChannels
             .filter(channel => selected.includes(channel.id))
-            .map(channel => `${channel.name}\n${station === "radio" ? channel.radio_url : channel.tv_url}\n`)
+            .map(channel => channel.name + "\n" + channel.url + "\n")
             .join("");
         const link = document.createElement("a");
         link.href = URL.createObjectURL(new Blob([content], {type: "text/plain;charset=utf-8"}));
@@ -121,10 +127,10 @@ function OnlineTxtGenerator() {
                 <div className="generator-title">{station === "radio" ? "Radio" : "TV"}</div>
                 <div className="generator-list">
                     {error && <p className="generator-message red">{error}</p>}
-                    {!error && channels.length === 0 && <p className="generator-message">Loading channels...</p>}
-                    {channels.map(channel => (
+                    {!error && currentChannels.length === 0 && <p className="generator-message">Loading channels...</p>}
+                    {currentChannels.map(channel => (
                         <label key={channel.id} className="generator-channel">
-                            <span>{channel.id === 1 ? "VotV Community Broadcast" : `VCB ${channel.name}`}</span>
+                            <span>{channel.name}</span>
                             <input type="checkbox" checked={selected.includes(channel.id)} onChange={() => toggleChannel(channel.id)}/>
                         </label>
                     ))}
@@ -132,7 +138,7 @@ function OnlineTxtGenerator() {
                         <span>Toggle All</span>
                         <input
                             type="checkbox"
-                            checked={channels.length > 0 && channels.every(channel => selected.includes(channel.id))}
+                            checked={currentChannels.length > 0 && currentChannels.every(channel => selected.includes(channel.id))}
                             onChange={toggleAll}
                         />
                     </label>
