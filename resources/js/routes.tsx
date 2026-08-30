@@ -3,10 +3,12 @@ import Home from './pages/Home';
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Tui from './pages/Tui.tsx'
+import Help from './pages/Help.tsx'
 
 export const router = createBrowserRouter([
     { path: '/', element: <Home /> },
     { path: '/login', element: <Login /> },
     { path: '/register', element: <Register /> },
     { path: '/tui', element: <Tui/>},
+    { path: '/help', element: <Help/>},
 ]);

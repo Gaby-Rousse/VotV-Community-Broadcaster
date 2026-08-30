@@ -173,6 +173,82 @@ html {
             }
         }
     }
+
+    .help {
+        padding: 0 1rem 2.5rem;
+
+        .help-subjects,
+        .help-section {
+            width: min(100%, 56rem);
+            margin: 1.5rem auto 0;
+        }
+
+        .help-subjects {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            padding: 1rem;
+            border: var(--votv-border);
+
+            a {
+                border: var(--votv-border);
+                background-color: black;
+                text-decoration: none;
+            }
+        }
+
+        .help-section {
+            scroll-margin-top: 5rem;
+        }
+
+        .help-section h2 {
+            margin-bottom: 1rem;
+            font-size: var(--text-4xl);
+        }
+
+        .help-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .help-content h3 {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: var(--text-xl);
+        }
+
+        .generator {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1rem;
+            background-color: var(--votv-panel-bg);
+        }
+
+        .generator-tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .generator button {
+            padding: 0.5rem 1rem;
+            border: var(--votv-border);
+            background-color: black;
+        }
+
+        .generator button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .generator-channel {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.35rem 0.5rem;
+            border-bottom: var(--votv-border);
+        }
+    }
 }
 
 .meadow {
