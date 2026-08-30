@@ -46,9 +46,9 @@ function HelpSubjects() {
     return (
         <fieldset className="help-subjects">
             <legend>Subjects</legend>
-            <a className="p-2" href="#how-to">How to</a>
-            <a className="p-2" href="#online-txt-generator">Online.txt generator</a>
-            <a className="p-2" href="#common-issues">Common issues</a>
+            <a className="p-2 w-40" href="#how-to">How to</a>
+            <a className="p-2 w-60" href="#online-txt-generator">Online.txt generator</a>
+            <a className="p-2 w-60" href="#common-issues">Common issues</a>
         </fieldset>
     );
 }
@@ -58,7 +58,7 @@ function HowTo() {
         <section id="how-to" className="help-section">
             <h2 className="subtitle">How to</h2>
             <div className="help-content">
-                <h3 className="subtitle">Paths for the files</h3>
+                <h3 className="subtitle">Paths</h3>
                 <p><span className="path-label">Windows (Radio):</span> %LOCALAPPDATA%\VotV\Assets\radio</p>
                 <p><span className="path-label">Windows (TV):</span> %LOCALAPPDATA%\VotV\Assets\tv</p>
                 <p><span className="path-label">Linux_steam (Radio):</span> /home/{"{user}"}/.steam/steam/steamapps/compatdata/{"{id_given_for_votv}"}/pfx/drive_c/users/steamuser/AppData/Local/VotV/Assets/radio</p>
