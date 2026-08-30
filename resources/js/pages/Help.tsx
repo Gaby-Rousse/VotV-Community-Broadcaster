@@ -5,7 +5,7 @@ import api from "../lib/axios.ts";
 type Station = "radio" | "tv";
 
 type Channel = {
-    id: string;
+    id: number;
     name: string;
     url: string;
 };
@@ -79,7 +79,7 @@ function HowTo() {
 function OnlineTxtGenerator() {
     const [station, setStation] = useState<Station>("radio");
     const [channels, setChannels] = useState<ChannelsByStation>({radio: [], tv: []});
-    const [selected, setSelected] = useState<string[]>([]);
+    const [selected, setSelected] = useState<number[]>([]);
     const [error, setError] = useState<string>();
 
     useEffect(() => {
@@ -90,7 +90,7 @@ function OnlineTxtGenerator() {
 
     const currentChannels = channels[station];
 
-    const toggleChannel = (id: string) => {
+    const toggleChannel = (id: number) => {
         setSelected(current => current.includes(id) ? current.filter(channelId => channelId !== id) : [...current, id]);
     };
 
