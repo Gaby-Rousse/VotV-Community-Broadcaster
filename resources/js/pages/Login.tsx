@@ -47,13 +47,13 @@ export default function Login() {
     }
 
     const lines = [
-        <div className="dos">{params.get("registerSuccess") == "true" ? 'Account created successfully. Please authenticate.' : 'Welcome. Please authenticate.'}</div>,
+        <div>{params.get("registerSuccess") == "true" ? 'Account created successfully. Please authenticate.' : 'Welcome. Please authenticate.'}</div>,
         "$error",
-        <><div className="dos">Username:</div><input name="username" type="text" className="dos w-full"/></>,
-        <><div className="dos">Password:</div><input name="password" type="password" className="dos w-full"/></>,
-        <><div className="dos">Remember me:</div><input name="remember" type="checkbox" className="dos"/></>,
-        <Link className="dos url" to="/forgot-password">Forgot your password?</Link>,
-        <Link className="dos url" to="/register">Need an account? Click here to register</Link>
+        <><div>Username:</div><input name="username" type="text" className="w-full"/></>,
+        <><div>Password:</div><input name="password" type="password" className="w-full"/></>,
+        <><div>Remember me:</div><input name="remember" type="checkbox"/></>,
+        <Link to="/forgot-password">Forgot your password?</Link>,
+        <Link to="/register">Need an account? Click here to register</Link>
     ]
 
     return <Form handleSubmit={handleSubmit} lines={lines} />

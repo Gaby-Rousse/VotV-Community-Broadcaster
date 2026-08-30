@@ -1,4 +1,4 @@
-export default function Dev() {
+export default function Tui() {
     return (
     <div className="tui flex flex-col">
         {/* TOP GRAY BAR */}
@@ -45,7 +45,7 @@ export default function Dev() {
 
 
         </div>
-        <div className="h-8 relative bottom-0 w-full leading-8 text-center bg-[#00AAAA]">VotV Community Broadcaster v1.0.0 Saki Edition</div>
+        <div className="h-8 relative bottom-0 w-full leading-8 text-center bg-(--tui-teal)">VotV Community Broadcaster v1.0.0 Saki Edition</div>
     </div>
 
     );

@@ -50,13 +50,13 @@ export default function account() {
     }
 
     const lines = [
-        <div className="dos">Hello {user.username}.</div>,
-        <div className="dos">You can adjust your account settings here.</div>,
+        <div>Hello {user.username}.</div>,
+        <div>You can adjust your account settings here.</div>,
         "$error",
-        <div className="dos">1) Log off</div>,
-        <div className="dos">2) Update account information</div>,
-        <div className="dos">3) Delete account</div>,
-        <><div className="dos">Please select an option:</div><input name="Option" className="dos"/></>
+        <div>1) Log off</div>,
+        <div>2) Update account information</div>,
+        <div>3) Delete account</div>,
+        <><div>Please select an option:</div><input name="Option"/></>
     ]
 
     return <Form lines={lines} handleSubmit={handleSubmit}></Form>

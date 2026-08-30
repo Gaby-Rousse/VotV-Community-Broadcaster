@@ -31,15 +31,14 @@ export function Form({ handleSubmit, lines }: {
     return (
         <>
             <form onSubmit={onSubmit}
-                  className="bg-black flex h-screen w-screen">
+                  className="meadow bg-black flex h-screen w-screen">
                 <div className="ml-1 mt-auto flex flex-col">
 
                     <Lines visibleCount={visibleCount}>
                         {lines.map(value =>
-                            value == "$error" ? (error ? <div className="dos red">ERR: {error}</div> : <></>) : <Line>{value}</Line>
+                            value == "$error" ? (error ? <div className="red">ERR: {error}</div> : <></>) : <Line>{value}</Line>
                         )}
                     </Lines>
-                    <button type="submit" className="dos url w-4 sm:hidden">Submit!</button>
                 </div>
                 {/* For Safari that uses GO for some stupid reason */}
                 <button type="submit" className="sr-only">Submit</button>
