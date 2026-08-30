@@ -186,6 +186,7 @@ html {
         .help-subjects {
             display: flex;
             flex-wrap: wrap;
+            justify-content: center;
             gap: 0.75rem;
             padding: 1rem;
             border: var(--votv-border);
@@ -216,6 +217,11 @@ html {
             margin-top: 1rem;
             text-align: center;
             font-size: var(--text-xl);
+        }
+
+        .path-label {
+            font-size: 1rem;
+            text-shadow: var(--votv-subtitle-shadow);
         }
 
         .generator {

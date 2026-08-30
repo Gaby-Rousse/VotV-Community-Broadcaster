@@ -58,11 +58,11 @@ function HowTo() {
         <section id="how-to" className="help-section">
             <h2 className="subtitle">How to</h2>
             <div className="help-content">
-                <h3 className="subtitle">Paths</h3>
-                <p><span className="subtitle">Windows (Radio):</span> %LOCALAPPDATA%\VotV\Assets\radio</p>
-                <p><span className="subtitle">Windows (TV):</span> %LOCALAPPDATA%\VotV\Assets\tv</p>
-                <p><span className="subtitle">Linux_steam (Radio):</span> /home/{"{user}"}/.steam/steam/steamapps/compatdata/{"{id_given_for_votv}"}/pfx/drive_c/users/steamuser/AppData/Local/VotV/Assets/radio</p>
-                <p><span className="subtitle">Linux_steam (TV):</span> /home/{"{user}"}/.steam/steam/steamapps/compatdata/{"{id_given_for_votv}"}/pfx/drive_c/users/steamuser/AppData/Local/VotV/Assets/tv</p>
+                <h3 className="subtitle">Paths for the files</h3>
+                <p><span className="path-label">Windows (Radio):</span> %LOCALAPPDATA%\VotV\Assets\radio</p>
+                <p><span className="path-label">Windows (TV):</span> %LOCALAPPDATA%\VotV\Assets\tv</p>
+                <p><span className="path-label">Linux_steam (Radio):</span> /home/{"{user}"}/.steam/steam/steamapps/compatdata/{"{id_given_for_votv}"}/pfx/drive_c/users/steamuser/AppData/Local/VotV/Assets/radio</p>
+                <p><span className="path-label">Linux_steam (TV):</span> /home/{"{user}"}/.steam/steam/steamapps/compatdata/{"{id_given_for_votv}"}/pfx/drive_c/users/steamuser/AppData/Local/VotV/Assets/tv</p>
                 <h3 className="subtitle">How to add the streams to your online.txt</h3>
                 <p>Every <span className="subtitle">odd</span> line is a label, the name you want to give the stream in-game.</p>
                 <p>Every <span className="subtitle">even</span> line is the URL toward the stream.</p>
