@@ -64,9 +64,9 @@ function HowTo() {
                 <p><span className="path-label">Linux_steam (Radio):</span> /home/{"{user}"}/.steam/steam/steamapps/compatdata/{"{id_given_for_votv}"}/pfx/drive_c/users/steamuser/AppData/Local/VotV/Assets/radio</p>
                 <p><span className="path-label">Linux_steam (TV):</span> /home/{"{user}"}/.steam/steam/steamapps/compatdata/{"{id_given_for_votv}"}/pfx/drive_c/users/steamuser/AppData/Local/VotV/Assets/tv</p>
                 <h3 className="subtitle">How to add the streams to your online.txt</h3>
-                <p>Every <span className="subtitle">odd</span> line is a label, the name you want to give the stream in-game.</p>
-                <p>Every <span className="subtitle">even</span> line is the URL toward the stream.</p>
-                <p>Once done, do not forget to <span className="subtitle">save</span> the file.</p>
+                <p>Every <span className="help-emphasis">odd</span> line is a label, the name you want to give the stream in-game.</p>
+                <p>Every <span className="help-emphasis">even</span> line is the URL toward the stream.</p>
+                <p>Once done, do not forget to <span className="help-emphasis">save</span> the file.</p>
             </div>
         </section>
     );

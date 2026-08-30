@@ -231,6 +231,11 @@ html {
             text-shadow: var(--votv-subtitle-shadow);
         }
 
+        .help-emphasis {
+            font-size: inherit;
+            text-shadow: var(--votv-subtitle-shadow);
+        }
+
         .generator {
             display: flex;
             flex-direction: column;
