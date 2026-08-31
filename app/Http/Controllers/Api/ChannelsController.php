@@ -11,16 +11,14 @@ class ChannelsController extends Controller
     public function index(): JsonResponse
     {
         return response()->json([
-            'radio' => DB::table('channels')
-                ->select(['id', 'generator_name as name', 'radio_url as url'])
-                ->whereNotNull('radio_url')
-                ->orderBy('generator_order')
+            'radio' => DB::table('browse_audio')
+                ->select(['id', 'long_name as name', 'url'])
+                ->orderBy('sort_order')
                 ->get()
                 ->values(),
-            'tv' => DB::table('channels')
-                ->select(['id', 'generator_name as name', 'tv_url as url'])
-                ->whereNotNull('tv_url')
-                ->orderBy('generator_order')
+            'tv' => DB::table('browse_video')
+                ->select(['id', 'long_name as name', 'url'])
+                ->orderBy('sort_order')
                 ->get()
                 ->values(),
         ]);
