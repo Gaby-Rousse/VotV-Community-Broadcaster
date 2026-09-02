@@ -48,11 +48,11 @@ function HelpNav() {
 
 function HelpSubjects() {
     return (
-        <fieldset className="help-subjects">
+        <fieldset className="help-subjects links">
             <legend>Subjects</legend>
-            <a className="p-2 w-40" href="#how-to">How to</a>
-            <a className="p-2 w-60" href="#online-txt-generator">Online.txt generator</a>
-            <a className="p-2 w-60" href="#common-issues">Common issues</a>
+            <a className="p-2" href="#how-to">How to</a>
+            <a className="p-2" href="#online-txt-generator">Online.txt generator</a>
+            <a className="p-2" href="#common-issues">Common issues</a>
         </fieldset>
     );
 }

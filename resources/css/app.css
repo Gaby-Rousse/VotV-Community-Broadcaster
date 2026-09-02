@@ -192,11 +192,8 @@ html {
             gap: 0.5rem;
             padding: 1rem;
             border: var(--votv-border);
-
-            a {
-                border: var(--votv-border);
-                background-color: black;
-                text-decoration: none;
+            & > a {
+                width: 100%;
             }
         }
 
@@ -276,7 +273,7 @@ html {
         .generator button:disabled:hover {
             color: #9A6B34;
             background-color: #303030;
-            cursor: default;
+            cursor: not-allowed;
         }
 
         .generator-tabs button {
@@ -323,7 +320,6 @@ html {
 
         .generator-channel input:checked {
             background-color: #C66200;
-            border-width: 3px;
         }
 
         .generator-message {
