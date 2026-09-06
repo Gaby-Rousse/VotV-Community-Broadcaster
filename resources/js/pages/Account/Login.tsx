@@ -1,12 +1,11 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {Link, useNavigate} from "react-router";
-import {useAuth} from "../contexts/AuthContext";
-import api from "../lib/axios.ts";
-import {Line, Lines} from "../components/Line.tsx";
-import {isAuthenticated} from "../models/interfaces/User.ts";
-import {useLoading} from "../contexts/LoadingContext.tsx";
+import {useAuth} from "../../contexts/AuthContext.tsx";
+import api from "../../lib/axios.ts";
+import {isAuthenticated} from "../../models/interfaces/User.ts";
+import {useLoading} from "../../contexts/LoadingContext.tsx";
 import {useSearchParams} from "react-router-dom";
-import {Form} from "../components/Form.tsx";
+import {Form} from "../../components/Form.tsx";
 export default function Login() {
     //https://reactrouter.com/start/declarative/navigating#usenavigate
     const navigate = useNavigate();
@@ -46,8 +45,32 @@ export default function Login() {
 
     }
 
+    let firstLine
+    switch(params.get("redirectCode")) {
+        case "1": {
+            firstLine = 'Account created successfully. Please authenticate.'
+            break;
+        }
+        case "2": {
+            firstLine = 'A request to reset your password has been made. Please authenticate.'
+            break;
+        }
+        case "3": {
+            firstLine = 'Password reset successfully. Please authenticate.'
+            break;
+        }
+        case "4": {
+            firstLine = 'Account deleted successfully. Goodbye.'
+            break;
+        }
+        default: {
+            firstLine = 'Welcome. Please authenticate.'
+            break;
+        }
+    }
+
     const lines = [
-        <div>{params.get("registerSuccess") == "true" ? 'Account created successfully. Please authenticate.' : 'Welcome. Please authenticate.'}</div>,
+        <div>{firstLine}</div>,
         "$error",
         <><div>Username:</div><input name="username" type="text" className="w-full"/></>,
         <><div>Password:</div><input name="password" type="password" className="w-full"/></>,

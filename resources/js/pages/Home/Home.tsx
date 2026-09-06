@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {Link} from "react-router";
-import {useAuth} from "../contexts/AuthContext";
-import {isAuthenticated} from "../models/interfaces/User.ts";
+import {useAuth} from "../../contexts/AuthContext.tsx";
+import {isAuthenticated} from "../../models/interfaces/User.ts";
 
 export default function Home() {
     return (
