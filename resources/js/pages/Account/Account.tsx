@@ -97,12 +97,11 @@ export default function account() {
         }
 
         setIsLoading(true)
-        return api.delete("/api/v1/user")
+        return api.delete(`/api/v1/user/${user.id}`)
             .then(async (response) => {
                 if (response.status === 204) {
                     refreshAuth()
                     navigate('/login?redirectCode=4', {replace: true})
-
                 }
                 return undefined;
             })

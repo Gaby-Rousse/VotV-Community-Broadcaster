@@ -19,6 +19,6 @@ Route::prefix('/v1')->group(function () {
     });
 
     Route::controller(UserController::class)->group(function () {
-        Route::delete('/user', 'selfDelete')->middleware('auth:sanctum');
+        Route::delete('/user/{id}', 'delete')->middleware('auth:sanctum');
     });
 });
