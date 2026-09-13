@@ -8,7 +8,7 @@ import {Form} from "../../components/Form.tsx";
 export default function forgotPassword() {
     //https://reactrouter.com/start/declarative/navigating#usenavigate
     const navigate = useNavigate();
-    const {user, refreshAuth} = useAuth();
+    const {user} = useAuth();
     const {setIsLoading} = useLoading();
 
     useEffect(() => {
@@ -20,6 +20,8 @@ export default function forgotPassword() {
     //https://react.dev/reference/react-dom/components/form
     const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>):Promise<string | undefined> => {
         e.preventDefault()
+
+        setIsLoading(true)
 
         let formData = new FormData(e.currentTarget);
 
@@ -47,5 +49,4 @@ export default function forgotPassword() {
 
     return <Form lines={lines} handleSubmit={handleSubmit}></Form>
 }
-
 
