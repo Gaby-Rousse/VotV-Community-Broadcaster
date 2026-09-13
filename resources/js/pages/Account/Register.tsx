@@ -1,11 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {Link, useNavigate} from "react-router";
-import {useAuth} from "../contexts/AuthContext";
-import {Line} from "../components/Line.tsx";
-import {isAuthenticated} from "../models/interfaces/User.ts";
-import api from "../lib/axios.ts";
-import {useLoading} from "../contexts/LoadingContext.tsx";
-import {Form} from "../components/Form.tsx";
+import {useAuth} from "../../contexts/AuthContext.tsx";
+import {isAuthenticated} from "../../models/interfaces/User.ts";
+import api from "../../lib/axios.ts";
+import {useLoading} from "../../contexts/LoadingContext.tsx";
+import {Form} from "../../components/Form.tsx";
 
 export default function register() {
     //https://reactrouter.com/start/declarative/navigating#usenavigate
@@ -30,7 +29,7 @@ export default function register() {
         return api.post("/api/v1/register", formData)
             .then(async (response) => {
                 if (response.status === 201) {
-                    navigate('/login?registerSuccess=true')
+                    navigate('/login?redirectCode=1')
                 }
                 return undefined;
             })

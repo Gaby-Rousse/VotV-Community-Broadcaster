@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {Link} from "react-router";
-import api from "../lib/axios.ts";
+import api from "../../lib/axios.ts";
+import {Nav} from "./Home.tsx";
 
 type Station = "radio" | "tv";
 
@@ -18,7 +19,7 @@ type ChannelsByStation = {
 export default function Help() {
     return (
         <div className="vcb">
-            <HelpNav/>
+            <Nav/>
             <main className="help">
                 <h1 className="text-center title text-4xl md:text-5xl lg:text-6xl">Help</h1>
                 <HelpSubjects/>
@@ -27,22 +28,6 @@ export default function Help() {
                 <CommonIssues/>
             </main>
         </div>
-    );
-}
-
-function HelpNav() {
-    return (
-        <nav>
-            <div className="flex flex-row h-16">
-                <div className="hidden sm:flex flex-row gap-4 mr-4 ml-auto">
-                    <Link className="mt-auto mb-auto p-2 w-28" to="/">Home</Link>
-                    <a className="mt-auto mb-auto p-2 w-28" href="https://radio.votvbroadcast.com/votv.mp3">Radio</a>
-                    <a className="mt-auto mb-auto p-2 w-28" href="https://tv.votvbroadcast.com/votv.mp4">TV</a>
-                    <Link className="mt-auto mb-auto p-2 w-28" to="/upload">Upload</Link>
-                    <Link className="mt-auto mb-auto p-2 w-28" to="/login">Login</Link>
-                </div>
-            </div>
-        </nav>
     );
 }
 

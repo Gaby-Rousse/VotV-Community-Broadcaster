@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* So apparently in CSS only inline works? */
+        /* Use me as a legend for the decisions below */
+
+        .white {
+            color: #FFFFFF;
+        }
+
+        .black {
+            color: #000000;
+        }
+
+        .gray {
+            color: #AAAAAA;
+        }
+
+        .darkblue {
+            color: #0000AA;
+        }
+
+        .teal {
+            color: #55FFFF
+        }
+
+        .red {
+            color: #AA0000;
+        }
+
+        .bottomright {
+            border: 2px solid #000000;
+        }
+
+        .topleft {
+            border: 2px solid #FFFFFF;
+        }
+        /* No custom font supported, font will often fallback. Tries to be as close as a console as possible. */
+        .font {
+            font-family:Consolas,'DejaVu Sans Mono',Menlo,'Courier New',monospace;"
+        }
+    </style>
+</head>
+
+<body style="margin:0; padding:0;">
+
+<div style="background-color:#0000AA; font-family:Consolas,'DejaVu Sans Mono',Menlo,'Courier New',monospace;">
+    <!--- TOP GRAY BAR --->
+    <div style="height:32px; background-color: #AAAAAA;"></div>
+    <!--- WINDOW --->
+    <div style=" margin: 50px auto; max-width: 650px; min-width: 650px; background-color: #AAAAAA;  border-top: 2px solid #FFFFFF; border-left: 2px solid #FFFFFF; border-bottom: 2px solid #000000; border-right:2px solid #000000; ">
+        <div style="height: 26px; line-height: 26px; background-color:#0000AA; color: #FFFFFF; text-align: center; letter-spacing: 1px; margin: 4px;">PASSWORD RESET TOOL (v0.1)</div>
+        <div style="padding: 20px 20px 0 20px;">
+            <!--- CONTENT --->
+            <div style=" font-size: 18px; letter-spacing: 1px;">RESET PASSWORD REQUEST</div>
+            <div style="margin-top: 25px; margin-bottom: 25px;">You've received this email because you requested to reset your password</div>
+        </div>
+
+        <div style="padding: 0 10px">
+            <!--- INFORMATIONS --->
+            <div style="background-color: #000000; display: grid; gap:5px; font-size:13px; line-height:20px; padding: 20px; border-top: 2px solid #878787; border-left: 2px solid #878787; border-bottom: 2px solid #FFFFFF; border-right:2px solid #FFFFFF; ">
+                <div style="display: flex; gap:10px;">
+                    <div style="color: #AAAAAA">Request received: </div> <div style="color:#55FFFF">{{now()}} (UTC)</div>
+                </div>
+                <div style="display: flex; gap:10px;">
+                    <div style="color: #AAAAAA">Username:</div> <div style="color:#55FFFF">{{$user->username}}</div>
+                </div>
+                <div style="display: flex; gap:10px;">
+                    <div style="color: #AAAAAA">Email:</div> <div style="color:#55FFFF">{{strtolower($user->email)}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="padding: 0 20px 20px 20px">
+            <!--- LIST --->
+            <div style="display:grid; gap:10px; margin: 20px 0;">
+                <div style="display: flex; gap:10px;">
+                    <div style="color: #AA0000">■</div> <div>Please click the "RESET PASSWORD" button below.</div>
+                </div>
+                <div style="display: flex; gap:10px;">
+                    <div style="color: #AA0000">■</div> <div>This link is valid for 60 minutes.</div>
+                </div>
+                <div style="display: flex; gap:10px;">
+                    <div style="color: #AA0000">■</div> <div>If you did not request to reset your password, ignore this message.</div>
+                </div>
+            </div>
+            <!--- BUTTON(S) --->
+            <div style="display: flex; gap: 20px">
+                <a href="{{$url}}" style="background-color: #00AAAA; padding: 8px 22px; font-weight: 500; text-decoration: none; color: #000000; user-select: none; font-size: 18px; border-top: 2px solid #FFFFFF; border-left: 2px solid #FFFFFF; border-bottom: 2px solid #000000; border-right:2px solid #000000;">RESET PASSWORD</a>
+            </div>
+        </div>
+
+
+    </div>
+    <!--- BOTTOM TEAL BAR --->
+    <div style="height:32px; line-height: 32px; text-align: center; background-color: #00AAAA;">VotV Community Broadcaster v1.0.0 Saki Edition</div>
+</div>
