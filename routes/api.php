@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\AccountsController;
 use App\Http\Controllers\Api\ChannelsController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
