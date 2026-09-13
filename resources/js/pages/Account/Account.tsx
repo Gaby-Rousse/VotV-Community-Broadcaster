@@ -26,7 +26,8 @@ export default function account() {
 
         let formData = new FormData(e.currentTarget);
         let option = parseInt(formData.get("Option")?.toString() ?? "")
-        let max = user.email_verified_at ? 4 : 5
+        const canResendVerification = Boolean(user.email && !user.email_verified_at);
+        let max = canResendVerification ? 5 : 4
         if(isNaN(option) || option > max || option <= 0)
         {
             return `Invalid option. Must be between 1 and ${max}.`
@@ -141,7 +142,7 @@ export default function account() {
         <div>2) Update profile information</div>,
         <div>3) Update password</div>,
         <div>4) Delete account</div>,
-        !user.email_verified_at && <div>5) Re-send confirmation email</div>,
+        canResendVerification && <div>5) Re-send confirmation email</div>,
         <><div>Please select an option:</div><input name="Option"/></>,
         showConfirmDialog && <div className="pb-5"></div>
     ]
@@ -150,5 +151,4 @@ export default function account() {
         {showConfirmDialog && <form onSubmit={handleDeletion} className="ml-1 flex flex-row meadow gap-1 fixed bottom-0"><div>Are you sure you want to do this? (y/n)</div><input name="Confirm"/></form>}
     </>
 }
-
 
