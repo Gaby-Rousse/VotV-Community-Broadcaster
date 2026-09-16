@@ -2,6 +2,7 @@ import {useState} from "react";
 import {Link} from "react-router";
 import {useAuth} from "../../contexts/AuthContext.tsx";
 import {isAuthenticated} from "../../models/interfaces/User.ts";
+import Notifications from "../../components/Notifications.tsx";
 
 export default function Home() {
     return (
@@ -50,6 +51,7 @@ export function Nav() {
                     <Link className="mt-auto mb-auto p-2 w-28" to="/radio">Radio</Link>
                     <Link className="mt-auto mb-auto p-2 w-28" to="/tv">TV</Link>
                     <Link className="mt-auto mb-auto p-2 w-28" to="/upload">Upload</Link>
+                    {isAuthenticated(user) && <Notifications/>}
                     {isAuthenticated(user) ? (
                         <Link className="mt-auto mb-auto p-2 w-28" to="/account">Account</Link>
                     ) : (
@@ -68,6 +70,7 @@ export function Nav() {
                     <Link className="mx-auto p-2 w-36" to="/radio">Radio</Link>
                     <Link className="mx-auto p-2 w-36" to="/tv">TV</Link>
                     <Link className="mx-auto p-2 w-36" to="/upload">Upload</Link>
+                    {isAuthenticated(user) && <Notifications className="mx-auto"/>}
                     {isAuthenticated(user) ? (
                         <Link className="mx-auto p-2 w-36" to="/account">Account</Link>
                     ) : (
