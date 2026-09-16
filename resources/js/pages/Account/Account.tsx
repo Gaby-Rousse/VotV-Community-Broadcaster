@@ -9,16 +9,17 @@ import {useSearchParams} from "react-router-dom";
 export default function account() {
     //https://reactrouter.com/start/declarative/navigating#usenavigate
     const navigate = useNavigate();
-    const {user, refreshAuth} = useAuth();
+    const {user, refreshAuth, loading} = useAuth();
     const {setIsLoading} = useLoading();
     const [params] = useSearchParams();
     const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+    const canResendVerification = Boolean(user.email && !user.email_verified_at);
 
     useEffect(() => {
-        if (!isAuthenticated(user)) {
+        if (!loading && !isAuthenticated(user)) {
             navigate("/login");
         }
-    }, [isAuthenticated(user), navigate]);
+    }, [loading, isAuthenticated(user), navigate]);
 
     //https://react.dev/reference/react-dom/components/form
     const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -26,7 +27,6 @@ export default function account() {
 
         let formData = new FormData(e.currentTarget);
         let option = parseInt(formData.get("Option")?.toString() ?? "")
-        const canResendVerification = Boolean(user.email && !user.email_verified_at);
         let max = canResendVerification ? 5 : 4
         if(isNaN(option) || option > max || option <= 0)
         {
@@ -151,4 +151,3 @@ export default function account() {
         {showConfirmDialog && <form onSubmit={handleDeletion} className="ml-1 flex flex-row meadow gap-1 fixed bottom-0"><div>Are you sure you want to do this? (y/n)</div><input name="Confirm"/></form>}
     </>
 }
-
