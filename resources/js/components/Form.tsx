@@ -17,7 +17,7 @@ export function Form({ handleSubmit, lines }: {
         if (visibleCount < lines.length) {
             const timer = setTimeout(() => {
                 setVisibleCount(prev => prev + 1);
-            }, 500);
+            }, 300);
             return () => clearTimeout(timer);
         }
     }, [visibleCount]);
@@ -32,7 +32,7 @@ export function Form({ handleSubmit, lines }: {
         <>
             <form onSubmit={onSubmit}
                   className="meadow bg-black flex h-screen w-screen">
-                <div className="ml-1 mt-auto flex flex-col">
+                <div className="ml-1 mt-auto flex w-full flex-col">
 
                     <Lines visibleCount={visibleCount}>
                         {lines.map(value =>

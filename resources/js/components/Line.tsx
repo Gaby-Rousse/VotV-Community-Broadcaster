@@ -8,5 +8,5 @@ export function Lines({ visibleCount, children }: {
 }
 
 export function Line({ children }: { children: React.ReactNode }) {
-    return <div className="flex flex-row gap-1">{children}</div>;
+    return <div className="flex flex-row w-full gap-1">{children}</div>;
 }
