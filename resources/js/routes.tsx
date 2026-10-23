@@ -9,10 +9,14 @@ import UpdateProfile from "./pages/Account/UpdateProfile";
 import UpdatePassword from "./pages/Account/UpdatePassword.tsx";
 import Tui from './pages/Dev/Tui'
 import Help from './pages/Home/Help'
+import Support from './pages/Support/Support'
 
 
 
 export const router = createBrowserRouter([
+    { path: '/support', element: <Support /> },
+    { path: '/suggestions', element: <Support /> },
+    { path: '/bugs', element: <Support /> },
     { path: '/', element: <Home /> },
     { path: '/login', element: <Login /> },
     { path: '/register', element: <Register /> },

@@ -9,16 +9,17 @@ import {useSearchParams} from "react-router-dom";
 export default function account() {
     //https://reactrouter.com/start/declarative/navigating#usenavigate
     const navigate = useNavigate();
-    const {user, refreshAuth} = useAuth();
+    const {user, refreshAuth, loading} = useAuth();
     const {setIsLoading} = useLoading();
     const [params] = useSearchParams();
     const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+    const canResendVerification = Boolean(user.email && !user.email_verified_at);
 
     useEffect(() => {
-        if (!isAuthenticated(user)) {
+        if (!loading && !isAuthenticated(user)) {
             navigate("/login");
         }
-    }, [isAuthenticated(user), navigate]);
+    }, [loading, isAuthenticated(user), navigate]);
 
     //https://react.dev/reference/react-dom/components/form
     const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -32,8 +33,6 @@ export default function account() {
         {
             return `Invalid option. Must be between 1 and ${max}.`
         }
-
-
 
         switch(option) {
             case 1: {
@@ -82,8 +81,6 @@ export default function account() {
                     });
             }
         }
-
-
     }
 
     const handleDeletion = async (e: React.SubmitEvent<HTMLFormElement>) => {
