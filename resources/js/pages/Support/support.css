@@ -562,7 +562,7 @@
                 }
             }
         }
-        @media (width < 640px) {
+        @media (width < theme(--breakpoint-sm))
 
             .topic {
                 flex-direction: row;

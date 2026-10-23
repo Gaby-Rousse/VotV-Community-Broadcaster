@@ -34,8 +34,6 @@ export default function account() {
             return `Invalid option. Must be between 1 and ${max}.`
         }
 
-
-
         switch(option) {
             case 1: {
                 setIsLoading(true)
@@ -83,8 +81,6 @@ export default function account() {
                     });
             }
         }
-
-
     }
 
     const handleDeletion = async (e: React.SubmitEvent<HTMLFormElement>) => {
