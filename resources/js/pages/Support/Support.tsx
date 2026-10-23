@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import type {FormEvent} from 'react';
 import {Link, useLocation, useSearchParams} from 'react-router-dom';
 import {isAxiosError} from 'axios';
@@ -7,6 +7,10 @@ import {useAuth} from '../../contexts/AuthContext';
 import {isAuthenticated} from '../../models/interfaces/User';
 import Roles from '../../models/enums/Roles';
 import Notifications from '../../components/Notifications';
+import MeadowButton from "../../components/MeadowButton.tsx";
+import SimpleBar from "simplebar-react";
+import {MeadowWhisper} from "../../components/MeadowWhisper.tsx";
+import {IoCaretBack, IoCaretForward} from "react-icons/io5";
 
 type ThreadType = 'suggestion' | 'bug';
 type Status = 'open' | 'in_progress' | 'resolved' | 'closed';
@@ -174,66 +178,88 @@ export default function Support() {
 
     function selectThread(id: number) {
         setParams({thread: String(id), page: String(page)});
+        scrollRight();
     }
 
-    return <main className="support">
-        <nav className="tabs" aria-label="Support folders">
-            <Link to="/" className="home-link">Home</Link>
-            <Link to="/suggestions" aria-current={tab === 'suggestions' ? 'page' : undefined}>{developer ? 'All suggestions' : 'Suggestions'}</Link>
-            <Link to="/bugs" aria-current={tab === 'bugs' ? 'page' : undefined}>{developer ? 'All bugs' : 'Bugs'}</Link>
-            <Link to="/support" aria-current={tab === 'mine' ? 'page' : undefined}>My submissions</Link>
-            <Link to="/support?view=write" aria-current={tab === 'write' ? 'page' : undefined}>Write</Link>
-            {developer && <Link to="/support?view=requests" aria-current={tab === 'requests' ? 'page' : undefined}>Requests</Link>}
-            <div className="account-actions">
-                {authenticated && <Notifications className="support-notifications"/>}
-                <Link to={authenticated ? '/account' : '/login'} className="account-link">{authenticated ? user.username : 'Login'}</Link>
+    const inboxRef = useRef<HTMLDivElement>(null);
+
+    function scrollRight() {
+        const el = inboxRef.current;
+        if (!el) return;
+        el.scrollBy({left: el.clientWidth, behavior: 'smooth'});
+    }
+
+    function scrollLeft() {
+        const el = inboxRef.current;
+        if (!el) return;
+        el.scrollBy({left: -el.clientWidth, behavior: 'smooth'});
+    }
+
+
+    return <div className="meadow"><main className="support">
+        <div className="tabs" aria-label="Support folders">
+            <div className="flex flex-row gap-1.5 h-full overflow-x-auto">
+                <MeadowButton animated to="/" text="Home"/>
+                <MeadowButton animated onClick={() => scrollLeft()} to="/suggestions" text="Suggestions" selected={tab === 'suggestions'}/>
+                <MeadowButton animated onClick={() => scrollLeft()} to="/bugs" text="Bugs" selected={tab === 'bugs'}/>
+                <MeadowButton animated onClick={() => scrollLeft()} to="/support" text="My submissions" selected={tab === 'mine'}/>
+                <MeadowButton animated onClick={() => scrollRight()} to="/support?view=write" text="Write" selected={tab === 'write'}/>
+                {developer && <MeadowButton animated to="/support?view=requests" text="Requests" selected={tab === 'requests'}/>}
             </div>
-        </nav>
-        {tab === 'requests' ? developer ? <DeveloperRequests/> : <section className="requests-panel"><p className="notice">This area is only available to developers.</p></section> : <div className="inbox">
-            <section className="mailbox" aria-label="Submissions">
+            <div className="account-actions">
+                <MeadowButton className="hidden md:block" animated to={authenticated ? '/account' : '/login'} text={authenticated ? user.username : 'Login'}/>
+                {authenticated && <Notifications className="support-notifications"/>}
+            </div>
+        </div>
+
+
+        {tab === 'requests' ? developer ? <DeveloperRequests/> : <section className="requests-panel"><p className="notice">This area is only available to developers.</p></section> : <div ref={inboxRef} className="inbox">
+            <section className="mailbox w-screen" aria-label="Submissions">
                 <header className="mailbox-heading"><h1>Contact support</h1><span>{listing.total} {listing.total === 1 ? 'thread' : 'threads'}</span></header>
                 <div className="folder-heading">{tab === 'bugs' ? 'Bug reports' : tab === 'suggestions' ? 'Suggestions' : 'My submissions'}</div>
                 {authLoading ? <p className="notice">Connecting...</p> : !authenticated && !publicFolder ? <p className="notice">Log in to view your submissions.</p> : <>
                     {publicFolder
                         ? <p className="privacy">Everyone can read submissions and their messages. Replying requires permission from a developer.</p>
                         : !developer && <p className="privacy">Everyone can read your conversation. Only you, developers, and approved participants can reply.</p>}
-                    {error && <p className="error" role="alert">{error} <button onClick={() => setRevision(current => current + 1)}>Retry</button></p>}
+                    {error && <p className="error" role="alert">{error} <MeadowButton animated onClick={() => setRevision(current => current + 1)} text="Retry"/> </p>}
                     {listLoading && <p className="notice" role="status">Loading...</p>}
                     {!listLoading && !error && listing.data.length === 0 && <p className="notice">No submissions found.</p>}
-                    <div className="thread-list">
-                        {listing.data.map(thread => <button key={thread.id} className={`thread-row ${thread.id === threadId ? 'active' : ''}`} onClick={() => selectThread(thread.id)} aria-pressed={thread.id === threadId}>
+                    <SimpleBar className="scrollbar">
+                        {listing.data.map(thread => <div key={thread.id} className={`thread-row ${thread.id === threadId ? 'active' : ''}`} onClick={() => selectThread(thread.id)} aria-pressed={thread.id === threadId}>
                             <span className="read-indicator" aria-label={thread.unread ? 'Unread' : 'Read'}>{thread.unread ? '●' : '·'}</span>
                             <span className="sender">{thread.author.username}</span>
-                            <span className="subject">{thread.subject}<small>{statusNames[thread.status]}{thread.approval_status !== 'approved' ? ` · Approval ${thread.approval_status}` : !thread.can_reply ? thread.access_request ? ` · Access ${thread.access_request.status}` : ' · Read only' : ''}</small></span>
+                            <span className="subject"><MeadowWhisper tooltip={thread.subject}>{thread.subject}</MeadowWhisper> <small>{statusNames[thread.status]}{thread.approval_status !== 'approved' ? ` · Approval ${thread.approval_status}` : !thread.can_reply ? thread.access_request ? ` · Access ${thread.access_request.status}` : ' · Read only' : ''}</small></span>
                             <time dateTime={thread.updated_at}>{dateLabel(thread.updated_at)}</time>
-                        </button>)}
-                    </div>
+                        </div>)}
+                    </SimpleBar>
                     {listing.last_page > 1 && <footer className="pagination">
-                        <button disabled={page === 1} onClick={() => setParams({page: String(page - 1)})}>Previous</button>
+                        <MeadowButton className="w-25" animated disabled={page === 1} onClick={() => setParams({page: String(page - 1)})} text="Previous"/>
                         <span>{page} / {listing.last_page}</span>
-                        <button disabled={page >= listing.last_page} onClick={() => setParams({page: String(page + 1)})}>Next</button>
+                        <MeadowButton className="w-25" animated disabled={page >= listing.last_page} onClick={() => setParams({page: String(page + 1)})} text="Next"/>
                     </footer>}
                 </>}
             </section>
             <section className="reader" aria-label="Conversation" aria-busy={threadLoading}>
                 {tab === 'write' && authenticated ? <Compose onCreated={id => { setParams({thread: String(id)}); setRevision(current => current + 1); }}/>
                     : conversation ? <>
-                        <header className="message-heading"><span className="avatar" aria-hidden="true">{conversation.thread.author.username.slice(0, 1).toUpperCase()}</span><span>{conversation.thread.author.username}</span><time dateTime={conversation.thread.updated_at}>{dateLabel(conversation.thread.updated_at)}</time></header>
-                        <div className="topic"><h2>{conversation.thread.subject}</h2><span>{conversation.thread.type === 'bug' ? 'Bug report' : 'Suggestion'} · {statusNames[conversation.thread.status]}</span></div>
+                        <header className="message-heading"><button onClick={scrollLeft} className="size-10 shrink-0 border-2 border-(--meadow-border) flex sm:hidden relative"><IoCaretBack className=" absolute text-2xl right-1.75 top-1.5"></IoCaretBack></button><span className="avatar" aria-hidden="true">{conversation.thread.author.username.slice(0, 1).toUpperCase()}</span><MeadowWhisper tooltip={conversation.thread.author.username}><span className="line-clamp-1">{conversation.thread.author.username}</span></MeadowWhisper><time dateTime={conversation.thread.updated_at}>{dateLabel(conversation.thread.updated_at)}</time></header>
+                        <div className="topic"><MeadowWhisper tooltip={conversation.thread.subject}><h2 className="text-lg! sm:text-3xl!">{conversation.thread.subject}</h2></MeadowWhisper> <span className="text-nowrap">{conversation.thread.type === 'bug' ? 'Bug report' : 'Suggestion'} · {statusNames[conversation.thread.status]}</span></div>
                         {developer && conversation.approval_status === 'approved' && <label className="status-control">Status <select value={conversation.thread.status} disabled={sending} onChange={event => changeStatus(event.target.value as Status)}>{Object.entries(statusNames).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>}
-                        <div className="messages">
-                            {conversation.has_older && <button disabled={sending} onClick={loadOlder}>Load earlier messages</button>}
-                            {conversation.messages.map(message => <article key={message.id} className={message.kind === 'status' ? 'status-message' : 'message'}>
-                                <header><span>{message.author.username}</span><time dateTime={message.created_at}>{dateLabel(message.created_at)}</time></header>
-                                <p>{message.content}</p>
-                            </article>)}
-                        </div>
+                            {conversation.has_older && <div onClick={loadOlder} className="border-(--meadow-yellow) hover:cursor-pointer bg-black btn-press-animation px-1 border-b flex"><span>&#9650;</span><span className="mx-auto">Load older messages</span><span>&#9650;</span></div>}
+                            <div className="messages">
+                                <SimpleBar className="scrollbar">
+                                    {conversation.messages.map(message => <article key={message.id} className={message.kind === 'status' ? 'status-message' : 'message'}>
+                                        <header><span>{message.author.username}</span><time dateTime={message.created_at}>{dateLabel(message.created_at)}</time></header>
+                                        <p>{message.content}</p>
+                                    </article>)}
+                                </SimpleBar>
+                            </div>
                         {actionError && <p className="error" role="alert">{actionError}</p>}
                         {conversation.approval_status !== 'approved' ? <SubmissionReviewState conversation={conversation} developer={developer} onReviewed={() => setRevision(current => current + 1)}/>
                             : conversation.thread.status === 'closed' ? <p className="notice">This thread is closed.</p> : conversation.can_reply ? <form className="reply" onSubmit={sendReply}>
                             <label htmlFor="reply-content">Reply</label>
                             <textarea id="reply-content" value={reply} onChange={event => setReply(event.target.value)} maxLength={10000} required disabled={sending}/>
-                            <button disabled={sending || !reply.trim()}>{sending ? 'Sending...' : 'Send reply'}</button>
+                            <MeadowButton animated type="submit" text={sending ? 'Sending...' : 'Send reply'} disabled={sending || !reply.trim()}/>
                         </form> : selectedThread && <JoinConversation thread={selectedThread} authenticated={authenticated} onRequested={() => setRevision(current => current + 1)}/>}
                     </> : <>
                         <header className="message-heading"><span className="avatar" aria-hidden="true">@</span><span>Support inbox</span></header>
@@ -246,8 +272,8 @@ export default function Support() {
                     </>}
             </section>
         </div>}
-        <footer className="inbox-footer"><span>VCB / SUPPORT</span><span>{authenticated ? 'New replies appear automatically' : 'Not connected'}</span></footer>
-    </main>;
+        <footer className="inbox-footer"><span className="hidden sm:block">VCB / SUPPORT</span>{authenticated ? <span className="sm:m-0 mx-auto">New replies appear automatically</span> : <Link className="sm:m-0 mx-auto" to="/login">Not connected</Link>}</footer>
+    </main></div>;
 }
 
 function Compose({onCreated}: {onCreated: (id: number) => void}) {
@@ -281,7 +307,7 @@ function Compose({onCreated}: {onCreated: (id: number) => void}) {
             <textarea id="submission-content" value={content} onChange={event => setContent(event.target.value)} maxLength={10000} required disabled={sending}/>
             <p className="privacy">A developer must approve this submission before it becomes public. Approval or refusal includes a response message.</p>
             {error && <p className="error" role="alert">{error}</p>}
-            <button disabled={sending || !subject.trim() || !content.trim()}>{sending ? 'Sending...' : 'Request publication'}</button>
+            <MeadowButton type="submit" animated text={sending ? 'Sending...' : 'Request publication'} disabled={sending || !subject.trim() || !content.trim()}/>
         </form>
     </>;
 }
@@ -291,6 +317,20 @@ function DeveloperRequests() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [revision, setRevision] = useState(0);
+
+    const requestsRef = useRef<HTMLDivElement>(null);
+
+    function scrollRight() {
+        const el = requestsRef.current;
+        if (!el) return;
+        el.scrollBy({left: el.clientWidth, behavior: 'smooth'});
+    }
+
+    function scrollLeft() {
+        const el = requestsRef.current;
+        if (!el) return;
+        el.scrollBy({left: -el.clientWidth, behavior: 'smooth'});
+    }
 
     useEffect(() => {
         const controller = new AbortController();
@@ -310,48 +350,57 @@ function DeveloperRequests() {
         return () => { controller.abort(); clearInterval(timer); };
     }, [revision]);
 
-    return <section className="requests-panel">
-        <header className="requests-heading"><h1>Developer requests</h1><span>{queue.submissions.length + queue.access_requests.length} pending</span></header>
-        {loading && <p className="notice">Loading requests...</p>}
-        {error && <p className="error" role="alert">{error}</p>}
-        <div className="request-groups">
-            <section>
-                <h2>Submission approvals</h2>
-                {!loading && queue.submissions.length === 0 && <p className="notice">No pending submissions.</p>}
-                {queue.submissions.map(submission => <article className="request-card" key={submission.id}>
-                    <header><Link to={`/${submission.type === 'bug' ? 'bugs' : 'suggestions'}?thread=${submission.id}`}>{submission.subject}</Link><time dateTime={submission.created_at}>{dateLabel(submission.created_at)}</time></header>
-                    <p>{submission.author.username} wants to publish a {submission.type === 'bug' ? 'bug report' : 'suggestion'}.</p>
-                    <DecisionForm onDecide={async (decision, message) => {
-                        await api.patch(`/api/v1/support/threads/${submission.id}/submission-review`, {decision, message});
-                        setRevision(current => current + 1);
-                    }}/>
-                </article>)}
-            </section>
-            <section>
-                <h2>Conversation access</h2>
-                {!loading && queue.access_requests.length === 0 && <p className="notice">No pending access requests.</p>}
-                {queue.access_requests.map(request => <article className="request-card" key={request.id}>
-                    <header><Link to={`/${request.thread.type === 'bug' ? 'bugs' : 'suggestions'}?thread=${request.thread.id}`}>{request.thread.subject}</Link><time dateTime={request.created_at}>{dateLabel(request.created_at)}</time></header>
-                    <p><span>{request.user.username}</span>: {request.message}</p>
-                    <DecisionForm onDecide={async (decision, message) => {
-                        await api.patch(`/api/v1/support/threads/${request.thread.id}/access-requests/${request.id}`, {decision, message});
-                        setRevision(current => current + 1);
-                    }}/>
-                </article>)}
-            </section>
+    return <div className="flex flex-col min-h-0 h-full overflow-hidden">
+        <header className="requests-heading"><h1>Developer requests</h1><span className="text-[18px] my-auto">{queue.submissions.length + queue.access_requests.length} pending</span></header>
+
+        <div className="flex flex-col flex-1 min-h-0">
+            {loading && <p className="notice">Loading requests...</p>}
+            {error && <p className="error" role="alert">{error}</p>}
+            <div ref={requestsRef} className="request-groups flex-1 min-h-0">
+
+                <section>
+                    <div className="flex flex-row py-1 pl-3 pr-1 sm:pr-3 border-b-2 border-white"><div className="my-auto text-2xl text-(--meadow-green)!">Submission approvals</div><button onClick={scrollRight} className="size-10 shrink-0 ml-auto border-2 border-(--meadow-border) flex sm:hidden relative "><IoCaretForward className=" absolute text-2xl left-1.75 top-1.5"></IoCaretForward></button></div>
+                    <SimpleBar className="scrollbar">
+                        {!loading && queue.submissions.length === 0 && <p className="notice">No pending submissions.</p>}
+                        {queue.submissions.map(submission => <article className="request-card" key={submission.id}>
+                            <header><Link to={`/${submission.type === 'bug' ? 'bugs' : 'suggestions'}?thread=${submission.id}`}>{submission.subject}</Link><time dateTime={submission.created_at}>{dateLabel(submission.created_at)}</time></header>
+                            <p>{submission.author.username} wants to publish a {submission.type === 'bug' ? 'bug report' : 'suggestion'}.</p>
+                            <DecisionForm onDecide={async (decision, message) => {
+                                await api.patch(`/api/v1/support/threads/${submission.id}/submission-review`, {decision, message});
+                                setRevision(current => current + 1);
+                            }}/>
+                        </article>)}
+                    </SimpleBar>
+                </section>
+
+                <section>
+                    <div className="flex flex-row py-1 pr-3 pl-1 sm:pl-3 border-b-2 border-white"><button onClick={scrollLeft} className="size-10 border-2 shrink-0  border-(--meadow-border) flex sm:hidden relative mr-2"><IoCaretBack className=" absolute text-2xl right-1.75 top-1.5"></IoCaretBack></button><div className="my-auto text-2xl text-(--meadow-green)!">Submission approvals</div></div>
+                    <SimpleBar className="scrollbar">
+                        {!loading && queue.access_requests.length === 0 && <p className="notice">No pending access requests.</p>}
+                        {queue.access_requests.map(request => <article className="request-card" key={request.id}>
+                            <header><Link to={`/${request.thread.type === 'bug' ? 'bugs' : 'suggestions'}?thread=${request.thread.id}`}>{request.thread.subject}</Link><time dateTime={request.created_at}>{dateLabel(request.created_at)}</time></header>
+                            <p><span>{request.user.username}</span>: {request.message}</p>
+                            <DecisionForm onDecide={async (decision, message) => {
+                                await api.patch(`/api/v1/support/threads/${request.thread.id}/access-requests/${request.id}`, {decision, message});
+                                setRevision(current => current + 1);
+                            }}/>
+                        </article>)}
+                    </SimpleBar>
+                </section>
+
+            </div>
         </div>
-    </section>;
+    </div>
 }
 
 function SubmissionReviewState({conversation, developer, onReviewed}: {conversation: Conversation; developer: boolean; onReviewed: () => void}) {
     return <section className="submission-review">
         <h3>Submission {conversation.approval_status}</h3>
         {conversation.approval_status === 'pending' ? <>
-            <p>This submission is waiting for a developer before it becomes public.</p>
-            {developer && <DecisionForm onDecide={async (decision, message) => {
+            {developer ? <DecisionForm onDecide={async (decision, message) => {
                 await api.patch(`/api/v1/support/threads/${conversation.thread.id}/submission-review`, {decision, message});
                 onReviewed();
-            }}/>} 
+            }}/> :  <p>This submission is waiting for a developer before it becomes public.</p>}
         </> : <>
             <p>A developer refused this publication request.</p>
             <blockquote>{conversation.approval_message}</blockquote>
@@ -379,8 +428,8 @@ function DecisionForm({onDecide}: {onDecide: (decision: 'approved' | 'refused', 
         <textarea value={message} onChange={event => setMessage(event.target.value)} maxLength={10000} required disabled={sending}/>
         {error && <p className="error" role="alert">{error}</p>}
         <div>
-            <button type="button" disabled={sending || !message.trim()} onClick={() => decide('approved')}>Approve</button>
-            <button type="button" disabled={sending || !message.trim()} onClick={() => decide('refused')}>Refuse</button>
+            <MeadowButton animated text="Approve" disabled={sending || !message.trim()} onClick={() => decide('approved')}/>
+            <MeadowButton animated text="Refuse" disabled={sending || !message.trim()} onClick={() => decide('refused')}/>
         </div>
     </div>;
 }
@@ -411,8 +460,8 @@ function JoinConversation({thread, authenticated, onRequested}: {thread: Thread;
     const refused = thread.access_request?.status === 'refused';
 
     return <div className="access-panel">
-            <h3>Join conversation</h3>
-            <p>You can read every message. A developer must approve you before you can reply.</p>
+            <h3 className="hidden sm:block">Join conversation</h3>
+            <p className="hidden sm:block">You can read every message. A developer must approve you before you can reply.</p>
             {!authenticated ? <><p>Log in to request permission from the developers.</p><Link to="/login">Log in</Link></>
                 : pending ? <>
                     <p className="access-state">Your request is waiting for a developer.</p>
@@ -424,9 +473,9 @@ function JoinConversation({thread, authenticated, onRequested}: {thread: Thread;
                     </div>}
                     <form onSubmit={requestAccess}>
                         <label htmlFor={`access-message-${thread.id}`}>{refused ? 'Send a new request' : 'Why do you want to join?'}</label>
-                        <textarea id={`access-message-${thread.id}`} value={message} onChange={event => setMessage(event.target.value)} maxLength={10000} required disabled={sending}/>
+                        <textarea className="h-20 sm:h-25" id={`access-message-${thread.id}`} value={message} onChange={event => setMessage(event.target.value)} maxLength={10000} required disabled={sending}/>
                         {error && <p className="error" role="alert">{error}</p>}
-                        <button disabled={sending || !message.trim()}>{sending ? 'Sending...' : 'Request access'}</button>
+                            <MeadowButton type="submit" text={sending ? 'Sending...' : 'Request access'} disabled={sending || !message.trim()} />
                     </form>
                 </>}
         </div>;

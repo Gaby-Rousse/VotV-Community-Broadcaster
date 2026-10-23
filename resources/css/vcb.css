@@ -1,0 +1,86 @@
+:root {
+    --votv-green: #04AA6D;
+    --votv-darkgreen: #006842;
+    --votv-border: 2px solid var(--votv-green);
+    --votv-hover: var(--votv-darkgreen);
+    --votv-url: rgba(111, 247, 219);
+    --votv-panel-bg: rgba(0, 0, 0, 0.8);
+    --votv-nav-bg: rgba(0, 0, 0, 0.8);
+    --votv-title-shadow: #8A8A8A 1.3px 1.3px 8px, #8A8A8A -1.3px -1.3px 8px;
+    --votv-subtitle-shadow: #04AA6D 1.3px 1.3px 8px, #04AA6D -1.3px -1.3px 8px;
+    --votv-border-radius: 20px;
+    --votv-font: "Share Tech Mono";
+}
+
+.vcb {
+
+    height: 100%;
+    width: 100%;
+
+    * {
+        font-family: var(--votv-font), monospace;
+        font-weight: 400;
+        font-style: normal;
+        color: white;
+    }
+
+    nav {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        background-color: var(--votv-nav-bg);
+        z-index: 100
+    }
+
+    .title {
+        text-shadow: var(--votv-title-shadow)
+    }
+
+    .subtitle {
+        text-shadow: var(--votv-subtitle-shadow)
+    }
+
+    a {
+        color: var(--votv-url);
+        text-decoration: underline;
+    }
+
+    .panel .subtitle {
+        font-size: var(--text-4xl);
+    }
+
+    .links a, nav a, button {
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        border: var(--votv-border);
+        background-color: black;
+        transition: background-color 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+
+        &:hover {
+            background-color: var(--votv-hover);
+            cursor: pointer;
+        }
+    }
+
+    .scrollbar {
+        flex: 1;
+        min-height: 0;
+        height: 100%;
+    }
+
+    .simplebar-content {
+    }
+
+    .simplebar-track.simplebar-vertical {
+        width: 10px;
+    }
+
+    .simplebar-scrollbar::before {
+        background: #ffffff;
+    }
+
+    .simplebar-content:hover {
+        cursor: pointer;
+    }
+}

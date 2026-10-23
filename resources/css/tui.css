@@ -1,0 +1,71 @@
+@font-face {
+    font-family: IBM_VGA_8x16;
+    src: url("../fonts/WebPlus_IBM_VGA_8x16.woff");
+    font-weight: normal;
+    font-style: normal;
+}
+
+:root {
+    --tui-white: #FFFFFF;
+    --tui-black: #000000;
+    --tui-gray: #AAAAAA;
+    --tui-darkgray: #878787;
+    --tui-darkblue: #0000AA;
+    --tui-teal: #55FFFF;
+    --tui-red: #AA0000;
+    --tui-font: "IBM_VGA_8x16";
+}
+
+.tui {
+    height: 100dvh;
+    width: 100dvw;
+    margin: 0;
+    padding: 0;
+    background-color: var(--tui-darkblue);
+
+    * {
+        font-family: IBM_VGA_8x16, Consolas,'DejaVu Sans Mono',Menlo,'Courier New',monospace;
+    }
+
+    /* Borders */
+
+    .outer-border {
+        border-top: 2px solid var(--tui-white);
+        border-right: 2px solid var(--tui-black);
+        border-bottom: 2px solid var(--tui-black);
+        border-left: 2px solid  var(--tui-white);
+    }
+
+    .inner-border {
+        border-top: 2px solid var(--tui-darkgray);
+        border-right: 2px solid  var(--tui-white);
+        border-bottom: 2px solid  var(--tui-white);
+        border-left: 2px solid var(--tui-darkgray);
+    }
+
+    /* Buttons */
+    a {
+        user-select: none;
+        padding: 8px 22px;
+        font-weight: 500;
+        text-decoration: none;
+        color: var(--tui-black);
+        border-top: 2px solid  var(--tui-white);
+        border-right: 2px solid var(--tui-black);
+        border-bottom: 2px solid var(--tui-black);
+        border-left: 2px solid var(--tui-white);
+
+        &.primary {
+            background-color: var(--tui-teal);
+        }
+
+        &.secondary {
+            background-color: var(--tui-gray);
+        }
+
+        &:active {
+            transform: translateY(2px);
+        }
+
+    }
+}

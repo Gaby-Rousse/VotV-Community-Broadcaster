@@ -46,6 +46,7 @@
     }
 
     .notification-panel {
+        overflow: hidden;
         position: absolute;
         z-index: 30;
         top: calc(100% + 0.4rem);
@@ -82,7 +83,6 @@
     }
 
     .notification-list {
-        overflow-y: auto;
 
         > button {
             display: flex;
@@ -152,5 +152,27 @@
             aspect-ratio: 1;
             padding: 0.5rem;
         }
+
+        .notification-panel {
+            border: var(--votv-border);
+
+            header {
+                border-bottom: var(--votv-border);
+            }
+        }
+
+        h2 {
+            color: white !important;
+        }
+
+        .subtitle {
+            color: white !important;
+        }
+
+        .unread {
+            border-left: 4px solid #06d489 !important;
+        }
+
+
     }
 }

@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {isAxiosError} from 'axios';
 import api from '../lib/axios';
+import SimpleBar from "simplebar-react";
 
 type Notification = {
     id: number;
@@ -129,7 +130,8 @@ export default function Notifications({className = ''}: {className?: string}) {
             {unreadCount > 0 && <span className="notification-count">{unreadCount > 99 ? '99+' : unreadCount}</span>}
         </button>
         {open && <section className="notification-panel" aria-label="Notifications">
-            <header><h2>Notifications</h2><span>{unreadCount} unread</span></header>
+            <header><h2 className="title">Notifications</h2><div className="flex"><div className="my-auto">{unreadCount} unread</div></div></header>
+            <SimpleBar className="scrollbar">
             <div className="notification-list">
                 {loading && items.length === 0 && <p>Loading...</p>}
                 {error && <p className="notification-error" role="alert">{error}</p>}
@@ -140,12 +142,13 @@ export default function Notifications({className = ''}: {className?: string}) {
                     className={notification.seen ? '' : 'unread'}
                     onClick={() => openNotification(notification)}
                 >
-                    <span className="notification-from">{notification.from.username}</span>
+                    <span className="notification-from subtitle">{notification.from.username}</span>
                     <span>{notification.content}</span>
-                    <time dateTime={notification.created_at}>{dateLabel(notification.created_at)}</time>
+                    <time className="subtitle ml-0.5 mt-0.5" dateTime={notification.created_at}>{dateLabel(notification.created_at)}</time>
                 </button>)}
             </div>
-            {page < lastPage && <button className="load-notifications" type="button" disabled={loading} onClick={() => loadNotifications(page + 1, true)}>
+            </SimpleBar>
+            {page < lastPage && <button className="load-notifications z-20" type="button" disabled={loading} onClick={() => loadNotifications(page + 1, true)}>
                 {loading ? 'Loading...' : 'Load older'}
             </button>}
         </section>}

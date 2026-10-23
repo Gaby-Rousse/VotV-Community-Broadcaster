@@ -51,18 +51,18 @@ export function Nav() {
                     <Link className="mt-auto mb-auto p-2 w-28" to="/radio">Radio</Link>
                     <Link className="mt-auto mb-auto p-2 w-28" to="/tv">TV</Link>
                     <Link className="mt-auto mb-auto p-2 w-28" to="/upload">Upload</Link>
-                    {isAuthenticated(user) && <Notifications/>}
                     {isAuthenticated(user) ? (
                         <Link className="mt-auto mb-auto p-2 w-28" to="/account">Account</Link>
                     ) : (
                         <Link className="mt-auto mb-auto p-2 w-28" to="/login">Login</Link>
                     )}
+                    {isAuthenticated(user) && <Notifications/>}
                 </div>
             </div>
 
             <div className="sm:hidden" id="mobile-menu">
                 <div
-                    className={`fixed top-15 right-0 bottom-0 w-1/2 bg-black/80 z-10 flex flex-col gap-2 transition-transform duration-300 ${
+                    className={`fixed top-16 right-0 bottom-0 w-1/2 bg-black/80 z-10 flex flex-col gap-2 transition-transform duration-300 ${
                         isOpen ? "translate-x-0" : "translate-x-full"
                     }`}
                 >
@@ -70,12 +70,12 @@ export function Nav() {
                     <Link className="mx-auto p-2 w-36" to="/radio">Radio</Link>
                     <Link className="mx-auto p-2 w-36" to="/tv">TV</Link>
                     <Link className="mx-auto p-2 w-36" to="/upload">Upload</Link>
-                    {isAuthenticated(user) && <Notifications className="mx-auto"/>}
                     {isAuthenticated(user) ? (
                         <Link className="mx-auto p-2 w-36" to="/account">Account</Link>
                     ) : (
                         <Link className="mx-auto p-2 w-36" to="/login">Login</Link>
                     )}
+                    {isAuthenticated(user) && <Notifications className="mx-auto"/>}
                 </div>
             </div>
         </nav>
