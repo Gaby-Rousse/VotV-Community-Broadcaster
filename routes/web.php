@@ -27,7 +27,12 @@ Route::view('/debug', 'debug', ['title' => 'Debug']);
 //Account related views
 Route::view('/signin', 'user.signin', ['title' => 'Sign in']);
 Route::view('/signup', 'user.signup', ['title' => 'Sign up']);
-Route::view('/account', 'user.account', ['title' => 'Account']);
+Route::get('/account', function () {
+    if (!Auth::check()) {
+        return redirect('/signin');
+    }
+    return view('user.account',['title' => 'Account']);
+});
 
 
 //Media Related Actions
