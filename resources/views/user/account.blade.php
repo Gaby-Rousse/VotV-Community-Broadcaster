@@ -13,13 +13,14 @@
             <div class="dos">1) Log off</div>
             <div class="dos">2) Change username</div>
             <div class="dos">3) Delete account (and all uploaded data.)</div>
+            <div class="dos">4) Reset password</div>
             <div class="flex">
                 <label for="option" class="dos">Please choose an option:</label><input id="option" type="text"
-                                                                                       name="choice"
                                                                                        class="dos flex-grow">
             </div>
-
+            <input type="hidden" name="choice" id="choice">
             <button type="submit" class="dos url hover:cursor-pointer mr-auto md:hidden">Submit!</button>
+
         </form>
     </div>
 </div>
@@ -30,6 +31,7 @@
     $(() => {
         $('form').submit(function (e) {
             let choice = $("#option").val()
+            if (choice) $("#choice").val(choice);
             if (choice === '2') {
                 e.preventDefault();
                 $("#option").val('')
@@ -46,7 +48,22 @@
                                                                                        class="dos flex-grow"></div>`);
                 $('#confirm').focus();
             }
+            if (choice === '4') {
+                e.preventDefault();
+                $("#option").val('')
+                $('button').before(`<div class="flex flex-col">
+                                    <div class="flex flex-row"><div class="dos">New password: </div> <input id="confirm" type="password" name="password" class="dos flex-grow"></div>
+                                    <div class="flex flex-row"><div class="dos">Confirmation: </div> <input type="password" name="password_confirmation" class="dos flex-grow"></div>
+</div>`);
+                $('#confirm').focus();
+            }
+
+            let currentForm = new FormData(document.getElementsByTagName("form")[0])
+
+            currentForm.append("choice", choice);
         });
+
+
     });
 </script>
 
